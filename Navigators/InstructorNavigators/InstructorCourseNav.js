@@ -1,20 +1,19 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import StudentCourseOverviewScreen from '../Screens/StudentCourseOverviewScreen'
-import StudentCourseContentScreen from '../Screens/StudentCourseContentScreen'
-import StudentCourseQuizzesScreen from '../Screens/StudentCourseQuizzesScreen'
-import StudentCourseGradesScreen from '../Screens/StudentCourseGradesScreen'
-import StudentCourseAssignmentsScreen from '../Screens/StudentCourseAssignmentsScreen'
-import Colors from '../Constants/colors';
-import { View } from 'react-native';
+import InstructorCourseOverviewScreen from '../../Screens/InstructorScreens/InstructorCourseOverviewScreen'
+import InstructorCourseContentScreen from '../../Screens/InstructorScreens/InstructorCourseContentScreen'
+import InstructorCourseQuizzesScreen from '../../Screens/InstructorScreens/InstructorCourseQuizzesScreen'
+import InstructorCourseGradesScreen from '../../Screens/InstructorScreens/InstructorCourseGradesScreen'
+import InstructorCourseAssignmentsScreen from '../../Screens/InstructorScreens/InstructorCourseAssignmentsScreen'
+import Colors from '../../Constants/colors';
 import { Icon } from 'react-native-elements'
 
-const StudentCourseNavigator = createBottomTabNavigator();
+const InstructorCourseNavigator = createBottomTabNavigator();
 
-export default class StudentCourseNav extends React.Component{
+export default class InstructorCourseNav extends React.Component{
   render(){
     return(
-      <StudentCourseNavigator.Navigator
+      <InstructorCourseNavigator.Navigator
         initialRouteName='overview'
         backBehavior='none'
         tabBarOptions={{
@@ -22,9 +21,9 @@ export default class StudentCourseNav extends React.Component{
           labelStyle: {fontSize: 13}
         }}  
       >
-        <StudentCourseNavigator.Screen
+        <InstructorCourseNavigator.Screen
           name='overview'
-          component={StudentCourseOverviewScreen}
+          component={InstructorCourseOverviewScreen}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 
@@ -34,9 +33,9 @@ export default class StudentCourseNav extends React.Component{
                 size={size} />),
           }}
         />
-        <StudentCourseNavigator.Screen
+        <InstructorCourseNavigator.Screen
           name='content'
-          component={StudentCourseContentScreen}
+          component={InstructorCourseContentScreen}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 
@@ -46,9 +45,9 @@ export default class StudentCourseNav extends React.Component{
                 size={size} />)
           }}
         />
-        <StudentCourseNavigator.Screen
+        <InstructorCourseNavigator.Screen
           name='quizzes'
-          component={StudentCourseQuizzesScreen}
+          component={InstructorCourseQuizzesScreen}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 
@@ -58,9 +57,9 @@ export default class StudentCourseNav extends React.Component{
                 size={size} />)
           }}
         />
-        <StudentCourseNavigator.Screen
+        <InstructorCourseNavigator.Screen
           name='assignments'
-          component={StudentCourseAssignmentsScreen}
+          component={InstructorCourseAssignmentsScreen}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 
@@ -70,9 +69,9 @@ export default class StudentCourseNav extends React.Component{
                 size={size} />)
           }}
         />
-        <StudentCourseNavigator.Screen
+        <InstructorCourseNavigator.Screen
           name='grades'
-          component={StudentCourseGradesScreen}
+          component={InstructorCourseGradesScreen}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 
@@ -82,7 +81,7 @@ export default class StudentCourseNav extends React.Component{
                 size={size} />)
           }}
         />
-      </StudentCourseNavigator.Navigator>
+      </InstructorCourseNavigator.Navigator>
     );
   }
 }

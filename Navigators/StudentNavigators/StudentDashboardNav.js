@@ -1,14 +1,10 @@
 import React from 'react'
-import {createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList} from '@react-navigation/drawer'
-import Colors from '../Constants/colors';
-import StudentCoursesScreen from '../Screens/StudentCoursesScreen';
-import StudentCalendarScreen from '../Screens/StudentCalendarScreen';
-import StudentProfileScreen from '../Screens/StudentProfileScreen';
-import ProfileAvatar from '../Components/ProfileAvatar';
-import StudentCourseNav from './StudentCourseNav';
-import { View, Text } from 'react-native';
-import { Image } from 'react-native';
-import StudentDrawer from '../Components/StudentDrawer';
+import {createDrawerNavigator, } from '@react-navigation/drawer'
+import Colors from '../../Constants/colors';
+import StudentCoursesScreen from '../../Screens/StudentScreens/StudentCoursesScreen.js';
+import StudentCalendarScreen from '../../Screens/StudentScreens/StudentCalendarScreen.js';
+import ProfileAvatar from '../../Components/ProfileAvatar';
+import CustomDrawer from '../../Components/CustomDrawer';
 
 
 const StudentDashboardNavigator = createDrawerNavigator();
@@ -22,7 +18,7 @@ export default class StudentDashboardNav extends React.Component{
       <StudentDashboardNavigator.Navigator 
         initialRouteName={'studentCoursesScreen'}
         drawerType='slide'
-        drawerContent={props => <StudentDrawer {...props}/>}
+        drawerContent={props => <CustomDrawer {...props}/>}
       >
         <StudentDashboardNavigator.Screen 
           name='studentCoursesScreen' 
@@ -31,7 +27,7 @@ export default class StudentDashboardNav extends React.Component{
             headerShown: true,
             headerTintColor: Colors.primary_color,
             headerRight: () => (
-              <ProfileAvatar navigation={this.props.navigation}/>
+              <ProfileAvatar navigation={this.props.navigation}  userType={'student'}/>
             ),
             title: 'Courses',
           }}

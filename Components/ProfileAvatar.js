@@ -6,7 +6,7 @@ import Colors from '../Constants/colors';
 export default class ProfileAvatar extends React.Component{
   render(){
     return(
-      <TouchableOpacity onPress={() => {this.props.navigation.navigate('studentProfileScreen')}}>
+      <TouchableOpacity onPress={() => {this.props.navigation.navigate(`${this.props.userType}ProfileScreen`)}}>
         <View style={styles.container}>
           <Avatar 
             rounded 

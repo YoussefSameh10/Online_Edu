@@ -7,7 +7,7 @@ export default class CourseCard extends React.Component{
 
   render(){
     return(
-      <TouchableOpacity onPress={() => {this.props.navigation.navigate('studentCourseNav')}}>
+      <TouchableOpacity onPress={() => {this.props.navigation.navigate(`${this.props.userType}CourseNav`)}}>
 				<Card>
 					<Card.Title style={styles.title}>Image Processing CSE444</Card.Title>
 					<Card.Image source={require('../assets/login_img1.png')} />

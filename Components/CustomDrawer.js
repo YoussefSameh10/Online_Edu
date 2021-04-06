@@ -2,9 +2,8 @@ import React from 'react'
 import {DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer'
 import { StyleSheet, View } from 'react-native';
 import { Image } from 'react-native';
-import StudentProfileScreen from '../Screens/StudentProfileScreen';
 
-export default class StudentDrawer extends React.Component{
+export default class CustomDrawer extends React.Component{
     render(){
       return(
         <DrawerContentScrollView {...this.props}>

@@ -3,9 +3,9 @@ import { View, StatusBar, StyleSheet, Button, Text } from 'react-native'
 import {createStackNavigator} from '@react-navigation/stack'
 import Colors from './Constants/colors'
 import { NavigationContainer } from '@react-navigation/native'
-import StudentDashboardNav from './Navigators/StudentNav'
 import LoginNav from './Navigators/LoginNav'
-import StudentNav from './Navigators/StudentNav'
+import StudentNav from './Navigators/StudentNavigators/StudentNav'
+import InstructorNav from './Navigators/InstructorNavigators/InstructorNav'
 
 const AppNavigator = createStackNavigator()
 
@@ -19,7 +19,7 @@ export default class App extends React.Component {
         <StatusBar backgroundColor = {Colors.primary_color}/> 
         <NavigationContainer>
           <AppNavigator.Navigator 
-            initialRouteName={'studentNav'} 
+            initialRouteName={'instructorNav'} 
             headerMode={'none'}  
           >
               <AppNavigator.Screen 
@@ -29,6 +29,10 @@ export default class App extends React.Component {
               <AppNavigator.Screen 
                 name={'studentNav'} 
                 component={StudentNav} 
+              />
+              <AppNavigator.Screen 
+                name={'instructorNav'} 
+                component={InstructorNav} 
               />
           </AppNavigator.Navigator>
         </NavigationContainer>     

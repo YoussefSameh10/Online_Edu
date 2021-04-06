@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import Colors from '../Constants/colors';
+import Colors from '../../Constants/colors';
 
 export default class StudentCalendarScreen extends React.Component{
 
