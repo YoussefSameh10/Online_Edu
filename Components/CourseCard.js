@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Card, } from 'react-native-elements'
+import { Card, Icon, Button } from 'react-native-elements'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class CourseCard extends React.Component{

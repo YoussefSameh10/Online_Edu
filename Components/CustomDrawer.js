@@ -1,6 +1,6 @@
 import React from 'react'
 import {DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer'
-import { View, StyleSheet, } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Image } from 'react-native';
 
 export default class CustomDrawer extends React.Component{
