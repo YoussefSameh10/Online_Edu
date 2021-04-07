@@ -9,8 +9,6 @@ import CustomDrawer from '../../Components/CustomDrawer';
 
 const InstructorDashboardNavigator = createDrawerNavigator();
 
-
-
 export default class InstructorDashboardNav extends React.Component{
 
   render(){

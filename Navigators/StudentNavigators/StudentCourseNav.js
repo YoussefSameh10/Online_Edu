@@ -1,4 +1,5 @@
 import React from 'react'
+import { Icon } from 'react-native-elements'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import StudentCourseOverviewScreen from '../../Screens/StudentScreens/StudentCourseOverviewScreen'
 import StudentCourseContentScreen from '../../Screens/StudentScreens/StudentCourseContentScreen'
@@ -6,7 +7,6 @@ import StudentCourseQuizzesScreen from '../../Screens/StudentScreens/StudentCour
 import StudentCourseGradesScreen from '../../Screens/StudentScreens/StudentCourseGradesScreen'
 import StudentCourseAssignmentsScreen from '../../Screens/StudentScreens/StudentCourseAssignmentsScreen'
 import Colors from '../../Constants/colors';
-import { Icon } from 'react-native-elements'
 
 const StudentCourseNavigator = createBottomTabNavigator();
 

@@ -1,5 +1,4 @@
 import React from 'react'
-import { View, StatusBar, StyleSheet, Button, Text } from 'react-native'
 import {createStackNavigator} from '@react-navigation/stack'
 import InstructorDashboardNav from './InstructorDashboardNav'
 import InstructorCourseNav from './InstructorCourseNav'

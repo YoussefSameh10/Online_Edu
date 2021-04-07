@@ -6,10 +6,7 @@ import StudentCalendarScreen from '../../Screens/StudentScreens/StudentCalendarS
 import ProfileAvatar from '../../Components/ProfileAvatar';
 import CustomDrawer from '../../Components/CustomDrawer';
 
-
 const StudentDashboardNavigator = createDrawerNavigator();
-
-
 
 export default class StudentDashboardNav extends React.Component{
 
