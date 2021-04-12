@@ -52,5 +52,5 @@ const styles = StyleSheet.create({
   headerText: { margin: 6, fontSize: 20, fontWeight: 'bold' },
   text: { margin: 6, },
   evenRow: { flexDirection: 'row', backgroundColor: '#fff', height: 40, },
-  oddRow: {flexDirection: 'row', backgroundColor: '#ddd', height: 40, },
+  oddRow: {flexDirection: 'row', backgroundColor: '#eef', height: 40, },
 });
