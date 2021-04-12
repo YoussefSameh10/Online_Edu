@@ -6,6 +6,7 @@ import Colors from './Constants/colors'
 import LoginNav from './Navigators/LoginNav'
 import StudentNav from './Navigators/StudentNavigators/StudentNav'
 import InstructorNav from './Navigators/InstructorNavigators/InstructorNav'
+import AdminNav from './Navigators/AdminNavigators/AdminNav'
 
 const AppNavigator = createStackNavigator()
 
@@ -19,7 +20,7 @@ export default class App extends React.Component {
         <StatusBar backgroundColor = {Colors.primary_color}/> 
         <NavigationContainer>
           <AppNavigator.Navigator 
-            initialRouteName={'instructorNav'} 
+            initialRouteName={'adminNav'} 
             headerMode={'none'}  
           >
               <AppNavigator.Screen 
@@ -33,6 +34,11 @@ export default class App extends React.Component {
               <AppNavigator.Screen 
                 name={'instructorNav'} 
                 component={InstructorNav} 
+              />
+
+              <AppNavigator.Screen 
+                name={'adminNav'} 
+                component={AdminNav} 
               />
           </AppNavigator.Navigator>
         </NavigationContainer>     
