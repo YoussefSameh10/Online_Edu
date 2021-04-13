@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { TextInput, } from 'react-native-gesture-handler';
-import YearDropdownMenu from '../../Components/YearDropDownMenu';
+import YearDropdownMenu from '../../Components/YearDropdownMenu';
 import DepartmentDropdownMenu from '../../Components/DepartmentDropdownMenu'
 import StudentsTable from '../../Components/StudentsTable';
 
@@ -10,7 +10,8 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
   state={
     attributes: ['NAME', 'CODE', ],
     data: [
-      
+      ['Youssef Sameh', '1234567890', ''],
+      ['Youssef Joe', '123490', ''],
       ['Youssef Sameh', '1234567890', ''],
       ['Youssef Sameh', '1234567890', ''],
       ['Youssef Sameh', '1234567890', ''],
@@ -33,11 +34,9 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
       ['Youssef Sameh', '1234567890', ''],
       ['Youssef Sameh', '1234567890', ''],
       ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-
     ]
   }
+
   render(){
 
     return(
@@ -52,7 +51,7 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
             <DepartmentDropdownMenu />
           </View>
         </View>
-        <StudentsTable attributes={this.state.attributes} data={this.state.data} />
+        <StudentsTable attributes={this.state.attributes} data={this.state.data} navigation={this.props.navigation} />
       </View>
     );
   }

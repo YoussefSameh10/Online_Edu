@@ -2,6 +2,7 @@ import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
 import AdminDashboardNav from './AdminDashboardNav';
 import AdminProfileScreen from '../../Screens/AdminScreens/AdminProfileScreen'
+
 const AdminNavigator = createStackNavigator()
 
 export default class AdminNav extends React.Component{
