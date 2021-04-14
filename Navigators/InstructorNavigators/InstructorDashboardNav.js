@@ -5,6 +5,7 @@ import InstructorCoursesScreen from '../../Screens/InstructorScreens/InstructorC
 import InstructorCalendarScreen from '../../Screens/InstructorScreens/InstructorCalendarScreen.js';
 import ProfileAvatar from '../../Components/ProfileAvatar';
 import CustomDrawer from '../../Components/CustomDrawer';
+import { TouchableOpacity } from 'react-native';
 
 
 const InstructorDashboardNavigator = createDrawerNavigator();
@@ -25,7 +26,11 @@ export default class InstructorDashboardNav extends React.Component{
             headerShown: true,
             headerTintColor: Colors.primary_color,
             headerRight: () => (
-              <ProfileAvatar navigation={this.props.navigation} userType={'instructor'}/>
+              <TouchableOpacity 
+                onPress={() => {this.props.navigation.navigate('instructorProfileScreen')}}
+              >
+                <ProfileAvatar size={'small'}/>
+              </TouchableOpacity>
             ),
             title: 'Courses',
           }}

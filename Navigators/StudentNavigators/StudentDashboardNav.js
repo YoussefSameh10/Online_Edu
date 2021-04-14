@@ -5,6 +5,7 @@ import StudentCoursesScreen from '../../Screens/StudentScreens/StudentCoursesScr
 import StudentCalendarScreen from '../../Screens/StudentScreens/StudentCalendarScreen.js';
 import ProfileAvatar from '../../Components/ProfileAvatar';
 import CustomDrawer from '../../Components/CustomDrawer';
+import { TouchableOpacity } from 'react-native';
 
 const StudentDashboardNavigator = createDrawerNavigator();
 
@@ -24,7 +25,11 @@ export default class StudentDashboardNav extends React.Component{
             headerShown: true,
             headerTintColor: Colors.primary_color,
             headerRight: () => (
-              <ProfileAvatar navigation={this.props.navigation}  userType={'student'}/>
+              <TouchableOpacity 
+                onPress={() => {this.props.navigation.navigate('studentProfileScreen')}}
+              >
+                <ProfileAvatar size={'small'}/>
+              </TouchableOpacity>
             ),
             title: 'Courses',
           }}

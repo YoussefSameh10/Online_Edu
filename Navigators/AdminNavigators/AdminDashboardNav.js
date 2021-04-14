@@ -1,7 +1,7 @@
 import React from 'react'
 import { createDrawerNavigator, } from '@react-navigation/drawer'
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import CustomDrawer from '../../Components/CustomDrawer';
 import ProfileAvatar from '../../Components/ProfileAvatar';
 import Colors from '../../Constants/colors';
@@ -38,7 +38,11 @@ export default class AdminDashboardNav extends React.Component{
             headerShown: this.getHeaderVisibility(route),
             headerTintColor: Colors.primary_color,
             headerRight: () => (
-              <ProfileAvatar navigation={this.props.navigation} userType={'admin'}/>
+              <TouchableOpacity 
+                onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
+              >
+                <ProfileAvatar size={'small'}/>
+              </TouchableOpacity>
             ),
             title: 'Students Accounts',
           })}

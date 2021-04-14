@@ -38,8 +38,8 @@ export default class StudentsTable extends React.Component{
           <Cell
             onPress={() => {
               this.props.navigation.navigate('adminManageStudentInfoScreen', {
-                studentName: this.props.data[index][0],
-                studentCode: this.props.data[index][1]
+                studentName: this.props.studentsBasicData[index][0],
+                studentCode: this.props.studentsBasicData[index][1]
               })
             }}
             key={cellIndex} 
@@ -93,7 +93,7 @@ export default class StudentsTable extends React.Component{
         </Dialog.Container>
 
         <FlatList 
-          data={this.props.data}
+          data={this.props.studentsBasicData}
           renderItem={this.renderItem}
           keyExtractor={item => item.id}
         />
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
   header: { height: 40, },
   headerText: { margin: 6, fontSize: 20, fontWeight: 'bold' },
   text: { margin: 6, },
-  evenRow: { flexDirection: 'row', backgroundColor: '#eef', height: 50, },
-  oddRow: {flexDirection: 'row', backgroundColor: '#fff', height: 50, },
+  evenRow: { flexDirection: 'row', backgroundColor: '#eef', height: 60, },
+  oddRow: {flexDirection: 'row', backgroundColor: '#fff', height: 60, },
   dialogDeleteButton: {color: 'red'},
   dialogCancelButton: {color: Colors.primary_color}
 });
