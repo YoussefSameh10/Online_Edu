@@ -2,8 +2,7 @@ import React from 'react'
 import {createStackNavigator} from '@react-navigation/stack'
 import InstructorDashboardNav from './InstructorDashboardNav'
 import InstructorCourseNav from './InstructorCourseNav'
-import InstructorProfileScreen from '../../Screens/StudentScreens/StudentProfileScreen'
-
+import InstructorProfileScreen from '../../Screens/InstructorScreens/InstructorProfileScreen'
 const InstructorNavigator = createStackNavigator()
 
 export default class InstructorNav extends React.Component{
@@ -34,7 +33,7 @@ export default class InstructorNav extends React.Component{
           name='instructorProfileScreen' 
           component={InstructorProfileScreen} 
           options={{
-            headerShown: false
+            title: 'Profile'
           }}
         />
       </InstructorNavigator.Navigator>

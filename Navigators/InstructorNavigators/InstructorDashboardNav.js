@@ -43,7 +43,11 @@ export default class InstructorDashboardNav extends React.Component{
             headerShown: true,
             headerTintColor: Colors.primary_color,
             headerRight: () => (
-              <ProfileAvatar navigation={this.props.navigation}/>
+              <TouchableOpacity 
+                onPress={() => {this.props.navigation.navigate('instructorProfileScreen')}}
+              >
+                <ProfileAvatar size={'small'}/>
+              </TouchableOpacity>
             ),
             title: 'Calendar',
           }}

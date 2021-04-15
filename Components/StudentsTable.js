@@ -5,7 +5,6 @@ import { Table, Row, Cell, } from 'react-native-table-component';
 import { Icon } from 'react-native-elements'
 import Dialog from "react-native-dialog";
 import Colors from '../Constants/colors'
-import AdminManageStudentsAccountsScreen from '../Screens/AdminScreens/AdminManageStudentsAccountsScreen';
 export default class StudentsTable extends React.Component{
   
   state = {

@@ -34,7 +34,7 @@ export default class StudentNav extends React.Component{
           name='studentProfileScreen' 
           component={StudentProfileScreen} 
           options={{
-            headerShown: false
+            title: 'Profile'
           }}
         />
       </StudentNavigator.Navigator>

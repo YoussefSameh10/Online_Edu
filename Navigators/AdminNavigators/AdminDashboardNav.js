@@ -8,6 +8,7 @@ import Colors from '../../Constants/colors';
 import AdminManageInstructorsAccountsScreen from '../../Screens/AdminScreens/AdminManageInstructorsAccountsScreen';
 import AdminManageAdminsAccountsScreen from '../../Screens/AdminScreens/AdminManageAdminsAccountsScreen';
 import AdminManageStudentsAccountsNav from './AdminManageStudentsAccountsNav';
+import AdminHomeScreen from '../../Screens/AdminScreens/AdminHomeScreen';
 
 const AdminDashboardNavigator = createDrawerNavigator()
 
@@ -31,6 +32,24 @@ export default class AdminDashboardNav extends React.Component{
         drawerType={'slide'}
         drawerContent={props => <CustomDrawer {...props} />}
       >
+
+        <AdminDashboardNavigator.Screen 
+          name={'adminHomeScreen'}
+          component={AdminHomeScreen}
+          options={({ route }) => ({
+            headerShown: this.getHeaderVisibility(route),
+            headerTintColor: Colors.primary_color,
+            headerRight: () => (
+              <TouchableOpacity 
+                onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
+              >
+                <ProfileAvatar size={'small'}/>
+              </TouchableOpacity>
+            ),
+            title: 'Home',
+          })}
+        />
+
         <AdminDashboardNavigator.Screen 
           name={'adminManageStudentsAccountsNav'}
           component={AdminManageStudentsAccountsNav}
