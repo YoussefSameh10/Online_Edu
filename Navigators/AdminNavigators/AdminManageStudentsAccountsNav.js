@@ -1,43 +1,54 @@
 import React from 'react'
-import { createStackNavigator } from '@react-navigation/stack';
-import AdminManageStudentsAccountsScreen from '../../Screens/AdminScreens/AdminManageStudentsAccountsScreen'
-import AdminManageStudentInfoScreen from '../../Screens/AdminScreens/AdminManageStudentInfoScreen'
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+import AdminViewStudentsAccountsScreen from '../../Screens/AdminScreens/AdminViewStudentsAccountsScreen';
+import AdminManageStudentsAccountsScreen from '../../Screens/AdminScreens/AdminManageStudentsAccountsScreen';
 import Colors from '../../Constants/colors';
-import Toast from 'react-native-simple-toast';
+import { Icon } from 'react-native-elements';
 
-const AdminManageStudentsAccountsNavigator = createStackNavigator()
+const AdminManageStudentsAccountsNavigator = createBottomTabNavigator()
 
 export default class AdminManageStudentsAccountsNav extends React.Component{
-  
-  getHeaderTitle(route) {
-    return route.params.studentName
-  }
-
-
   render(){
     return(
       <AdminManageStudentsAccountsNavigator.Navigator
-        initialRouteName={'adminManageStudentsAccountsScreen'}
-        headerMode={'screen'}      
+        backBehavior='history'
+        tabBarOptions={{
+          activeTintColor: Colors.primary_color,
+          labelStyle: {fontSize: 13},
+        }}
       >
         
         <AdminManageStudentsAccountsNavigator.Screen 
-          name={'adminManageStudentsAccountsScreen'}
-          component={AdminManageStudentsAccountsScreen}
+          name='adminViewStudentsAccountsScreen'
+          component={AdminViewStudentsAccountsScreen}
           options={{
-            headerShown: false
+            title: 'Students List',
+            tabBarIcon: ({color, size}) =>(
+              <Icon 
+                name='list'
+                type='font-awesome-5' 
+                color={color} 
+                size={size} 
+              />
+            ),
           }}
         />
 
         <AdminManageStudentsAccountsNavigator.Screen 
-          name={'adminManageStudentInfoScreen'}
-          component={AdminManageStudentInfoScreen}
-          options={({ route }) => ({
-            headerTintColor: Colors.primary_color,
-            headerTitle: this.getHeaderTitle(route)
-          })}
+          name='adminManageStudentsAccountsScreen'
+          component={AdminManageStudentsAccountsScreen}
+          options={{
+            title: 'Create New Accounts',
+            tabBarIcon: ({color, size}) =>(
+              <Icon 
+                name='plus'
+                type='font-awesome-5' 
+                color={color} 
+                size={size} 
+              />
+            ),
+          }}
         />
-
       </AdminManageStudentsAccountsNavigator.Navigator>
     );
   }

@@ -2,9 +2,8 @@ import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ProfileAvatar from '../../Components/ProfileAvatar'
 import { Icon } from 'react-native-elements'
-import { TextInput } from 'react-native-gesture-handler';
 
-export default class AdminManageStudentInfoScreen extends React.Component{
+export default class AdminViewStudentInfoScreen extends React.Component{
  
   render(){
     return(

@@ -5,9 +5,9 @@ import { View, TouchableOpacity } from 'react-native';
 import CustomDrawer from '../../Components/CustomDrawer';
 import ProfileAvatar from '../../Components/ProfileAvatar';
 import Colors from '../../Constants/colors';
-import AdminManageInstructorsAccountsScreen from '../../Screens/AdminScreens/AdminManageInstructorsAccountsScreen';
-import AdminManageAdminsAccountsScreen from '../../Screens/AdminScreens/AdminManageAdminsAccountsScreen';
-import AdminManageStudentsAccountsNav from './AdminManageStudentsAccountsNav';
+import AdminViewInstructorsAccountsScreen from '../../Screens/AdminScreens/AdminViewInstructorsAccountsScreen';
+import AdminViewAdminsAccountsScreen from '../../Screens/AdminScreens/AdminViewAdminsAccountsScreen';
+import AdminViewStudentsAccountsNav from './AdminViewStudentsAccountsNav';
 import AdminHomeScreen from '../../Screens/AdminScreens/AdminHomeScreen';
 
 const AdminDashboardNavigator = createDrawerNavigator()
@@ -17,18 +17,17 @@ export default class AdminDashboardNav extends React.Component{
   getHeaderVisibility(route) {
     const routeName = getFocusedRouteNameFromRoute(route) ?? 'adminManageStudentsAccountsScreen';
     switch (routeName) {
-      case 'adminManageStudentsAccountsScreen':
-        return true;
       case 'adminManageStudentInfoScreen':
-        return false;
+        return false
     }
+    return true
   }
 
 
   render(){
     return(
       <AdminDashboardNavigator.Navigator
-        initialRouteName={'adminManageStudentsAccountsNav'}
+        initialRouteName={'adminViewStudentsAccountsNav'}
         drawerType={'slide'}
         drawerContent={props => <CustomDrawer {...props} />}
       >
@@ -51,8 +50,8 @@ export default class AdminDashboardNav extends React.Component{
         />
 
         <AdminDashboardNavigator.Screen 
-          name={'adminManageStudentsAccountsNav'}
-          component={AdminManageStudentsAccountsNav}
+          name={'adminViewStudentsAccountsNav'}
+          component={AdminViewStudentsAccountsNav}
           options={({ route }) => ({
             headerShown: this.getHeaderVisibility(route),
             headerTintColor: Colors.primary_color,
@@ -67,8 +66,8 @@ export default class AdminDashboardNav extends React.Component{
           })}
         />
         <AdminDashboardNavigator.Screen 
-          name={'adminManageInstructorsAccountsScreen'}
-          component={AdminManageInstructorsAccountsScreen}
+          name={'adminViewInstructorsAccountsScreen'}
+          component={AdminViewInstructorsAccountsScreen}
           options={{
             headerShown: true,
             headerTintColor: Colors.primary_color,
@@ -80,8 +79,8 @@ export default class AdminDashboardNav extends React.Component{
         />
 
         <AdminDashboardNavigator.Screen 
-          name={'adminManageAdminsAccountsScreen'}
-          component={AdminManageAdminsAccountsScreen}
+          name={'adminViewAdminsAccountsScreen'}
+          component={AdminViewAdminsAccountsScreen}
           options={{
             headerShown: true,
             headerTintColor: Colors.primary_color,
