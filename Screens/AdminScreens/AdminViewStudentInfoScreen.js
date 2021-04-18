@@ -1,88 +1,82 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import ProfileAvatar from '../../Components/ProfileAvatar'
 import { Icon } from 'react-native-elements'
 
 export default class AdminViewStudentInfoScreen extends React.Component{
  
+  state = {
+    editable: false
+  }
+  makeEditable = () => {
+    this.setState({editable: true})
+  }
+  makeIneditable = () => {
+    this.setState({editable: false})
+  }
   render(){
     return(
       <View style={styles.container}>
         <View style={styles.picture}>
           <ProfileAvatar size={'large'}/>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>Full Name:</Text>
-          <Text style={styles.text}>Fname Mname Lname</Text>
-          <TouchableOpacity
-            onPress={() => {}}
+        <TouchableOpacity
+            onPress={() => {this.makeEditable()}}
           >
             <Icon name='edit'/>
           </TouchableOpacity>
+        <View style={styles.row}>
+          <Text style={styles.title}>Full Name:</Text>
+          <TextInput 
+            value='Fname Mname Lname'
+            editable={this.state.editable}
+            style={styles.text}
+          />
         </View>
         <View style={styles.row}>
           <Text style={styles.title}>Code:</Text>
-          <Text style={styles.text}>{`${this.props.route.params.studentCode}`}</Text>
-          <TouchableOpacity
-            onPress={() => {}}
-          >
-            <Icon name='edit'/>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>National ID:</Text>
-          <Text style={styles.text}>28940542641068451</Text>
-          <TouchableOpacity
-            onPress={() => {}}
-          >
-            <Icon name='edit'/>
-          </TouchableOpacity>
+          <TextInput 
+            value={`${this.props.route.params.studentCode}`}
+            editable={this.state.editable}
+            style={styles.text}
+          />
         </View>
         <View style={styles.row}>
           <Text style={styles.title}>Year:</Text>
-          <Text style={styles.text}>3rd Year</Text>
-          <TouchableOpacity
-            onPress={() => {}}
-          >
-            <Icon name='edit'/>
-          </TouchableOpacity>
+          <TextInput 
+            value='3rd Year'
+            editable={this.state.editable}
+            style={styles.text}
+          />
         </View>
         <View style={styles.row}>
           <Text style={styles.title}>Department:</Text>
-          <Text style={styles.text}>Mechanical</Text>
-          <TouchableOpacity
-            onPress={() => {}}
-          >
-            <Icon name='edit'/>
-          </TouchableOpacity>
+          <TextInput 
+            value='Civil'
+            editable={this.state.editable}
+            style={styles.text}
+          />          
         </View>
         <View style={styles.row}>
           <Text style={styles.title}>Grade:</Text>
-          <Text style={styles.text}>Good</Text>
-          <TouchableOpacity
-            onPress={() => {}}
-          >
-            <Icon name='edit'/>
-          </TouchableOpacity>
+          <TextInput 
+            value='Good'
+            editable={this.state.editable}
+            style={styles.text}
+          />
         </View>
         <View style={styles.row}>
           <Text style={styles.title}>Email:</Text>
-          <Text style={styles.text}>test.test@gmail.com</Text>
-          <TouchableOpacity
-            onPress={() => {}}
-          >
-            <Icon name='edit'/>
-          </TouchableOpacity>
+          <TextInput 
+            value='test.test@gmail.com'
+            editable={this.state.editable}
+            style={styles.text}
+          />
         </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>Phone:</Text>
-          <Text style={styles.text}>01252874628</Text>
-          <TouchableOpacity
-            onPress={() => {}}
-          >
-            <Icon name='edit'/>
-          </TouchableOpacity>
-        </View>
+        <Button 
+          title='Save'
+          onPress={() => {this.makeIneditable()}}  
+        />
       </View>
     );
   }

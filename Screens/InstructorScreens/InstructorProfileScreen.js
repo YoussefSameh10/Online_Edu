@@ -24,17 +24,8 @@ export default class InstructorProfileScreen extends React.Component{
           <Text style={styles.text}>1234567890</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.title}>National ID:</Text>
-          <Text style={styles.text}>28940542641068451</Text>
-        </View>
-        
-        <View style={styles.row}>
           <Text style={styles.title}>Email:</Text>
           <Text style={styles.text}>test.test@gmail.com</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>Phone:</Text>
-          <Text style={styles.text}>01252874628</Text>
         </View>
         <Dialog.Container visible={this.state.dialogVisibility}>
           <Dialog.Title>Change Password</Dialog.Title>

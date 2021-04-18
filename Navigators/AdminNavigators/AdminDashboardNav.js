@@ -15,9 +15,9 @@ const AdminDashboardNavigator = createDrawerNavigator()
 export default class AdminDashboardNav extends React.Component{
 
   getHeaderVisibility(route) {
-    const routeName = getFocusedRouteNameFromRoute(route) ?? 'adminManageStudentsAccountsScreen';
+    const routeName = getFocusedRouteNameFromRoute(route) ?? 'adminViewStudentsAccountsScreen';
     switch (routeName) {
-      case 'adminManageStudentInfoScreen':
+      case 'adminViewStudentInfoScreen':
         return false
     }
     return true

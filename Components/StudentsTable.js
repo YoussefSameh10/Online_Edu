@@ -36,7 +36,7 @@ export default class StudentsTable extends React.Component{
         item.map((cellData, cellIndex) => (
           <Cell
             onPress={() => {
-              this.props.navigation.navigate('adminManageStudentInfoScreen', {
+              this.props.navigation.navigate('adminViewStudentInfoScreen', {
                 studentName: this.props.studentsBasicData[index][0],
                 studentCode: this.props.studentsBasicData[index][1]
               })

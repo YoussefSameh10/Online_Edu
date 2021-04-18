@@ -22,16 +22,12 @@ export default class AdminManageStudentInfoScreen extends React.Component{
           <Text style={styles.text}>Admin</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.title}>National ID:</Text>
-          <Text style={styles.text}>2125796218325205656</Text>
+          <Text style={styles.title}>Code:</Text>
+          <Text style={styles.text}>212579621656</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.title}>Email:</Text>
           <Text style={styles.text}>test.test@gmail.com</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>Phone:</Text>
-          <Text style={styles.text}>01252874628</Text>
         </View>
         <Dialog.Container visible={this.state.dialogVisibility}>
           <Dialog.Title>Change Password</Dialog.Title>
