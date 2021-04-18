@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, Button, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import ProfileAvatar from '../../Components/ProfileAvatar'
 import { Icon } from 'react-native-elements'
+import DropDownPicker from 'react-native-dropdown-picker';
 
 export default class AdminViewStudentInfoScreen extends React.Component{
  
@@ -43,19 +44,46 @@ export default class AdminViewStudentInfoScreen extends React.Component{
         </View>
         <View style={styles.row}>
           <Text style={styles.title}>Year:</Text>
-          <TextInput 
-            value='3rd Year'
-            editable={this.state.editable}
-            style={styles.text}
-          />
+          <DropDownPicker
+          items={[
+            {label: 'Year 0', value: '0',},
+            {label: 'Year 1', value: '1', },
+            {label: 'Year 2', value: '2', },
+            {label: 'Year 3', value: '3', },
+            {label: 'Year 4', value: '4', },
+          ]}
+          defaultValue={'0'}
+          onChangeItem={item => {
+            this.setState({year: item.value})
+          }}
+          value='3'
+          disabled={this.state.editable}
+          style={styles.text}
+          // itemStyle={styles.item}
+          // dropDownStyle={styles.dropdown}
+          // containerStyle={styles.box}
+        />
+
         </View>
         <View style={styles.row}>
           <Text style={styles.title}>Department:</Text>
-          <TextInput 
-            value='Civil'
-            editable={this.state.editable}
+          <DropDownPicker
+            items={[
+              {label: 'All', value: 'All',},
+              {label: 'Electrical', value: 'Electrical',},
+              {label: 'Mechanical', value: 'Mechanical', },
+              {label: 'Architecture', value: 'Architecture', },
+              {label: 'Civil', value: 'Civil', },
+              
+            ]}
+            disabled={this.state.editable}
+            defaultValue={'All'}
+            onChangeItem={item => {}}
             style={styles.text}
-          />          
+            // itemStyle={styles.item}
+            // dropDownStyle={styles.dropdown}
+            // containerStyle={styles.box}
+          />         
         </View>
         <View style={styles.row}>
           <Text style={styles.title}>Grade:</Text>
