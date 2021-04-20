@@ -9,31 +9,70 @@ export default class AdminViewStudentsAccountsScreen extends React.Component{
   state={
     attributes: ['NAME', 'CODE', ],
     studentsBasicData: [
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Joe', '123490', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-      ['Youssef Sameh', '1234567890', ''],
-    ]
+      ['asdfg', '1234567890', ''],
+      ['axdrew', '123490', ''],
+      ['jygvf', '1234567890', ''],
+      ['xcvgtgvfd', '1234567890', ''],
+      ['ryhfcnj', '1234567890', ''],
+      ['efyvuw', '1234567890', ''],
+      ['wbvhekfwku', '1234567890', ''],
+      ['ewbrefvwe', '1234567890', ''],
+      ['etnebwre', '1234567890', ''],
+      ['wrnetbgdv', '1234567890', ''],
+      ['asvfghtrtgfd', '1234567890', ''],
+      ['ehtrgvfeeg', '1234567890', ''],
+      ['ymrtndgbf', '1234567890', ''],
+      ['sdvfthgf', '1234567890', ''],
+      ['bgfdfgfdrtyj', '1234567890', ''],
+      ['sfvreuyjtrd', '1234567890', ''],
+      ['rhnrtbdgvfd', '1234567890', ''],
+      ['htentbgrdvc', '1234567890', ''],
+      ['gtwgefvsad', '1234567890', ''],
+      ['vewdasxa', '1234567890', ''],
+      ['zsertgvcds', '1234567890', ''],
+      ['asdfewvfscx', '1234567890', ''],
+      ['jtrhbdgf', '1234567890', ''],
+      ['eyrbgsfvdc', '1234567890', ''],
+    ],
+
+    studentsShownData: [
+      ['asdfg', '1234567890', ''],
+      ['axdrew', '123490', ''],
+      ['jygvf', '1234567890', ''],
+      ['xcvgtgvfd', '1234567890', ''],
+      ['ryhfcnj', '1234567890', ''],
+      ['efyvuw', '1234567890', ''],
+      ['wbvhekfwku', '1234567890', ''],
+      ['ewbrefvwe', '1234567890', ''],
+      ['etnebwre', '1234567890', ''],
+      ['wrnetbgdv', '1234567890', ''],
+      ['asvfghtrtgfd', '1234567890', ''],
+      ['ehtrgvfeeg', '1234567890', ''],
+      ['ymrtndgbf', '1234567890', ''],
+      ['sdvfthgf', '1234567890', ''],
+      ['bgfdfgfdrtyj', '1234567890', ''],
+      ['sfvreuyjtrd', '1234567890', ''],
+      ['rhnrtbdgvfd', '1234567890', ''],
+      ['htentbgrdvc', '1234567890', ''],
+      ['gtwgefvsad', '1234567890', ''],
+      ['vewdasxa', '1234567890', ''],
+      ['zsertgvcds', '1234567890', ''],
+      ['asdfewvfscx', '1234567890', ''],
+      ['jtrhbdgf', '1234567890', ''],
+      ['eyrbgsfvdc', '1234567890', ''],
+    ],
+  }
+
+  handleSearch = input => {
+    if(input === ''){
+      this.setState({
+        studentsShownData: this.state.studentsBasicData
+      })
+    } else{
+      this.setState({
+        studentsShownData: this.state.studentsBasicData.filter(function(item) { return item[0]===input})
+      })
+    }
   }
 
   render(){
@@ -43,11 +82,16 @@ export default class AdminViewStudentsAccountsScreen extends React.Component{
         <View style={styles.fixedView}>
           <TextInput 
             placeholder={'Search'}
+            onChangeText={this.handleSearch}
             style={styles.searchBox}
           />
           <DropdownMenus />
         </View>
-        <StudentsTable attributes={this.state.attributes} studentsBasicData={this.state.studentsBasicData} navigation={this.props.navigation} />
+        <StudentsTable 
+          attributes={this.state.attributes} 
+          studentsBasicData={this.state.studentsShownData} 
+          navigation={this.props.navigation} 
+        />
       </View>
     );
   }

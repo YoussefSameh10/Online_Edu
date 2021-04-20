@@ -20,11 +20,6 @@ export default class LoginScreen extends React.Component{
     if(prevState.username !== this.state.username || prevState.password !== this.state.password){
       this.validateForm()
     }
-
-    // if(prevState.loading !== this.state.loading){
-    //   this.authenticateUser()
-    // } 
-
   }
 
   toggleTyping = () => {this.setState({typing: this.state.typing*-1})}
