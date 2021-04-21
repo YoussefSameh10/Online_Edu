@@ -33,7 +33,8 @@
     "react-native-toast-message": "^1.4.9",
     "react-native-typewriter": "^0.7.0",
     "react-native-web": "~0.13.12",
-    "react-navigation": "^4.4.4"
+    "react-navigation": "^4.4.4",
+    "expo-document-picker": "~8.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"

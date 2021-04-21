@@ -37,8 +37,8 @@ export default class StudentsTable extends React.Component{
           <Cell
             onPress={() => {
               this.props.navigation.navigate('adminViewStudentInfoScreen', {
-                studentName: this.props.studentsBasicData[index][0],
-                studentCode: this.props.studentsBasicData[index][1]
+                studentName: this.props.studentsShownData[index][0],
+                studentCode: this.props.studentsShownData[index][1]
               })
             }}
             key={cellIndex} 
@@ -92,7 +92,7 @@ export default class StudentsTable extends React.Component{
         </Dialog.Container>
 
         <FlatList 
-          data={this.props.studentsBasicData}
+          data={this.props.studentsShownData}
           renderItem={this.renderItem}
           keyExtractor={item => item.id}
         />

@@ -72,7 +72,11 @@ export default class AdminDashboardNav extends React.Component{
             headerShown: true,
             headerTintColor: Colors.primary_color,
             headerRight: () => (
-              <ProfileAvatar navigation={this.props.navigation} userType={'admin'}/>
+              <TouchableOpacity 
+                onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
+              >
+                <ProfileAvatar size={'small'}/>
+              </TouchableOpacity>
             ),
             title: 'Instructors Accounts',
           }}
@@ -85,7 +89,11 @@ export default class AdminDashboardNav extends React.Component{
             headerShown: true,
             headerTintColor: Colors.primary_color,
             headerRight: () => (
-              <ProfileAvatar navigation={this.props.navigation} userType={'admin'}/>
+              <TouchableOpacity 
+                onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
+              >
+                <ProfileAvatar size={'small'}/>
+              </TouchableOpacity>
             ),
             title: 'Admins Accounts',
           }}

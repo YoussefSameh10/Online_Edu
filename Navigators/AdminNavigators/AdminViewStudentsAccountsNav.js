@@ -1,6 +1,5 @@
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
-import AdminViewStudentsAccountsScreen from '../../Screens/AdminScreens/AdminViewStudentsAccountsScreen'
 import AdminViewStudentInfoScreen from '../../Screens/AdminScreens/AdminViewStudentInfoScreen'
 import Colors from '../../Constants/colors';
 import Toast from 'react-native-simple-toast';
