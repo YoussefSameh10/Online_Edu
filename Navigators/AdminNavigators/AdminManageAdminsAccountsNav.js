@@ -1,17 +1,17 @@
 import React from 'react'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import AdminManageStudentsAccountsScreen from '../../Screens/AdminScreens/AdminManageStudentsAccountsScreen';
-import AdminCreateStudentsAccountsScreen from '../../Screens/AdminScreens/AdminCreateStudentsAccountsScreen';
+import AdminManageAdminsAccountsScreen from '../../Screens/AdminScreens/AdminManageAdminsAccountsScreen';
+import AdminCreateAdminsAccountsScreen from '../../Screens/AdminScreens/AdminCreateAdminsAccountsScreen';
 import Colors from '../../Constants/colors';
 import { Icon } from 'react-native-elements';
 
-const AdminManageStudentsAccountsNavigator = createBottomTabNavigator()
+const AdminManageAdminsAccountsNavigator = createBottomTabNavigator()
 
-export default class AdminManageStudentsAccountsNav extends React.Component{
+export default class AdminManageAdminsAccountsNav extends React.Component{
   render(){
     return(
-      <AdminManageStudentsAccountsNavigator.Navigator
-        initialRouteName='adminManageStudentsAccountsScreen'
+      <AdminManageAdminsAccountsNavigator.Navigator
+        initialRouteName='adminManageAdminsAccountsScreen'
         backBehavior='history'
         tabBarOptions={{
           activeTintColor: Colors.primary_color,
@@ -21,11 +21,11 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
         
       >
         
-        <AdminManageStudentsAccountsNavigator.Screen 
-          name='adminManageStudentsAccountsScreen'
-          component={AdminManageStudentsAccountsScreen}
+        <AdminManageAdminsAccountsNavigator.Screen 
+          name='adminManageAdminsAccountsScreen'
+          component={AdminManageAdminsAccountsScreen}
           options={{
-            title: 'Students List',
+            title: 'Admins List',
             tabBarIcon: ({color, size}) =>(
               <Icon 
                 name='list'
@@ -37,9 +37,9 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
           }}
         />
 
-        <AdminManageStudentsAccountsNavigator.Screen 
-          name='adminCreateStudentsAccountsScreen'
-          component={AdminCreateStudentsAccountsScreen}
+        <AdminManageAdminsAccountsNavigator.Screen 
+          name='adminCreateAdminsAccountsScreen'
+          component={AdminCreateAdminsAccountsScreen}
           options={{
             title: 'Create New Accounts',
             tabBarIcon: ({color, size}) =>(
@@ -52,7 +52,7 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
             ),
           }}
         />
-      </AdminManageStudentsAccountsNavigator.Navigator>
+      </AdminManageAdminsAccountsNavigator.Navigator>
     );
   }
 }

@@ -2,7 +2,6 @@ import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
 import AdminViewStudentInfoScreen from '../../Screens/AdminScreens/AdminViewStudentInfoScreen'
 import Colors from '../../Constants/colors';
-import Toast from 'react-native-simple-toast';
 import AdminManageStudentsAccountsNav from './AdminManageStudentsAccountsNav';
 
 const AdminViewStudentsAccountsNavigator = createStackNavigator()
@@ -10,7 +9,7 @@ const AdminViewStudentsAccountsNavigator = createStackNavigator()
 export default class AdminViewStudentsAccountsNav extends React.Component{
   
   getHeaderTitle(route) {
-    return route.params.studentName
+    return route.params.userName
   }
 
 

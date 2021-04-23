@@ -15,7 +15,7 @@ async function upload() {
   }
 }
 
-export default class AdminCreateStudentsAccountsScreen extends React.Component{
+export default class AdminCreateAdminsAccountsScreen extends React.Component{
 
   state = {
     isFormValid: false,

@@ -5,7 +5,7 @@ import { Table, Row, Cell, } from 'react-native-table-component';
 import { Icon } from 'react-native-elements'
 import Dialog from "react-native-dialog";
 import Colors from '../Constants/colors'
-export default class StudentsTable extends React.Component{
+export default class UsersTable extends React.Component{
   
   state = {
     dialogVisibility: false,
@@ -36,9 +36,9 @@ export default class StudentsTable extends React.Component{
         item.map((cellData, cellIndex) => (
           <Cell
             onPress={() => {
-              this.props.navigation.navigate('adminViewStudentInfoScreen', {
-                studentName: this.props.studentsShownData[index][0],
-                studentCode: this.props.studentsShownData[index][1]
+              this.props.navigation.navigate(`adminView${this.props.userType}InfoScreen`, {
+                userName: this.props.usersShownData[index][0],
+                userCode: this.props.usersShownData[index][1]
               })
             }}
             key={cellIndex} 
@@ -92,7 +92,7 @@ export default class StudentsTable extends React.Component{
         </Dialog.Container>
 
         <FlatList 
-          data={this.props.studentsShownData}
+          data={this.props.usersShownData}
           renderItem={this.renderItem}
           keyExtractor={item => item.id}
         />

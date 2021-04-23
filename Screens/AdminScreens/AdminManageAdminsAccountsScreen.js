@@ -4,11 +4,11 @@ import { TextInput, } from 'react-native-gesture-handler';
 import DropdownMenus from '../../Components/DropdownMenus';
 import UsersTable from '../../Components/UsersTable';
 
-export default class AdminManageStudentsAccountsScreen extends React.Component{
+export default class AdminManageAdminsAccountsScreen extends React.Component{
   
   state={
     attributes: ['NAME', 'CODE', ],
-    studentsBasicData: [
+    adminsBasicData: [
       ['asdfg', '1234567890', ''],
       ['axdrew', '123490', ''],
       ['jygvf', '1234567890', ''],
@@ -35,7 +35,7 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
       ['eyrbgsfvdc', '1234567890', ''],
     ],
 
-    studentsShownData: [
+    adminsShownData: [
       ['asdfg', '1234567890', ''],
       ['axdrew', '123490', ''],
       ['jygvf', '1234567890', ''],
@@ -64,17 +64,17 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
   }
 
   componentDidMount(){
-    this.setState({studentsShownData: [...this.state.studentsShownData.sort()]})
+    this.setState({adminsShownData: [...this.state.adminsShownData.sort()]})
   }
 
   handleSearch = input => {
     if(input === ''){
       this.setState({
-        studentsShownData: this.state.studentsBasicData
+        adminsShownData: this.state.adminsBasicData
       })
     } else{
       this.setState({
-        studentsShownData: this.state.studentsBasicData.filter(function(item) {return !item[0].indexOf(input)})
+        adminsShownData: this.state.adminsBasicData.filter(function(item) {return !item[0].indexOf(input)})
       })
     }
   }
@@ -93,9 +93,9 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
         </View>
         
         <UsersTable 
-          userType={'Student'}
+          userType={'Admin'}
           attributes={this.state.attributes} 
-          usersShownData={this.state.studentsShownData} 
+          usersShownData={this.state.adminsShownData} 
           navigation={this.props.navigation} 
         />
       </View>

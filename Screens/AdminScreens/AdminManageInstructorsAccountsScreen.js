@@ -4,11 +4,11 @@ import { TextInput, } from 'react-native-gesture-handler';
 import DropdownMenus from '../../Components/DropdownMenus';
 import UsersTable from '../../Components/UsersTable';
 
-export default class AdminManageStudentsAccountsScreen extends React.Component{
+export default class AdminManageInstructorsAccountsScreen extends React.Component{
   
   state={
     attributes: ['NAME', 'CODE', ],
-    studentsBasicData: [
+    instructorsBasicData: [
       ['asdfg', '1234567890', ''],
       ['axdrew', '123490', ''],
       ['jygvf', '1234567890', ''],
@@ -35,7 +35,7 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
       ['eyrbgsfvdc', '1234567890', ''],
     ],
 
-    studentsShownData: [
+    instructorsShownData: [
       ['asdfg', '1234567890', ''],
       ['axdrew', '123490', ''],
       ['jygvf', '1234567890', ''],
@@ -64,17 +64,17 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
   }
 
   componentDidMount(){
-    this.setState({studentsShownData: [...this.state.studentsShownData.sort()]})
+    this.setState({instructorsShownData: [...this.state.instructorsShownData.sort()]})
   }
 
   handleSearch = input => {
     if(input === ''){
       this.setState({
-        studentsShownData: this.state.studentsBasicData
+        instructorsShownData: this.state.instructorsBasicData
       })
     } else{
       this.setState({
-        studentsShownData: this.state.studentsBasicData.filter(function(item) {return !item[0].indexOf(input)})
+        instructorsShownData: this.state.instructorsBasicData.filter(function(item) {return !item[0].indexOf(input)})
       })
     }
   }
@@ -93,9 +93,9 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
         </View>
         
         <UsersTable 
-          userType={'Student'}
+          userType={'Instructor'}
           attributes={this.state.attributes} 
-          usersShownData={this.state.studentsShownData} 
+          usersShownData={this.state.instructorsShownData} 
           navigation={this.props.navigation} 
         />
       </View>
