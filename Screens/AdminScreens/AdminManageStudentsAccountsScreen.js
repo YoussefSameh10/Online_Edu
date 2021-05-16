@@ -12,7 +12,8 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
     attributes: ['NAME', 'CODE', ],
     studentsBasicData: [],
     studentsShownData: [],
-    students: []
+    students: [],
+    h: null
   }
 
   init = () => {
