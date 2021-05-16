@@ -13,7 +13,6 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
     studentsBasicData: [],
     studentsShownData: [],
     students: [],
-    h: null
   }
 
   init = () => {
