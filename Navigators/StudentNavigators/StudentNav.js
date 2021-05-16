@@ -1,5 +1,6 @@
 import React from 'react'
 import {createStackNavigator} from '@react-navigation/stack'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import StudentDashboardNav from './StudentDashboardNav'
 import StudentCourseNav from './StudentCourseNav'
 import StudentProfileScreen from '../../Screens/StudentScreens/StudentProfileScreen'
@@ -7,6 +8,25 @@ import StudentProfileScreen from '../../Screens/StudentScreens/StudentProfileScr
 const StudentNavigator = createStackNavigator()
 
 export default class StudentNav extends React.Component{
+
+  getHeaderVisibility(route) {
+    const routeName = getFocusedRouteNameFromRoute(route)
+    switch (routeName) {
+      case 'studentProfileScreen':
+        return true
+    }
+    return false
+  }
+
+  getHeaderTitle(route) {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? 'studentViewStudentsAccountsScreen';
+    switch (routeName) {
+      case 'studentProfileScreen':
+        return 'Profile'
+    }
+    return ''
+  }
+
   render(){
     return(
       <StudentNavigator.Navigator 
@@ -17,9 +37,10 @@ export default class StudentNav extends React.Component{
         <StudentNavigator.Screen 
           name={'studentDashboardNav'} 
           component={StudentDashboardNav} 
-          options={{
-            headerShown: false
-          }}
+          options={({route}) => ({
+            headerShown: this.getHeaderVisibility(route),
+            title: this.getHeaderTitle(route)
+          })}
         />
 
         <StudentNavigator.Screen 
@@ -34,7 +55,8 @@ export default class StudentNav extends React.Component{
           name='studentProfileScreen' 
           component={StudentProfileScreen} 
           options={{
-            title: 'Profile'
+            title: 'Profile',
+            headerLeft: () => {null}
           }}
         />
       </StudentNavigator.Navigator>

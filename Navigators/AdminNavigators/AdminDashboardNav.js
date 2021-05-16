@@ -10,6 +10,7 @@ import AdminViewInstructorsAccountsNav from './AdminViewInstructorsAccountsNav';
 import AdminViewAdminsAccountsNav from './AdminViewAdminsAccountsNav';
 import AdminHomeScreen from '../../Screens/AdminScreens/AdminHomeScreen';
 import AdminViewCoursesScreen from '../../Screens/AdminScreens/AdminViewCoursesScreen';
+import AdminProfileScreen from '../../Screens/AdminScreens/AdminProfileScreen';
 
 const AdminDashboardNavigator = createDrawerNavigator()
 
@@ -28,35 +29,17 @@ export default class AdminDashboardNav extends React.Component{
     return true
   }
 
-
   render(){
     return(
       <AdminDashboardNavigator.Navigator
-        initialRouteName={'adminViewStudentsAccountsNav'}
+        initialRouteName={'adminViewAdminsAccountsNav'}
         drawerType={'slide'}
         drawerContent={props => <CustomDrawer {...props} />}
       >
 
         <AdminDashboardNavigator.Screen 
-          name={'adminHomeScreen'}
-          component={AdminHomeScreen}
-          options={({ route }) => ({
-            headerShown: true,
-            headerTintColor: Colors.primary_color,
-            headerRight: () => (
-              <TouchableOpacity 
-                onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
-              >
-                <ProfileAvatar size={'small'}/>
-              </TouchableOpacity>
-            ),
-            title: 'Home',
-          })}
-        />
-
-        <AdminDashboardNavigator.Screen 
-          name={'adminViewStudentsAccountsNav'}
-          component={AdminViewStudentsAccountsNav}
+          name={'adminViewAdminsAccountsNav'}
+          component={AdminViewAdminsAccountsNav}
           options={({ route }) => ({
             headerShown: this.getHeaderVisibility(route),
             headerTintColor: Colors.primary_color,
@@ -67,9 +50,10 @@ export default class AdminDashboardNav extends React.Component{
                 <ProfileAvatar size={'small'}/>
               </TouchableOpacity>
             ),
-            title: 'Students Accounts',
+            title: 'Admins Accounts',
           })}
         />
+        
         <AdminDashboardNavigator.Screen 
           name={'adminViewInstructorsAccountsNav'}
           component={AdminViewInstructorsAccountsNav}
@@ -88,8 +72,13 @@ export default class AdminDashboardNav extends React.Component{
         />
 
         <AdminDashboardNavigator.Screen 
-          name={'adminViewAdminsAccountsNav'}
-          component={AdminViewAdminsAccountsNav}
+          name={'adminViewStudentsAccountsNav'}
+          children={() => 
+            <AdminViewStudentsAccountsNav 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+            />
+          }
           options={({ route }) => ({
             headerShown: this.getHeaderVisibility(route),
             headerTintColor: Colors.primary_color,
@@ -100,8 +89,9 @@ export default class AdminDashboardNav extends React.Component{
                 <ProfileAvatar size={'small'}/>
               </TouchableOpacity>
             ),
-            title: 'Admins Accounts',
+            title: 'Students Accounts',
           })}
+          
         />
 
         <AdminDashboardNavigator.Screen 
@@ -118,6 +108,23 @@ export default class AdminDashboardNav extends React.Component{
               </TouchableOpacity>
             ),
             title: 'Courses',
+          }}
+        />
+
+        <AdminDashboardNavigator.Screen 
+          name={'adminProfileScreen'}
+          component={AdminProfileScreen}
+          options={{
+            headerShown: false,
+            headerTintColor: Colors.primary_color,
+            headerRight: () => (
+              <TouchableOpacity 
+                onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
+              >
+                <ProfileAvatar size={'small'}/>
+              </TouchableOpacity>
+            ),
+            title: 'Profile',
           }}
         />
 

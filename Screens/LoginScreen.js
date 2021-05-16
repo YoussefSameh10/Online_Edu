@@ -53,9 +53,7 @@ export default class LoginScreen extends React.Component{
       StackActions.replace('loadingScreen',
         {username: this.state.username, password: this.state.password})
     );
-    // this.props.navigation.navigate('loadingScreen', 
-    //   {username: this.state.username, password: this.state.password})
-    //this.authenticateUser()
+    
   }
 
   render(){

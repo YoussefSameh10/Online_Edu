@@ -1,6 +1,5 @@
 import React from 'react'
 import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
-import DropDownPicker from 'react-native-dropdown-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import Toast from 'react-native-simple-toast';
 
@@ -21,9 +20,6 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
     isFormValid: false,
     fullName: '',
     code: '',
-    year: '',
-    department: '',
-    grade: '',
     email: '',
     file: {}
   }
@@ -31,9 +27,6 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
   componentDidUpdate(prevProps, prevState){
     if(prevState.fullName !== this.state.fullName || 
       prevState.code !== this.state.code ||
-      prevState.year !== this.state.year ||
-      prevState.department !== this.state.department ||
-      prevState.grade !== this.state.grade ||
       prevState.email !== this.state.email
     ){
       this.validateForm()
@@ -43,10 +36,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
   validateForm = () => {
     if(this.state.fullName.length > 0 && 
       this.state.code.length > 0 && 
-      this.state.grade.length > 0 && 
-      this.state.email.length > 0 &&
-      this.state.year !== '' &&
-      (this.state.department !== '' || this.state.year === '0')
+      this.state.email.length > 0
     ){
       this.setState({isFormValid: true})
     } else{
@@ -61,13 +51,6 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
   }
   handleCodeUpdate = code => {
     this.setState({code})
-  }
-  
-  handleYearUpdate =item => {
-   this.setState({year: item.value})
-  }
-  handleGradeUpdate = grade => {
-    this.setState({grade})
   }
   handleEmailUpdate = email => {
     this.setState({email})
@@ -92,41 +75,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
               onChangeText={this.handleCodeUpdate}
               style={styles.textInput}
             />
-            <DropDownPicker
-              items={[
-                {label: 'Year 0', value: '0', },
-                {label: 'Year 1', value: '1', },
-                {label: 'Year 2', value: '2', },
-                {label: 'Year 3', value: '3', },
-                {label: 'Year 4', value: '4', },
-              ]}
-              placeholder='Year'
-              value={this.state.year}
-              onChangeItem={this.handleYearUpdate}
-              containerStyle={styles.dropdownBox}
-              placeholderStyle={styles.dropdownBoxPlaceholder}
-            />
-          <DropDownPicker
-            items={[
-              {label: 'Electrical', value: 'Electrical',},
-              {label: 'Mechanical', value: 'Mechanical', },
-              {label: 'Architecture', value: 'Architecture', },
-              {label: 'Civil', value: 'Civil', },
-              
-            ]}
-            placeholder='Department'
-            value={this.state.year === '0' ? 'None' : this.state.department}
-            onChangeItem={item => {this.setState({department: item.value})}}
-            disabled={this.state.year === '0'}
-            containerStyle={styles.dropdownBox}
-            placeholderStyle={styles.dropdownBoxPlaceholder}
-          />     
-            <TextInput 
-              value={this.state.grade}
-              placeholder='Grade'
-              onChangeText={this.handleGradeUpdate}
-              style={styles.textInput}
-            />
+            
             <TextInput 
               value={this.state.email}
               placeholder='Email'

@@ -33,16 +33,20 @@ export default class UsersTable extends React.Component{
 
     <Row 
       data={
-        item.map((cellData, cellIndex) => (
+        Object.keys(item).map((cellData, cellIndex) => (
           <Cell
             onPress={() => {
               this.props.navigation.navigate(`adminView${this.props.userType}InfoScreen`, {
-                userName: this.props.usersShownData[index][0],
-                userCode: this.props.usersShownData[index][1]
+                userName: this.props.usersShownData[index].name,
+                userCode: this.props.usersShownData[index].code
               })
             }}
             key={cellIndex} 
-            data={cellIndex === 2 ? this.deleteIcon(index) : cellData} 
+            data={
+              cellData === 'name' || cellData === 'code' ? item[cellData] 
+              : cellIndex === 2 ? this.deleteIcon(index)
+              : null
+          }
             textStyle={styles.text}
           />
         ))

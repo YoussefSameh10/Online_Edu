@@ -11,18 +11,14 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
     editable: false,
     fullName: 'Fname Mname Lname',
     code: '1234567890',
-    year: '3',
     department: 'Civil',
-    grade: 'Good',
     email: 'test.test@gmail.com'
   }
 
   componentDidUpdate(prevProps, prevState){
     if(prevState.fullName !== this.state.fullName || 
       prevState.code !== this.state.code ||
-      prevState.year !== this.state.year ||
       prevState.department !== this.state.department ||
-      prevState.grade !== this.state.grade ||
       prevState.email !== this.state.email
     ){
       this.validateForm()
@@ -32,7 +28,6 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
   validateForm = () => {
     if(this.state.fullName.length > 0 && 
       this.state.code.length > 0 && 
-      this.state.grade.length > 0 && 
       this.state.email.length > 0
     ){
       this.setState({isFormValid: true})
@@ -54,9 +49,6 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
   }
   handleCodeUpdate = code => {
     this.setState({code})
-  }
-  handleGradeUpdate = grade => {
-    this.setState({grade})
   }
   handleEmailUpdate = email => {
     this.setState({email})
@@ -102,51 +94,25 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
               style={styles.text}
             />
           </View>
-          <View style={styles.row}>
-            <Text style={styles.title}>Year:</Text>
-            <DropDownPicker
-            items={[
-              {label: 'Year 0', value: '0', },
-              {label: 'Year 1', value: '1', },
-              {label: 'Year 2', value: '2', },
-              {label: 'Year 3', value: '3', },
-              {label: 'Year 4', value: '4', },
-            ]}
-            defaultValue={this.state.year}
-            value={this.state.year}
-            onChangeItem={item => {this.setState({year: item.value})}}
-            disabled={!this.state.editable}
-            containerStyle={styles.dropdownBox}
-          />
-
-          </View>
+          
           <View style={styles.row}>
             <Text style={styles.title}>Department:</Text>
             <DropDownPicker
               items={[
-                {label: 'None', value: 'None',},
                 {label: 'Electrical', value: 'Electrical',},
                 {label: 'Mechanical', value: 'Mechanical', },
                 {label: 'Architecture', value: 'Architecture', },
                 {label: 'Civil', value: 'Civil', },
                 
               ]}
-              defaultValue={this.state.year === '0' ? 'None' : this.state.department}
-              value={this.state.year === '0' ? 'None' : this.state.department}
+              defaultValue={this.state.department}
+              value={this.state.department}
               onChangeItem={item => {this.setState({department: item.value})}}
-              disabled={!this.state.editable || this.state.year === '0'}
+              disabled={!this.state.editable}
               containerStyle={styles.dropdownBox}
             />         
           </View>
-          <View style={styles.row}>
-            <Text style={styles.title}>Grade:</Text>
-            <TextInput 
-              value={this.state.grade}
-              editable={this.state.editable}
-              onChangeText={this.handleGradeUpdate}
-              style={styles.text}
-            />
-          </View>
+          
           <View style={styles.row}>
             <Text style={styles.title}>Email:</Text>
             <TextInput 

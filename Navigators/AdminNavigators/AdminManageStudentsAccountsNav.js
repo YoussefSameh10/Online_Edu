@@ -23,7 +23,12 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
         
         <AdminManageStudentsAccountsNavigator.Screen 
           name='adminManageStudentsAccountsScreen'
-          component={AdminManageStudentsAccountsScreen}
+          children={() => 
+            <AdminManageStudentsAccountsScreen 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+            />
+          }
           options={{
             title: 'Students List',
             tabBarIcon: ({color, size}) =>(

@@ -4,6 +4,8 @@ import ProfileAvatar from '../../Components/ProfileAvatar'
 import { Icon } from 'react-native-elements'
 import DropDownPicker from 'react-native-dropdown-picker';
 
+
+
 export default class AdminViewStudentInfoScreen extends React.Component{
  
   state = {
@@ -62,6 +64,7 @@ export default class AdminViewStudentInfoScreen extends React.Component{
     this.setState({email})
   }
   render(){
+
     return(
       <KeyboardAvoidingView 
         style={styles.container} 

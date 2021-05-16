@@ -8,34 +8,46 @@ import { StackActions } from '@react-navigation/routers'
 
 export default class LoadingScreen extends React.Component{
      
+  state = {
+    userToken: null,
+    user: {},
+  }
   
   componentDidMount(){
-    //Just for simulation
-    setTimeout(() => {this.authenticateUser()}, 200)
+    this.loginUser()
     
   }
 
-  authenticateUser = () => {
+  loginUser = async () => {
       
-    if(this.props.route.params.username !== 'asdf'){
-      Toast.show('Incorrect username or password')
-      this.props.navigation.dispatch(
-        StackActions.replace('loginScreen')
-      );
-    } 
-    else if(this.props.route.params.password !== '123456'){
-      Toast.show('Incorrect password')
-      this.props.navigation.dispatch(
-        StackActions.replace('loginScreen')
-      );
+
+    //======================Login=======================//
+    try{
+      const response = await fetch('http://192.168.1.8:3000/users/login', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          email: this.props.route.params.username,
+          password: this.props.route.params.password,
+        })
+      })
+      
+      const result = await response.json()
+      
+      if(response.status === 400){
+        Toast.show(result)
+        this.props.navigation.dispatch(StackActions.replace('loginScreen'))
+      }
+      else{
+        this.setState({userToken: result.token, user: result.user}, 
+          this.props.navigation.dispatch(StackActions.replace(`${result.user.role}Nav`,
+            {userToken: result.token}
+          )))
+      }
+    } catch (e) {
+      console.log(e.message)
     }
-    //Actions will differ based on whether it is student, instructor or admin
-    else{
-      Toast.show('Logged in successfully')
-      this.props.navigation.dispatch(
-        StackActions.replace('studentNav')
-      );
-    }
+
   }
 
   render(){

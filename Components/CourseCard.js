@@ -11,12 +11,7 @@ export default class CourseCard extends React.Component{
 				<Card>
 					<Card.Title style={styles.title}>Image Processing CSE444</Card.Title>
 					<Card.Image source={require('../assets/login_img1.png')} />
-					<Card.Divider />
-					<View style={styles.instructor}>
-						<Text style={styles.instructorText}>
-							Prof. Opera
-						</Text>
-					</View>
+					
       	</Card>
 			</TouchableOpacity>
     );      
