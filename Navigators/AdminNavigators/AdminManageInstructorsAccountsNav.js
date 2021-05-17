@@ -1,5 +1,5 @@
 import React from 'react'
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+import {createBottomTabNavigator, useBottomTabBarHeight} from '@react-navigation/bottom-tabs'
 import AdminManageInstructorsAccountsScreen from '../../Screens/AdminScreens/AdminManageInstructorsAccountsScreen';
 import AdminCreateInstructorsAccountsScreen from '../../Screens/AdminScreens/AdminCreateInstructorsAccountsScreen';
 import Colors from '../../Constants/colors';
@@ -23,7 +23,13 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
         
         <AdminManageInstructorsAccountsNavigator.Screen 
           name='adminManageInstructorsAccountsScreen'
-          component={AdminManageInstructorsAccountsScreen}
+          children={() => 
+            <AdminManageInstructorsAccountsScreen 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+              tabBarHeight={useBottomTabBarHeight()}
+            />
+          }
           options={{
             title: 'Instructors List',
             tabBarIcon: ({color, size}) =>(

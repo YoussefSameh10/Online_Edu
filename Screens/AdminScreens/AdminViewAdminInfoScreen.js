@@ -9,24 +9,24 @@ export default class AdminViewAdminInfoScreen extends React.Component{
   state = {
     isFormValid: true,
     editable: false,
-    fullName: 'Fname Mname Lname',
-    code: '1234567890',
-    email: 'test.test@gmail.com'
+    adminName: this.props.route.params.userName,
+    adminCode: this.props.route.params.userCode,
+    adminEmail: this.props.route.params.userEmail
   }
 
   componentDidUpdate(prevProps, prevState){
-    if(prevState.fullName !== this.state.fullName || 
-      prevState.code !== this.state.code ||
-      prevState.email !== this.state.email
+    if(prevState.adminName !== this.state.adminName || 
+      prevState.adminCode !== this.state.adminCode ||
+      prevState.adminEmail !== this.state.adminEmail
     ){
       this.validateForm()
     }
   }
 
   validateForm = () => {
-    if(this.state.fullName.length > 0 && 
-      this.state.code.length > 0 && 
-      this.state.email.length > 0
+    if(this.state.adminName.length > 0 && 
+      this.state.adminCode.length > 0 && 
+      this.state.adminEmail.length > 0
     ){
       this.setState({isFormValid: true})
     } else{
@@ -42,14 +42,14 @@ export default class AdminViewAdminInfoScreen extends React.Component{
     this.setState({editable: false})
   }
 
-  handlefullNameUpdate = fullName => {
-    this.setState({fullName})
+  handleAdminNameUpdate = adminName => {
+    this.setState({adminName})
   }
-  handleCodeUpdate = code => {
-    this.setState({code})
+  handleAdminCodeUpdate = adminCode => {
+    this.setState({adminCode})
   }
-  handleEmailUpdate = email => {
-    this.setState({email})
+  handleAdminEmailUpdate = adminEmail => {
+    this.setState({adminEmail})
   }
   render(){
     return(
@@ -77,8 +77,8 @@ export default class AdminViewAdminInfoScreen extends React.Component{
           <View style={styles.row}>
             <Text style={styles.title}>Full Name:</Text>
             <TextInput 
-              value={this.state.fullName}
-              onChangeText={this.handlefullNameUpdate}
+              value={this.state.adminName}
+              onChangeText={this.handleAdminNameUpdate}
               editable={this.state.editable}
               style={styles.text}
             />
@@ -86,8 +86,8 @@ export default class AdminViewAdminInfoScreen extends React.Component{
           <View style={styles.row}>
             <Text style={styles.title}>Code:</Text>
             <TextInput 
-              value={this.state.code}
-              onChangeText={this.handleCodeUpdate}
+              value={this.state.adminCode}
+              onChangeText={this.handleAdminCodeUpdate}
               editable={this.state.editable}
               style={styles.text}
             />
@@ -96,9 +96,9 @@ export default class AdminViewAdminInfoScreen extends React.Component{
           <View style={styles.row}>
             <Text style={styles.title}>Email:</Text>
             <TextInput 
-              value={this.state.email}
+              value={this.state.adminEmail}
               editable={this.state.editable}
-              onChangeText={this.handleEmailUpdate}
+              onChangeText={this.handleAdminEmailUpdate}
               style={styles.text}
             />
           </View>
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   picture: {marginBottom: 32},
   row: {flexDirection: 'row', marginBottom: 16, alignItems: 'center',},
   title: {flex: 0.35, fontSize: 20, fontWeight:'bold',},
-  text: {flex: 0.65, fontSize: 16, backgroundColor: '#fff'},
+  text: {flex: 0.65, fontSize: 16, backgroundColor: '#fff', textAlign: 'center'},
   dropdownBox: {flex: 0.65, height: 30,},
   saveButton: {marginTop: 30, width: '30%', alignSelf: 'center', backgroundColor: '#0f0'},
   editIcon: {margin: 20,}

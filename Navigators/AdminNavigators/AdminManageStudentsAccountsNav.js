@@ -1,5 +1,5 @@
 import React from 'react'
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+import {createBottomTabNavigator, useBottomTabBarHeight} from '@react-navigation/bottom-tabs'
 import AdminManageStudentsAccountsScreen from '../../Screens/AdminScreens/AdminManageStudentsAccountsScreen';
 import AdminCreateStudentsAccountsScreen from '../../Screens/AdminScreens/AdminCreateStudentsAccountsScreen';
 import Colors from '../../Constants/colors';
@@ -16,7 +16,7 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
         tabBarOptions={{
           activeTintColor: Colors.primary_color,
           labelStyle: {fontSize: 13},
-          keyboardHidesTabBar: 'true'
+          keyboardHidesTabBar: 'true',
         }}
         
       >
@@ -27,6 +27,7 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
             <AdminManageStudentsAccountsScreen 
               navigation={this.props.navigation} 
               userToken={this.props.userToken}
+              tabBarHeight={useBottomTabBarHeight()}
             />
           }
           options={{

@@ -22,7 +22,8 @@ export default class AdminViewStudentsAccountsNav extends React.Component{
         <AdminViewStudentsAccountsNavigator.Screen 
           name={'adminManageStudentsAccountsNav'}
           children={() => <AdminManageStudentsAccountsNav 
-            navigation={this.props.navigation} userToken={this.props.userToken}
+            navigation={this.props.navigation} 
+            userToken={this.props.userToken}
           />}
           options={{
             headerShown: false

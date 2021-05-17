@@ -41,7 +41,6 @@ export default class AdminNav extends React.Component{
         
         <AdminNavigator.Screen 
           name={'adminDashboardNav'}
-          //component={AdminDashboardNav}
           children={() => <AdminDashboardNav navigation={this.props.navigation} userToken={this.props.route.params.userToken}/>}
           options={({route}) => ({
             headerShown: this.getHeaderVisibility(route),

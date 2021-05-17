@@ -39,7 +39,12 @@ export default class AdminDashboardNav extends React.Component{
 
         <AdminDashboardNavigator.Screen 
           name={'adminViewAdminsAccountsNav'}
-          component={AdminViewAdminsAccountsNav}
+          children={() => 
+            <AdminViewAdminsAccountsNav 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+            />
+          }          
           options={({ route }) => ({
             headerShown: this.getHeaderVisibility(route),
             headerTintColor: Colors.primary_color,
@@ -56,7 +61,12 @@ export default class AdminDashboardNav extends React.Component{
         
         <AdminDashboardNavigator.Screen 
           name={'adminViewInstructorsAccountsNav'}
-          component={AdminViewInstructorsAccountsNav}
+          children={() => 
+            <AdminViewInstructorsAccountsNav 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+            />
+          }   
           options={({ route }) => ({
             headerShown: this.getHeaderVisibility(route),
             headerTintColor: Colors.primary_color,

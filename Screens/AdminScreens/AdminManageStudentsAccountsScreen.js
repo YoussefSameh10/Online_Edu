@@ -4,6 +4,7 @@ import { TextInput, } from 'react-native-gesture-handler';
 import DropDownPicker from 'react-native-dropdown-picker';
 import UsersTable from '../../Components/UsersTable';
 import Toast from 'react-native-simple-toast'
+import { compareByName } from '../../Constants/Functions';
 
 export default class AdminManageStudentsAccountsScreen extends React.Component{
   
@@ -20,27 +21,19 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
     let obj = {}
     this.state.students.map((item) => {
       Object.keys(item).map((key) => {
-        key === 'name' || key === 'code' || key === 'year' ? obj[key] = item[key]
+        key === 'name' || key === 'code' || key === 'createdAt' ? obj[key] = item[key]
         : null
       })
       arr.push(obj)
       obj={}
     })
     this.setState({
-      studentsShownData: [...arr.sort(this.compare)], 
-      studentsBasicData: [...arr.sort(this.compare)]
+      studentsShownData: [...arr.sort(compareByName)], 
+      studentsBasicData: [...arr.sort(compareByName)],
+      students: [...this.state.students.sort(compareByName)],
     })
   }
 
-  compare = (i, j) => {
-    if(i.name < j.name){
-      return -1
-    }
-    else if(i.name > j.name){
-      return 1
-    }
-    return 0
-  }
 
   getStudents = async (year) => {
     try{
@@ -83,7 +76,9 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
     } else{
       this.setState({
         studentsShownData: this.state.studentsBasicData
-          .filter(function(item) {return !item.name.indexOf(input)})
+          .filter(function(item) {
+            return !(item.name.indexOf(input) && item.code.indexOf(input))
+          })
       })
     }
   }
@@ -96,7 +91,7 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
   render(){
 
     return(
-      <View style={styles.container}>
+      <View style={[styles.container, {paddingBottom: this.props.tabBarHeight + 70}]}>
         <View style={styles.fixedView}>
           <TextInput 
             placeholder={'Search'}
@@ -132,6 +127,7 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
           userType={'Student'}
           attributes={this.state.attributes} 
           usersShownData={this.state.studentsShownData} 
+          users={this.state.students}
           navigation={this.props.navigation} 
         />
       </View>
@@ -141,7 +137,7 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
 
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#fff', padding: 16,},
   fixedView: {marginBottom: 10},
   searchBox: {alignSelf: 'center', marginBottom: 16, borderBottomWidth: 1, width: '90%', paddingLeft: 8},
   dropDownContainer: {justifyContent: 'space-around'},

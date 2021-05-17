@@ -37,13 +37,16 @@ export default class UsersTable extends React.Component{
           <Cell
             onPress={() => {
               this.props.navigation.navigate(`adminView${this.props.userType}InfoScreen`, {
-                userName: this.props.usersShownData[index].name,
-                userCode: this.props.usersShownData[index].code
+                userName: this.props.users[index].name,
+                userCode: this.props.users[index].code,
+                userEmail: this.props.users[index].email,
+                userYear: this.props.users[index].year,
               })
             }}
             key={cellIndex} 
             data={
-              cellData === 'name' || cellData === 'code' ? item[cellData] 
+              cellIndex === 0 ? item['name']  
+              :cellIndex === 1 ? item['code'] 
               : cellIndex === 2 ? this.deleteIcon(index)
               : null
           }
@@ -95,6 +98,7 @@ export default class UsersTable extends React.Component{
           />
         </Dialog.Container>
 
+        
         <FlatList 
           data={this.props.usersShownData}
           renderItem={this.renderItem}

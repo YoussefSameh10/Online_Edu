@@ -11,31 +11,31 @@ export default class AdminViewStudentInfoScreen extends React.Component{
   state = {
     isFormValid: true,
     editable: false,
-    fullName: 'Fname Mname Lname',
-    code: '1234567890',
-    year: '3',
+    studentName: this.props.route.params.userName,
+    studentCode: this.props.route.params.userCode,
+    studentYear: this.props.route.params.userYear,
     department: 'Civil',
     grade: 'Good',
-    email: 'test.test@gmail.com'
+    studentEmail: this.props.route.params.userEmail
   }
 
   componentDidUpdate(prevProps, prevState){
-    if(prevState.fullName !== this.state.fullName || 
-      prevState.code !== this.state.code ||
-      prevState.year !== this.state.year ||
+    if(prevState.studentName !== this.state.studentName || 
+      prevState.studentCode !== this.state.studentCode ||
+      prevState.studentYear !== this.state.studentYear ||
       prevState.department !== this.state.department ||
       prevState.grade !== this.state.grade ||
-      prevState.email !== this.state.email
+      prevState.studentEmail !== this.state.studentEmail
     ){
       this.validateForm()
     }
   }
 
   validateForm = () => {
-    if(this.state.fullName.length > 0 && 
-      this.state.code.length > 0 && 
+    if(this.state.studentName.length > 0 && 
+      this.state.studentCode.length > 0 && 
       this.state.grade.length > 0 && 
-      this.state.email.length > 0
+      this.state.studentEmail.length > 0
     ){
       this.setState({isFormValid: true})
     } else{
@@ -51,17 +51,17 @@ export default class AdminViewStudentInfoScreen extends React.Component{
     this.setState({editable: false})
   }
 
-  handlefullNameUpdate = fullName => {
-    this.setState({fullName})
+  handleStudentNameUpdate = studentName => {
+    this.setState({studentName})
   }
-  handleCodeUpdate = code => {
-    this.setState({code})
+  handleStudentCodeUpdate = studentCode => {
+    this.setState({studentCode})
   }
   handleGradeUpdate = grade => {
     this.setState({grade})
   }
-  handleEmailUpdate = email => {
-    this.setState({email})
+  handleStudentEmailUpdate = studentEmail => {
+    this.setState({studentEmail})
   }
   render(){
 
@@ -90,36 +90,37 @@ export default class AdminViewStudentInfoScreen extends React.Component{
           <View style={styles.row}>
             <Text style={styles.title}>Full Name:</Text>
             <TextInput 
-              value={this.state.fullName}
-              onChangeText={this.handlefullNameUpdate}
+              value={this.state.studentName}
+              onChangeText={this.handleStudentNameUpdate}
               editable={this.state.editable}
               style={styles.text}
             />
           </View>
           <View style={styles.row}>
-            <Text style={styles.title}>Code:</Text>
+            <Text style={styles.title}>studentCode:</Text>
             <TextInput 
-              value={this.state.code}
-              onChangeText={this.handleCodeUpdate}
+              value={this.state.studentCode}
+              onChangeText={this.handleStudentCodeUpdate}
               editable={this.state.editable}
               style={styles.text}
             />
           </View>
           <View style={styles.row}>
-            <Text style={styles.title}>Year:</Text>
+            <Text style={styles.title}>studentYear:</Text>
             <DropDownPicker
             items={[
-              {label: 'Year 0', value: '0', },
-              {label: 'Year 1', value: '1', },
-              {label: 'Year 2', value: '2', },
-              {label: 'Year 3', value: '3', },
-              {label: 'Year 4', value: '4', },
+              {label: 'Year 0', value: 'first', },
+              {label: 'Year 1', value: 'second', },
+              {label: 'Year 2', value: 'third', },
+              {label: 'Year 3', value: 'fourth', },
+              {label: 'Year 4', value: 'fifth', },
             ]}
-            defaultValue={this.state.year}
-            value={this.state.year}
-            onChangeItem={item => {this.setState({year: item.value})}}
+            defaultValue={this.state.studentYear}
+            value={this.state.studentYear}
+            onChangeItem={item => {this.setState({studentYear: item.value})}}
             disabled={!this.state.editable}
             containerStyle={styles.dropdownBox}
+            labelStyle={styles.dropdownLabel}
           />
 
           </View>
@@ -134,11 +135,12 @@ export default class AdminViewStudentInfoScreen extends React.Component{
                 {label: 'Civil', value: 'Civil', },
                 
               ]}
-              defaultValue={this.state.year === '0' ? 'None' : this.state.department}
-              value={this.state.year === '0' ? 'None' : this.state.department}
+              defaultValue={this.state.studentYear === '0' ? 'None' : this.state.department}
+              value={this.state.studentYear === '0' ? 'None' : this.state.department}
               onChangeItem={item => {this.setState({department: item.value})}}
-              disabled={!this.state.editable || this.state.year === '0'}
+              disabled={!this.state.editable || this.state.studentYear === '0'}
               containerStyle={styles.dropdownBox}
+              labelStyle={styles.dropdownLabel}
             />         
           </View>
           <View style={styles.row}>
@@ -151,11 +153,11 @@ export default class AdminViewStudentInfoScreen extends React.Component{
             />
           </View>
           <View style={styles.row}>
-            <Text style={styles.title}>Email:</Text>
+            <Text style={styles.title}>studentEmail:</Text>
             <TextInput 
-              value={this.state.email}
+              value={this.state.studentEmail}
               editable={this.state.editable}
-              onChangeText={this.handleEmailUpdate}
+              onChangeText={this.handleStudentEmailUpdate}
               style={styles.text}
             />
           </View>
@@ -177,8 +179,9 @@ const styles = StyleSheet.create({
   picture: {marginBottom: 32},
   row: {flexDirection: 'row', marginBottom: 16, alignItems: 'center',},
   title: {flex: 0.35, fontSize: 20, fontWeight:'bold',},
-  text: {flex: 0.65, fontSize: 16, backgroundColor: '#fff'},
+  text: {flex: 0.65, fontSize: 16, backgroundColor: '#fff', textAlign: 'center'},
   dropdownBox: {flex: 0.65, height: 30,},
+  dropdownLabel: {textAlign: 'center'},
   saveButton: {marginTop: 30, width: '30%', alignSelf: 'center', backgroundColor: '#0f0'},
   editIcon: {margin: 20,}
 })
