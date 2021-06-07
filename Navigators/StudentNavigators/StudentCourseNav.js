@@ -23,7 +23,9 @@ export default class StudentCourseNav extends React.Component{
       >
         <StudentCourseNavigator.Screen
           name='overview'
-          component={StudentCourseOverviewScreen}
+          children={() => <StudentCourseOverviewScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 
@@ -35,7 +37,9 @@ export default class StudentCourseNav extends React.Component{
         />
         <StudentCourseNavigator.Screen
           name='content'
-          component={StudentCourseContentScreen}
+          children={() => <StudentCourseContentScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 
@@ -47,7 +51,9 @@ export default class StudentCourseNav extends React.Component{
         />
         <StudentCourseNavigator.Screen
           name='quizzes'
-          component={StudentCourseQuizzesScreen}
+          children={() => <StudentCourseQuizzesScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 
@@ -59,7 +65,9 @@ export default class StudentCourseNav extends React.Component{
         />
         <StudentCourseNavigator.Screen
           name='assignments'
-          component={StudentCourseAssignmentsScreen}
+          children={() => <StudentCourseAssignmentsScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 
@@ -71,7 +79,9 @@ export default class StudentCourseNav extends React.Component{
         />
         <StudentCourseNavigator.Screen
           name='grades'
-          component={StudentCourseGradesScreen}
+          children={() => <StudentCourseGradesScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             tabBarIcon: ({color, size}) =>(
               <Icon 

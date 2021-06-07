@@ -1,36 +1,37 @@
 import React from 'react'
 import {createBottomTabNavigator, useBottomTabBarHeight} from '@react-navigation/bottom-tabs'
-import AdminManageInstructorsAccountsScreen from '../../Screens/AdminScreens/AdminManageInstructorsAccountsScreen';
-import AdminCreateInstructorsAccountsScreen from '../../Screens/AdminScreens/AdminCreateInstructorsAccountsScreen';
+import AdminManageCoursesScreen from '../../Screens/AdminScreens/AdminManageCoursesScreen';
+import AdminCreateCoursesScreen from '../../Screens/AdminScreens/AdminCreateCoursesScreen';
 import Colors from '../../Constants/colors';
 import { Icon } from 'react-native-elements';
 
-const AdminManageInstructorsAccountsNavigator = createBottomTabNavigator()
+const AdminManageCoursesNavigator = createBottomTabNavigator()
 
-export default class AdminManageInstructorsAccountsNav extends React.Component{
+export default class AdminManageCoursesNav extends React.Component{
   render(){
     return(
-      <AdminManageInstructorsAccountsNavigator.Navigator
-        initialRouteName='adminManageInstructorsAccountsScreen'
+      <AdminManageCoursesNavigator.Navigator
+        initialRouteName='adminManageCoursesScreen'
         backBehavior='history'
         tabBarOptions={{
           activeTintColor: Colors.primary_color,
           labelStyle: {fontSize: 13},
-          keyboardHidesTabBar: 'true'
+          keyboardHidesTabBar: 'true',
         }}
+        
         
       >
         
-        <AdminManageInstructorsAccountsNavigator.Screen 
-          name='adminManageInstructorsAccountsScreen'
+        <AdminManageCoursesNavigator.Screen 
+          name='adminManageCoursesScreen'
           children={() => 
-            <AdminManageInstructorsAccountsScreen 
+            <AdminManageCoursesScreen 
               navigation={this.props.navigation} 
               userToken={this.props.userToken}
             />
           }
           options={{
-            title: 'Instructors List',
+            title: 'Courses List',
             tabBarIcon: ({color, size}) =>(
               <Icon 
                 name='list'
@@ -42,11 +43,16 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
           }}
         />
 
-        <AdminManageInstructorsAccountsNavigator.Screen 
-          name='adminCreateInstructorsAccountsScreen'
-          component={AdminCreateInstructorsAccountsScreen}
+        <AdminManageCoursesNavigator.Screen 
+          name='adminCreateCoursesScreen'
+          children={() => 
+            <AdminCreateCoursesScreen 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+            />
+          }
           options={{
-            title: 'Create New Accounts',
+            title: 'Create New Course',
             tabBarIcon: ({color, size}) =>(
               <Icon 
                 name='plus'
@@ -57,7 +63,7 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
             ),
           }}
         />
-      </AdminManageInstructorsAccountsNavigator.Navigator>
+      </AdminManageCoursesNavigator.Navigator>
     );
   }
 }

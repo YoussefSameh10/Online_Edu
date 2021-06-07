@@ -34,7 +34,7 @@ export default class App extends React.Component {
                 component={StudentNav} 
               />
               <AppNavigator.Screen 
-                name={'instructorNav'} 
+                name={'instructorNav'}
                 component={InstructorNav} 
               />
 

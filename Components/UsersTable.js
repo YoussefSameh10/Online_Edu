@@ -5,11 +5,15 @@ import { Table, Row, Cell, } from 'react-native-table-component';
 import { Icon } from 'react-native-elements'
 import Dialog from "react-native-dialog";
 import Colors from '../Constants/colors'
+import { url } from '../Constants/numbers';
+import Toast from 'react-native-simple-toast';
+
+
 export default class UsersTable extends React.Component{
   
   state = {
     dialogVisibility: false,
-    indexToBeDeleted: -1,
+    codeToBeDeleted: -1,
   }
 
   deleteIcon = (index) => (
@@ -17,7 +21,7 @@ export default class UsersTable extends React.Component{
       onPress={() => {
         this.setState({
           dialogVisibility: true,
-          indexToBeDeleted: index
+          codeToBeDeleted: this.props.usersShownData[index].code
         })
       }}
     >
@@ -36,18 +40,31 @@ export default class UsersTable extends React.Component{
         Object.keys(item).map((cellData, cellIndex) => (
           <Cell
             onPress={() => {
-              this.props.navigation.navigate(`adminView${this.props.userType}InfoScreen`, {
-                userName: this.props.users[index].name,
-                userCode: this.props.users[index].code,
-                userEmail: this.props.users[index].email,
-                userYear: this.props.users[index].year,
-              })
+              if(this.props.userType !== 'Course'){
+                this.props.navigation.navigate(`adminView${this.props.userType}InfoScreen`, {
+                  userName: this.props.users[index].name,
+                  userCode: this.props.users[index].code,
+                  userEmail: this.props.users[index].email,
+                  userYear: this.props.users[index].year,
+                  userToken: this.props.userToken,
+                  refresh: this.props.refresh,
+                })
+              }
+              else{
+                this.props.navigation.navigate(`adminView${this.props.userType}InfoScreen`, {
+                  userName: this.props.users[index].name,
+                  userCode: this.props.users[index].code,
+                  userYear: this.props.users[index].year,
+                  userToken: this.props.userToken,
+                  refresh: this.props.refresh,
+                })
+              }
             }}
             key={cellIndex} 
             data={
               cellIndex === 0 ? item['name']  
-              :cellIndex === 1 ? item['code'] 
-              : cellIndex === 2 ? this.deleteIcon(index)
+              : cellIndex === 1 ? item['code'] 
+              : cellIndex === 2 && this.props.userType !== 'Admin'? this.deleteIcon(index)
               : null
           }
             textStyle={styles.text}
@@ -63,15 +80,48 @@ export default class UsersTable extends React.Component{
     this.setState({dialogVisibility: false})
   };
 
-  handleDelete = () => {
-    //Delete indexToBeDeleted
-    indexToBeDeleted = -1
-    this.setState({dialogVisibility: false})
+  handleDelete = async() => {
+
+    this.setState({
+      dialogVisibility: false
+    })
+    try{
+      const response = await fetch(
+        `${url}/admins/deleteUser`,{
+          method: 'DELETE',
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + this.props.userToken,        
+          },
+          body: JSON.stringify({
+            code: this.state.codeToBeDeleted
+          })
+        }
+      )
+
+      
+      if(response.status === 200){
+        this.props.deleteUser(this.state.codeToBeDeleted)
+      }
+      else if(response.status === 404){
+        Toast.show('User Not Found')
+      }
+      else{
+        Toast.show('Server Error')
+      }
+
+      this.setState({
+        codeToBeDeleted: -1, 
+      })
+      
+    } catch(e){
+      console.log(e.message)
+    }
   };
 
   render(){
     return(
-      <View>
+      <View style={styles.container}>
         <Table borderStyle={{borderColor: 'transparent'}}>
           <Row 
             data={this.props.attributes} 
@@ -111,6 +161,7 @@ export default class UsersTable extends React.Component{
 }
 
 const styles = StyleSheet.create({
+  container: {flex: 1},
   header: { height: 40, },
   headerText: { margin: 6, fontSize: 20, fontWeight: 'bold' },
   text: { margin: 6, },

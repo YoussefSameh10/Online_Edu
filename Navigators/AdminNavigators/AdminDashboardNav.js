@@ -8,8 +8,7 @@ import Colors from '../../Constants/colors';
 import AdminViewStudentsAccountsNav from './AdminViewStudentsAccountsNav';
 import AdminViewInstructorsAccountsNav from './AdminViewInstructorsAccountsNav';
 import AdminViewAdminsAccountsNav from './AdminViewAdminsAccountsNav';
-import AdminHomeScreen from '../../Screens/AdminScreens/AdminHomeScreen';
-import AdminViewCoursesScreen from '../../Screens/AdminScreens/AdminViewCoursesScreen';
+import AdminViewCoursesNav from '../../Navigators/AdminNavigators/AdminViewCoursesNav';
 import AdminProfileScreen from '../../Screens/AdminScreens/AdminProfileScreen';
 
 const AdminDashboardNavigator = createDrawerNavigator()
@@ -17,13 +16,15 @@ const AdminDashboardNavigator = createDrawerNavigator()
 export default class AdminDashboardNav extends React.Component{
 
   getHeaderVisibility(route) {
-    const routeName = getFocusedRouteNameFromRoute(route) ?? 'adminViewStudentsAccountsScreen';
+    const routeName = getFocusedRouteNameFromRoute(route)
     switch (routeName) {
       case 'adminViewStudentInfoScreen':
         return false
       case 'adminViewInstructorInfoScreen':
         return false
       case 'adminViewAdminInfoScreen':
+        return false
+      case 'adminViewCourseInfoScreen':
         return false
     }
     return true
@@ -105,10 +106,15 @@ export default class AdminDashboardNav extends React.Component{
         />
 
         <AdminDashboardNavigator.Screen 
-          name={'adminViewCoursesScreen'}
-          component={AdminViewCoursesScreen}
-          options={{
-            headerShown: true,
+          name={'adminViewCoursesNav'}
+          children={() => 
+            <AdminViewCoursesNav 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+            />
+          }
+          options={({ route }) => ({
+            headerShown: this.getHeaderVisibility(route),
             headerTintColor: Colors.primary_color,
             headerRight: () => (
               <TouchableOpacity 
@@ -118,7 +124,8 @@ export default class AdminDashboardNav extends React.Component{
               </TouchableOpacity>
             ),
             title: 'Courses',
-          }}
+          })}
+          
         />
 
         <AdminDashboardNavigator.Screen 

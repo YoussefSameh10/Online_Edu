@@ -23,7 +23,9 @@ export default class StudentDashboardNav extends React.Component{
       >
         <StudentDashboardNavigator.Screen 
           name='studentCoursesScreen' 
-          component={StudentCoursesScreen} 
+          children={() => <StudentCoursesScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             headerShown: true,
             headerTintColor: Colors.primary_color,
@@ -40,7 +42,9 @@ export default class StudentDashboardNav extends React.Component{
 
         <StudentDashboardNavigator.Screen 
           name='studentCalendarScreen' 
-          component={StudentCalendarScreen} 
+          children={() => <StudentCalendarScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             headerShown: true,
             headerTintColor: Colors.primary_color,
@@ -91,7 +95,9 @@ export default class StudentDashboardNav extends React.Component{
 
         <StudentDashboardNavigator.Screen 
           name='studentProfileScreen' 
-          component={StudentProfileScreen} 
+          children={() => <studentProfileScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             headerShown: false,
             headerTintColor: Colors.primary_color,

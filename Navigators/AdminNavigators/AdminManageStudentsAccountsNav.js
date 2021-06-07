@@ -19,6 +19,7 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
           keyboardHidesTabBar: 'true',
         }}
         
+        
       >
         
         <AdminManageStudentsAccountsNavigator.Screen 
@@ -27,7 +28,6 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
             <AdminManageStudentsAccountsScreen 
               navigation={this.props.navigation} 
               userToken={this.props.userToken}
-              tabBarHeight={useBottomTabBarHeight()}
             />
           }
           options={{
@@ -45,7 +45,12 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
 
         <AdminManageStudentsAccountsNavigator.Screen 
           name='adminCreateStudentsAccountsScreen'
-          component={AdminCreateStudentsAccountsScreen}
+          children={() => 
+            <AdminCreateStudentsAccountsScreen 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+            />
+          }
           options={{
             title: 'Create New Accounts',
             tabBarIcon: ({color, size}) =>(

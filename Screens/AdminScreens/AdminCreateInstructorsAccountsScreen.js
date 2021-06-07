@@ -3,6 +3,8 @@ import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoiding
 import DropDownPicker from 'react-native-dropdown-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import Toast from 'react-native-simple-toast';
+import { url } from '../../Constants/numbers';
+import Colors from '../../Constants/colors';
 
 async function upload() {
   const file = await DocumentPicker.getDocumentAsync()
@@ -19,27 +21,26 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
 
   state = {
     isFormValid: false,
-    fullName: '',
-    code: '',
-    department: '',
-    email: '',
+    instructorName: '',
+    instructorCode: '',
+    instructorEmail: '',
     file: {}
   }
 
   componentDidUpdate(prevProps, prevState){
-    if(prevState.fullName !== this.state.fullName || 
-      prevState.code !== this.state.code ||
+    if(prevState.instructorName !== this.state.instructorName || 
+      prevState.instructorCode !== this.state.instructorCode ||
       prevState.department !== this.state.department ||
-      prevState.email !== this.state.email
+      prevState.instructorEmail !== this.state.instructorEmail
     ){
       this.validateForm()
     }
   }
 
   validateForm = () => {
-    if(this.state.fullName.length > 0 && 
-      this.state.code.length > 0 && 
-      this.state.email.length > 0 &&
+    if(this.state.instructorName.length > 0 && 
+      this.state.instructorCode.length > 0 && 
+      this.state.instructorEmail.length > 0 &&
       this.state.department !== ''
     ){
       this.setState({isFormValid: true})
@@ -50,18 +51,48 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
 
 
   
-  handlefullNameUpdate = fullName => {
-    this.setState({fullName})
+  handleInstructorNameUpdate = instructorName => {
+    this.setState({instructorName})
   }
-  handleCodeUpdate = code => {
-    this.setState({code})
+  handleInstructorCodeUpdate = instructorCode => {
+    this.setState({instructorCode})
   }
   
   handleDepartmentUpdate =item => {
    this.setState({department: item.value})
   }
-  handleEmailUpdate = email => {
-    this.setState({email})
+  handleInstructorEmailUpdate = instructorEmail => {
+    this.setState({instructorEmail})
+  }
+
+  handleCreate = async() => {
+
+    try{
+      const response = await fetch(`${url}/users`,{
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.state.instructorName,
+          code: this.state.instructorCode,
+          email: this.state.instructorEmail,
+          password: this.state.instructorCode,
+          role: 'instructor'
+        })
+      })
+
+      if(response.status === 201){
+        Toast.show('Instructor Created Successfully')
+      }
+      else{
+        Toast.show(`Can't Create Instructor`)  
+        const result = await response.json()
+        Toast.show(result, Toast.LONG)  
+      }
+    } catch(e){
+      console.log(e.message)
+    }
   }
 
   render(){
@@ -72,57 +103,41 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
             Create Single Account
           </Text>
           <TextInput 
-              value={this.state.fullName}
+              value={this.state.instructorName}
               placeholder='Full Name'
-              onChangeText={this.handlefullNameUpdate}
+              onChangeText={this.handleInstructorNameUpdate}
               style={styles.textInput}
             />
             <TextInput 
-              value={this.state.code}
+              value={this.state.instructorCode}
               placeholder='Code'
-              onChangeText={this.handleCodeUpdate}
+              onChangeText={this.handleInstructorCodeUpdate}
               style={styles.textInput}
-            />
-            
-            <DropDownPicker
-              items={[
-                {label: 'Electrical', value: 'Electrical',},
-                {label: 'Mechanical', value: 'Mechanical', },
-                {label: 'Architecture', value: 'Architecture', },
-                {label: 'Civil', value: 'Civil', },
-                
-              ]}
-              placeholder='Department'
-              value={this.state.department}
-              onChangeItem={this.handleDepartmentUpdate}
-              disabled={this.state.year === '0'}
-              containerStyle={styles.dropdownBox}
-              placeholderStyle={styles.dropdownBoxPlaceholder}
-            />     
+            />   
             
             <TextInput 
-              value={this.state.email}
+              value={this.state.instructorEmail}
               placeholder='Email'
-              onChangeText={this.handleEmailUpdate}
+              onChangeText={this.handleInstructorEmailUpdate}
               style={styles.textInput}
             />
             <View style={styles.createButton}>
               <Button 
                 title='Create'
-                onPress={() => {}}
+                onPress={this.handleCreate}
                 disabled={!this.state.isFormValid}
               />
             </View>
 
-            <Text style={styles.title}>
-              OR Upload File
-            </Text>
-            <Button 
-              title='Upload'
-              onPress={() => {
-                this.setState({file: upload()})
-              }}
-            />
+            <View style={styles.uploadButton}>
+              <Button 
+                title='Upload File'
+                onPress={() => {
+                  this.setState({file: upload()})
+                }}
+                color={Colors.primary_color}
+              />
+            </View>
             
         </ScrollView>
       </KeyboardAvoidingView>
@@ -136,5 +151,6 @@ const styles = StyleSheet.create({
   textInput: {width: '100%', marginBottom: 16, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff',},
   dropdownBox: {width: '100%', height: 30, marginBottom: 16,},
   dropdownBoxPlaceholder: {color: '#777'},
-  createButton: {marginTop: 20, marginBottom: 40, width: '30%', alignSelf: 'center', backgroundColor: '#0f0'},
+  createButton: {marginTop: 20, width: '25%', alignSelf: 'center',},  
+  uploadButton: {marginTop: 20, width: '40%', alignSelf: 'center',},
 })

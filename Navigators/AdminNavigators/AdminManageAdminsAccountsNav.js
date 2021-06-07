@@ -27,7 +27,6 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
             <AdminManageAdminsAccountsScreen 
               navigation={this.props.navigation} 
               userToken={this.props.userToken}
-              tabBarHeight={useBottomTabBarHeight()}
             />
           }
           options={{
@@ -45,7 +44,12 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
 
         <AdminManageAdminsAccountsNavigator.Screen 
           name='adminCreateAdminsAccountsScreen'
-          component={AdminCreateAdminsAccountsScreen}
+          children={() => 
+            <AdminCreateAdminsAccountsScreen 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+            />
+          }
           options={{
             title: 'Create New Accounts',
             tabBarIcon: ({color, size}) =>(

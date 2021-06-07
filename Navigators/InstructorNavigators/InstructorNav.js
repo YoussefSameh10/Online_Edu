@@ -4,6 +4,7 @@ import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import InstructorDashboardNav from './InstructorDashboardNav'
 import InstructorCourseNav from './InstructorCourseNav'
 import InstructorProfileScreen from '../../Screens/InstructorScreens/InstructorProfileScreen'
+
 const InstructorNavigator = createStackNavigator()
 
 export default class InstructorNav extends React.Component{
@@ -35,7 +36,9 @@ export default class InstructorNav extends React.Component{
         
         <InstructorNavigator.Screen 
           name={'instructorDashboardNav'} 
-          component={InstructorDashboardNav} 
+          children={() => <InstructorDashboardNav 
+            navigation={this.props.navigation} userToken={this.props.route.params.userToken}
+          />}
           options={({route}) => ({
             headerShown: this.getHeaderVisibility(route),
             title: this.getHeaderTitle(route)
@@ -44,7 +47,9 @@ export default class InstructorNav extends React.Component{
 
         <InstructorNavigator.Screen 
           name={'instructorCourseNav'} 
-          component={InstructorCourseNav} 
+          children={() => <InstructorCourseNav 
+            navigation={this.props.navigation} userToken={this.props.route.params.userToken}
+          />}
           options={{
             title: 'Image Processing CSE444'
           }}
@@ -52,7 +57,9 @@ export default class InstructorNav extends React.Component{
 
         <InstructorNavigator.Screen 
           name='instructorProfileScreen' 
-          component={InstructorProfileScreen} 
+          children={() => <InstructorProfileScreen 
+            navigation={this.props.navigation} userToken={this.props.route.params.userToken}
+          />}
           options={{
             title: 'Profile',
             headerLeft: () => {null}

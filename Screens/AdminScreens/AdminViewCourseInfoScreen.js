@@ -1,37 +1,41 @@
 import React from 'react'
 import { View, Text, Button, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView} from 'react-native';
-import ProfileAvatar from '../../Components/ProfileAvatar'
 import { Icon } from 'react-native-elements'
 import DropDownPicker from 'react-native-dropdown-picker';
 import { url } from '../../Constants/numbers';
+import Toast from 'react-native-simple-toast';
 import Colors from '../../Constants/colors';
 
-export default class AdminViewInstructorInfoScreen extends React.Component{
+
+
+export default class AdminViewCourseInfoScreen extends React.Component{
  
   state = {
     isFormValid: true,
     editable: false,
-    instructorOldCode: this.props.route.params.userCode,
-    instructorName: this.props.route.params.userName,
-    instructorCode: this.props.route.params.userCode,
-    department: 'Civil',
-    instructorEmail: this.props.route.params.userEmail
+    courseOldCode: this.props.route.params.userCode, 
+    courseName: this.props.route.params.userName,
+    courseCode: this.props.route.params.userCode,
+    courseYear: this.props.route.params.userYear,
+    instructorCode: '',
+    score: '100',
   }
 
   componentDidUpdate(prevProps, prevState){
-    if(prevState.instructorName !== this.state.instructorName || 
-      prevState.instructorCode !== this.state.instructorCode ||
-      prevState.department !== this.state.department ||
-      prevState.instructorEmail !== this.state.instructorEmail
+    if(prevState.courseName !== this.state.courseName || 
+      prevState.courseCode !== this.state.courseCode ||
+      prevState.courseYear !== this.state.courseYear ||
+      prevState.score !== this.state.score 
     ){
       this.validateForm()
     }
   }
 
   validateForm = () => {
-    if(this.state.instructorName.length > 0 && 
-      this.state.instructorCode.length > 0 && 
-      this.state.instructorEmail.length > 0
+    if(this.state.courseName.length > 0 && 
+      this.state.courseCode.length > 0 &&
+      this.state.courseYear.length > 0 && 
+      +this.state.score
     ){
       this.setState({isFormValid: true})
     } else{
@@ -47,42 +51,45 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
     this.setState({editable: false})
   }
 
-  handleInstructorNameUpdate = instructorName => {
-    this.setState({instructorName})
+  handleCourseNameUpdate = courseName => {
+    this.setState({courseName})
+  }
+  handleCourseCodeUpdate = courseCode => {
+    this.setState({courseCode})
   }
   handleInstructorCodeUpdate = instructorCode => {
     this.setState({instructorCode})
   }
-  handleInstructorEmailUpdate = instructorEmail => {
-    this.setState({instructorEmail})
+  handleScoreUpdate = score => {
+    this.setState({score})
   }
 
+  /*=============//modify backend in order to sent instructor code in stead of instructor id============*/
   handleSave = async() => {
-    console.log('save')
     try{
-      const response = await fetch(`${url}/admins/users/update`, {
+      const response = await fetch(`${url}/admins/courses/update`, {
         method: 'PATCH',
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + this.props.route.params.userToken,        
         },
         body: JSON.stringify({
-          old_code: this.state.instructorOldCode,
-          code: this.state.instructorCode,
-          name: this.state.instructorName,
-          email: this.state.instructorEmail,
-          role: 'instructor',
+          old_code: this.state.courseOldCode,
+          code: this.state.courseCode,
+          name: this.state.courseName,
+          year: this.state.courseYear,
+          score: this.state.courseScore,
         })
       })
 
       if(response.status === 200){
-        Toast.show('Instructor Updated Successfully')
+        Toast.show('Course Updated Successfully')
         this.makeIneditable()
-        this.props.route.params.refresh()
+        this.props.route.params.refresh(this.state.courseYear)
         this.props.navigation.goBack()
       }
       else if(response.status === 404){
-        Toast.show('Admin Not Found')
+        Toast.show('Course Not Found')
       }
       else if(response.status === 403){
         Toast.show('Unauthorized Action')
@@ -97,11 +104,11 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
     } catch(e){
       console.log(e.message)
     }
-
-    
   }
 
+
   render(){
+
     return(
       <KeyboardAvoidingView 
         style={styles.container} 
@@ -109,10 +116,8 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
         keyboardVerticalOffset={-100}
       >
         <ScrollView>
-          {/* <View style={styles.picture}>
-            <ProfileAvatar size={'large'}/>
-          </View> */}
-          <View>
+          
+        <View>
             <TouchableOpacity
               onPress={() => {this.makeEditable()}}
               style={[styles.editIcon, {backgroundColor: this.state.editable ? '#aaa' : Colors.primary_color}]}
@@ -125,52 +130,63 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
-            <Text style={styles.title}>Full Name</Text>
+            <Text style={styles.title}>Course Name</Text>
             <TextInput 
-              value={this.state.instructorName}
-              onChangeText={this.handleInstructorNameUpdate}
+              value={this.state.courseName}
+              onChangeText={this.handleCourseNameUpdate}
               editable={this.state.editable}
               style={styles.text}
             />
           </View>
           <View style={styles.row}>
-            <Text style={styles.title}>Code</Text>
+            <Text style={styles.title}>Course Code</Text>
+            <TextInput 
+              value={this.state.courseCode}
+              onChangeText={this.handleCourseCodeUpdate}
+              editable={this.state.editable}
+              style={styles.text}
+            />
+          </View>
+
+          {/* <View style={styles.row}>
+            <Text style={styles.title}>Instructor Code</Text>
             <TextInput 
               value={this.state.instructorCode}
               onChangeText={this.handleInstructorCodeUpdate}
               editable={this.state.editable}
               style={styles.text}
             />
-          </View>
-          
-          {/* <View style={styles.row}>
-            <Text style={styles.title}>Department</Text>
+          </View> */}
+
+          <View style={styles.row}>
+            <Text style={styles.title}>Year</Text>
             <DropDownPicker
               items={[
-                {label: 'Electrical', value: 'Electrical',},
-                {label: 'Mechanical', value: 'Mechanical', },
-                {label: 'Architecture', value: 'Architecture', },
-                {label: 'Civil', value: 'Civil', },
-                
+                {label: 'Year 1', value: 'first',},
+                {label: 'Year 2', value: 'second', },
+                {label: 'Year 3', value: 'third', },
+                {label: 'Year 4', value: 'fourth', },
+                {label: 'Year 5', value: 'fifth', },
               ]}
-              defaultValue={this.state.department}
-              value={this.state.department}
-              onChangeItem={item => {this.setState({department: item.value})}}
+              defaultValue={this.state.courseYear}
+              value={this.state.courseYear}
+              onChangeItem={item => {this.setState({courseYear: item.value})}}
               disabled={!this.state.editable}
               containerStyle={styles.dropdownBox}
               labelStyle={styles.dropdownLabel}
-            />         
-          </View> */}
+            />
+          </View>
           
           <View style={styles.row}>
-            <Text style={styles.title}>Email</Text>
+            <Text style={styles.title}>Score</Text>
             <TextInput 
-              value={this.state.instructorEmail}
+              value={this.state.score}
               editable={this.state.editable}
-              onChangeText={this.handleInstructorEmailUpdate}
+              onChangeText={this.handleScoreUpdate}
               style={styles.text}
             />
           </View>
+          
           <View style={styles.saveButton}>
             <Button 
               title='Save'
@@ -190,8 +206,7 @@ const styles = StyleSheet.create({
   row: {flex: 1, flexDirection: 'column', marginBottom: 16, alignItems: 'flex-start',},
   title: {flex: 1, fontSize: 18, color: '#666', paddingLeft: 8, marginBottom: 4},
   text: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',height: 35, borderRadius: 20, paddingLeft: 8},
-  dropdownBox: {flex: 1, height: 30, width: '100%'},
-  dropdownLabel: {textAlign: 'center'},
+  dropdownBox: {flex: 1, height: 30, width: '90%',},
   saveButton: {marginTop: 30, width: '30%', alignSelf: 'center', backgroundColor: '#0f0'},
-  editIcon: {alignSelf: 'flex-end', marginTop: 8, backgroundColor: Colors.primary_color, borderRadius: 40, width: 30, height: 30, justifyContent: 'center'}
+  editIcon: {alignSelf: 'flex-end', marginTop: 8, borderRadius: 40, width: 30, height: 30, justifyContent: 'center'}
 })

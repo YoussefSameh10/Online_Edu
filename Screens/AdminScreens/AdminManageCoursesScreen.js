@@ -7,22 +7,21 @@ import Toast from 'react-native-simple-toast'
 import { compareByName } from '../../Constants/Functions';
 import { url } from '../../Constants/numbers';
 
-export default class AdminManageStudentsAccountsScreen extends React.Component{
+export default class AdminManageCoursesScreen extends React.Component{
   
   state={
     searchInput: '',
     year: '0',
     attributes: ['NAME', 'CODE', ],
-    studentsBasicData: [],
-    studentsShownData: [],
-    students: [],
+    coursesBasicData: [],
+    coursesShownData: [],
+    courses: [],
   }
-
 
   init = () => {
     const arr = []
     let obj = {}
-    this.state.students.map((item) => {
+    this.state.courses.map((item) => {
       Object.keys(item).map((key) => {
         key === 'name' || key === 'code' || key === 'createdAt' ? obj[key] = item[key]
         : null
@@ -31,39 +30,40 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
       obj={}
     })
     this.setState({
-      studentsShownData: [...arr.sort(compareByName)], 
-      studentsBasicData: [...arr.sort(compareByName)],
-      students: [...this.state.students.sort(compareByName)],
+      coursesShownData: [...arr.sort(compareByName)], 
+      coursesBasicData: [...arr.sort(compareByName)],
+      courses: [...this.state.courses.sort(compareByName)],
     })
   }
 
-  getStudents = async (year) => {
+  getCourses = async (year) => {
     try{
       const response = await fetch(
-        `${url}/admins/getStudentsOfCertainYear/${year}`, {
+        `${url}/admins/courses/year/${year}`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer " + this.props.userToken,
+          "Authorization": "Bearer " + this.props.userToken,        
         }
       })
       
       const results = await response.json()
       if(response.status === 200){
-        this.setState({students: results}, this.init)
+        this.setState({courses: results}, this.init)
       }
       else if(response.status === 404){
-        this.setState({students: []}, this.init)
+        this.setState({courses: []}, this.init)
         Toast.show(results)
       }
       else if(response.status === 403){
-        this.setState({students: []}, this.init)
+        this.setState({courses: []}, this.init)
         Toast.show('Unauthorithed')
       }
       else if(response.status === 500){
         Toast.show('Server Error')
       }
       
+
     } catch (err){
       console.log(err.message)
     }
@@ -73,11 +73,11 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
     this.setState({searchInput: input})
     if(input === null){
       this.setState({
-        studentsShownData: this.state.studentsBasicData
+        coursesShownData: this.state.coursesBasicData
       })
     } else{
       this.setState({
-        studentsShownData: this.state.studentsBasicData
+        coursesShownData: this.state.coursesBasicData
           .filter(function(item) {
             return !(item.name.indexOf(input) && item.code.indexOf(input))
           })
@@ -86,12 +86,12 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
   }
 
   handleYearChange = (year) => {
-    this.setState({year: year, searchInput: ''}, () => this.getStudents(year))
+    this.setState({year: year, searchInput: ''}, () => this.getCourses(year))
   }
 
-  deleteStudent = (code) => {
+  deleteCourse = (code) => {
     this.setState({
-        students: [...this.state.students.filter(student => student.code !== code)]
+        courses: [...this.state.courses.filter(course => course.code !== code)]
       },
       this.init
     )
@@ -129,18 +129,18 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
           </View>
           
           <Text style={styles.counter}>
-            {`Number Of Shown Students: ${this.state.students.length}`}
+            {`Number Of Shown Courses: ${this.state.courses.length}`}
           </Text>
         </View>
         
         <UsersTable 
-          userType={'Student'}
+          userType={'Course'}
           attributes={this.state.attributes} 
-          usersShownData={this.state.studentsShownData} 
-          users={this.state.students}
+          usersShownData={this.state.coursesShownData} 
+          users={this.state.courses}
           userToken={this.props.userToken}
           navigation={this.props.navigation} 
-          deleteUser={this.deleteStudent}
+          deleteUser={this.deleteCourse}
           refresh={this.handleYearChange}
         />
       </View>

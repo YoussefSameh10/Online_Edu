@@ -4,10 +4,12 @@ import { TextInput, } from 'react-native-gesture-handler';
 import DropdownMenus from '../../Components/DropdownMenus';
 import UsersTable from '../../Components/UsersTable';
 import { compareByName } from '../../Constants/Functions';
+import { url } from '../../Constants/numbers';
 
 export default class AdminManageAdminsAccountsScreen extends React.Component{
   
   state={
+    searchInput: '',
     attributes: ['NAME', 'CODE', ],
     adminsBasicData: [],
     adminsShownData: [],
@@ -36,11 +38,10 @@ export default class AdminManageAdminsAccountsScreen extends React.Component{
     })
   }
 
-
   getAdmins = async () => {
     try{
       const response = await fetch(
-        `http://192.168.1.8:3000/admins/getAllStudents`, {
+        `${url}/admins/getAdmins`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",
@@ -70,8 +71,8 @@ export default class AdminManageAdminsAccountsScreen extends React.Component{
     }
   }
 
-
   handleSearch = input => {
+    this.setState({searchInput: input})
     if(input === null){
       this.setState({
         adminsShownData: this.state.adminsBasicData
@@ -86,13 +87,22 @@ export default class AdminManageAdminsAccountsScreen extends React.Component{
     }
   }
 
+  deleteAdmin = (code) => {
+    this.setState({
+        admins: [...this.state.admins.filter(admin => admin.code !== code)]
+      },
+      this.init
+    )
+  }
+
   render(){
 
     return(
-      <View style={[styles.container, {paddingBottom: this.props.tabBarHeight + 30}]}>
+      <View style={styles.container}>
         <View style={styles.fixedView}>
           <TextInput 
             placeholder={'Search'}
+            value={this.state.searchInput}
             onChangeText={this.handleSearch}
             style={styles.searchBox}
           />
@@ -106,7 +116,10 @@ export default class AdminManageAdminsAccountsScreen extends React.Component{
           attributes={this.state.attributes} 
           usersShownData={this.state.adminsShownData} 
           users={this.state.admins}
+          userToken={this.props.userToken}
           navigation={this.props.navigation} 
+          deleteUser={this.deleteAdmin}
+          refresh={this.getAdmins}
         />
       </View>
     );

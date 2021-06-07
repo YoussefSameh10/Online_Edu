@@ -36,7 +36,9 @@ export default class StudentNav extends React.Component{
         
         <StudentNavigator.Screen 
           name={'studentDashboardNav'} 
-          component={StudentDashboardNav} 
+          children={() => <StudentDashboardNav 
+            navigation={this.props.navigation} userToken={this.props.route.params.userToken}
+          />}
           options={({route}) => ({
             headerShown: this.getHeaderVisibility(route),
             title: this.getHeaderTitle(route)
@@ -45,7 +47,9 @@ export default class StudentNav extends React.Component{
 
         <StudentNavigator.Screen 
           name={'studentCourseNav'} 
-          component={StudentCourseNav} 
+          children={() => <StudentCourseNav 
+            navigation={this.props.navigation} userToken={this.props.route.params.userToken}
+          />}
           options={{
             title: 'Image Processing CSE444'
           }}
@@ -53,7 +57,9 @@ export default class StudentNav extends React.Component{
 
         <StudentNavigator.Screen 
           name='studentProfileScreen' 
-          component={StudentProfileScreen} 
+          children={() => <StudentProfileScreen 
+            navigation={this.props.navigation} userToken={this.props.route.params.userToken}
+          />}
           options={{
             title: 'Profile',
             headerLeft: () => {null}

@@ -22,7 +22,9 @@ export default class InstructorDashboardNav extends React.Component{
       >
         <InstructorDashboardNavigator.Screen 
           name='instructorCoursesScreen' 
-          component={InstructorCoursesScreen} 
+          children={() => <InstructorCoursesScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             headerShown: true,
             headerTintColor: Colors.primary_color,
@@ -39,7 +41,9 @@ export default class InstructorDashboardNav extends React.Component{
 
         <InstructorDashboardNavigator.Screen 
           name='instructorCalendarScreen' 
-          component={InstructorCalendarScreen} 
+          children={() => <InstructorCalendarScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             headerShown: true,
             headerTintColor: Colors.primary_color,
@@ -56,7 +60,9 @@ export default class InstructorDashboardNav extends React.Component{
 
         <InstructorDashboardNavigator.Screen 
           name='instructorProfileScreen' 
-          component={InstructorProfileScreen} 
+          children={() => <InstructorProfileScreen 
+            navigation={this.props.navigation} userToken={this.props.userToken}
+          />}
           options={{
             headerShown: false,
             headerTintColor: Colors.primary_color,

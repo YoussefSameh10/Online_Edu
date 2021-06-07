@@ -2,6 +2,8 @@ import React from 'react'
 import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import Toast from 'react-native-simple-toast';
+import { url } from '../../Constants/numbers';
+import Colors from '../../Constants/colors';
 
 async function upload() {
   const file = await DocumentPicker.getDocumentAsync()
@@ -18,25 +20,25 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
 
   state = {
     isFormValid: false,
-    fullName: '',
-    code: '',
-    email: '',
+    adminName: '',
+    adminCode: '',
+    adminEmail: '',
     file: {}
   }
 
   componentDidUpdate(prevProps, prevState){
-    if(prevState.fullName !== this.state.fullName || 
-      prevState.code !== this.state.code ||
-      prevState.email !== this.state.email
+    if(prevState.adminName !== this.state.adminName || 
+      prevState.adminCode !== this.state.adminCode ||
+      prevState.adminEmail !== this.state.adminEmail
     ){
       this.validateForm()
     }
   }
 
   validateForm = () => {
-    if(this.state.fullName.length > 0 && 
-      this.state.code.length > 0 && 
-      this.state.email.length > 0
+    if(this.state.adminName.length > 0 && 
+      this.state.adminCode.length > 0 && 
+      this.state.adminEmail.length > 0
     ){
       this.setState({isFormValid: true})
     } else{
@@ -46,14 +48,44 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
 
 
   
-  handlefullNameUpdate = fullName => {
-    this.setState({fullName})
+  handleAdminNameUpdate = adminName => {
+    this.setState({adminName})
   }
-  handleCodeUpdate = code => {
-    this.setState({code})
+  handleAdminCodeUpdate = adminCode => {
+    this.setState({adminCode})
   }
-  handleEmailUpdate = email => {
-    this.setState({email})
+  handleAdminEmailUpdate = adminEmail => {
+    this.setState({adminEmail})
+  }
+
+  handleCreate = async() => {
+
+    try{
+      const response = await fetch(`${url}/users`,{
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.state.adminName,
+          code: this.state.adminCode,
+          email: this.state.adminEmail,
+          password: this.state.adminCode,
+          role: 'admin'
+        })
+      })
+
+      if(response.status === 201){
+        Toast.show('Admin Created Successfully')
+      }
+      else{
+        Toast.show(`Can't Create Admin`)  
+        const result = await response.json()
+        Toast.show(result, Toast.LONG)  
+      }
+    } catch(e){
+      console.log(e.message)
+    }
   }
 
   render(){
@@ -64,41 +96,42 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
             Create Single Account
           </Text>
           <TextInput 
-              value={this.state.fullName}
+              value={this.state.adminName}
               placeholder='Full Name'
-              onChangeText={this.handlefullNameUpdate}
+              onChangeText={this.handleAdminNameUpdate}
               style={styles.textInput}
             />
             <TextInput 
-              value={this.state.code}
+              value={this.state.adminCode}
               placeholder='Code'
-              onChangeText={this.handleCodeUpdate}
+              onChangeText={this.handleAdminCodeUpdate}
               style={styles.textInput}
             />
             
             <TextInput 
-              value={this.state.email}
+              value={this.state.adminEmail}
               placeholder='Email'
-              onChangeText={this.handleEmailUpdate}
+              onChangeText={this.handleAdminEmailUpdate}
               style={styles.textInput}
             />
             <View style={styles.createButton}>
               <Button 
                 title='Create'
-                onPress={() => {}}
+                onPress={this.handleCreate}
                 disabled={!this.state.isFormValid}
+                // color={Colors.primary_color}
               />
             </View>
 
-            <Text style={styles.title}>
-              OR Upload File
-            </Text>
-            <Button 
-              title='Upload'
-              onPress={() => {
-                this.setState({file: upload()})
-              }}
-            />
+            <View style={styles.uploadButton}>
+              <Button 
+                title='Upload File'
+                onPress={() => {
+                  this.setState({file: upload()})
+                }}
+                color={Colors.primary_color}
+              />
+            </View>
             
         </ScrollView>
       </KeyboardAvoidingView>
@@ -107,10 +140,12 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
 }
 
 const styles = StyleSheet.create({
-  container: {margin: 16},
+  container: {margin: 16, marginTop: 30},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
   textInput: {width: '100%', marginBottom: 16, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff',},
   dropdownBox: {width: '100%', height: 30, marginBottom: 16,},
   dropdownBoxPlaceholder: {color: '#777'},
-  createButton: {marginTop: 20, marginBottom: 40, width: '30%', alignSelf: 'center', backgroundColor: '#0f0'},
+  createButton: {marginTop: 20, width: '25%', alignSelf: 'center',},
+  uploadButton: {marginTop: 20, width: '40%', alignSelf: 'center',},
+
 })

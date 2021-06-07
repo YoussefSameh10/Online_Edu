@@ -3,6 +3,7 @@ import {View, ActivityIndicator, StyleSheet, Text} from 'react-native'
 import Colors from '../Constants/colors';
 import Toast from 'react-native-simple-toast'
 import { StackActions } from '@react-navigation/routers'
+import {url} from '../Constants/numbers'
 
 
 
@@ -23,7 +24,7 @@ export default class LoadingScreen extends React.Component{
 
     //======================Login=======================//
     try{
-      const response = await fetch('http://192.168.1.8:3000/users/login', {
+      const response = await fetch(`${url}/users/login`, {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
@@ -33,7 +34,6 @@ export default class LoadingScreen extends React.Component{
       })
       
       const result = await response.json()
-      
       if(response.status === 400){
         Toast.show(result)
         this.props.navigation.dispatch(StackActions.replace('loginScreen'))

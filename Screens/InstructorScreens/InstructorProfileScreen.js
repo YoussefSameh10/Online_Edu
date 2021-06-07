@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, StyleSheet, Button } from 'react-native';
 import ProfileAvatar from '../../Components/ProfileAvatar'
 import Dialog from "react-native-dialog";
+import { StackActions } from '@react-navigation/routers';
 
 export default class InstructorProfileScreen extends React.Component{
  
