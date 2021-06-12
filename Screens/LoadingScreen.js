@@ -41,7 +41,10 @@ export default class LoadingScreen extends React.Component{
       else{
         this.setState({userToken: result.token, user: result.user}, 
           this.props.navigation.dispatch(StackActions.replace(`${result.user.role}Nav`,
-            {userToken: result.token}
+            {
+              userToken: result.token,
+              user: result.user,
+            }
           )))
       }
     } catch (e) {

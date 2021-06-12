@@ -12,7 +12,7 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
     return(
       <AdminManageInstructorsAccountsNavigator.Navigator
         initialRouteName='adminManageInstructorsAccountsScreen'
-        backBehavior='history'
+        backBehavior='none'
         tabBarOptions={{
           activeTintColor: Colors.primary_color,
           labelStyle: {fontSize: 13},

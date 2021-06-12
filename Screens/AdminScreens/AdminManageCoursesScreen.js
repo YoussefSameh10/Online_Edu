@@ -1,11 +1,13 @@
 import React from 'react'
-import { StyleSheet, View, Button, Text } from 'react-native';
+import { StyleSheet, View, Button, Text, TouchableOpacity } from 'react-native';
 import { TextInput, } from 'react-native-gesture-handler';
+import { Icon } from 'react-native-elements'
 import DropDownPicker from 'react-native-dropdown-picker';
 import UsersTable from '../../Components/UsersTable';
 import Toast from 'react-native-simple-toast'
 import { compareByName } from '../../Constants/Functions';
 import { url } from '../../Constants/numbers';
+import Colors from '../../Constants/colors';
 
 export default class AdminManageCoursesScreen extends React.Component{
   
@@ -128,9 +130,20 @@ export default class AdminManageCoursesScreen extends React.Component{
             />
           </View>
           
-          <Text style={styles.counter}>
-            {`Number Of Shown Courses: ${this.state.courses.length}`}
-          </Text>
+          <View style={styles.row}>
+            <Text style={styles.counter}>
+              {`Number Of Shown Courses: ${this.state.courses.length}`}
+            </Text>
+            <TouchableOpacity
+              onPress={() => this.getCourses(this.state.year)}
+              style={styles.refreshIcon}
+            >
+              <Icon 
+                name='refresh'
+                color={'#fff'}  
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         
         <UsersTable 
@@ -152,11 +165,13 @@ export default class AdminManageCoursesScreen extends React.Component{
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 16,},
   fixedView: {marginBottom: 10},
-  searchBox: {alignSelf: 'center', marginBottom: 16, borderBottomWidth: 1, width: '90%', paddingLeft: 8},
+  searchBox: {alignSelf: 'center', marginBottom: 16, borderBottomWidth: 1, width: '100%', paddingLeft: 8},
   dropDownContainer: {justifyContent: 'space-around'},
   menu: {backgroundColor: '#fafafa',},
   item: {justifyContent: 'flex-start'},
   dropdown: {backgroundColor: '#fafafa',},
-  box: { width: '90%', height: 40},
-  counter: { fontSize: 16, marginTop: 20 }
+  box: { width: '100%', height: 40},
+  row: {flexDirection: 'row', marginTop: 20, alignItems: 'center' ,justifyContent: 'space-between'},
+  counter: {fontSize: 16, color: '#000'},
+  refreshIcon: {backgroundColor: Colors.primary_color, borderRadius: 40, width: 30, height: 30, justifyContent: 'center'}
 });

@@ -23,7 +23,9 @@ export default class InstructorDashboardNav extends React.Component{
         <InstructorDashboardNavigator.Screen 
           name='instructorCoursesScreen' 
           children={() => <InstructorCoursesScreen 
-            navigation={this.props.navigation} userToken={this.props.userToken}
+            navigation={this.props.navigation} 
+            userToken={this.props.userToken}
+            user={this.props.user}
           />}
           options={{
             headerShown: true,
@@ -42,7 +44,8 @@ export default class InstructorDashboardNav extends React.Component{
         <InstructorDashboardNavigator.Screen 
           name='instructorCalendarScreen' 
           children={() => <InstructorCalendarScreen 
-            navigation={this.props.navigation} userToken={this.props.userToken}
+            navigation={this.props.navigation} 
+            userToken={this.props.userToken}
           />}
           options={{
             headerShown: true,
@@ -58,7 +61,7 @@ export default class InstructorDashboardNav extends React.Component{
           }}
         />
 
-        <InstructorDashboardNavigator.Screen 
+        {/* <InstructorDashboardNavigator.Screen 
           name='instructorProfileScreen' 
           children={() => <InstructorProfileScreen 
             navigation={this.props.navigation} userToken={this.props.userToken}
@@ -75,7 +78,7 @@ export default class InstructorDashboardNav extends React.Component{
             ),
             title: 'Profile',
           }}
-        />
+        /> */}
 
         
       </InstructorDashboardNavigator.Navigator>

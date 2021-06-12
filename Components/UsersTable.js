@@ -80,7 +80,15 @@ export default class UsersTable extends React.Component{
     this.setState({dialogVisibility: false})
   };
 
-  handleDelete = async() => {
+  handleDelete = () => {
+    if(this.props.userType === 'Course'){
+      this.handleDeleteCourse()
+    }
+    else{
+      this.handleDeleteUser()
+    }
+  }
+  handleDeleteUser = async() => {
 
     this.setState({
       dialogVisibility: false
@@ -99,7 +107,6 @@ export default class UsersTable extends React.Component{
         }
       )
 
-      
       if(response.status === 200){
         this.props.deleteUser(this.state.codeToBeDeleted)
       }
@@ -117,7 +124,44 @@ export default class UsersTable extends React.Component{
     } catch(e){
       console.log(e.message)
     }
-  };
+  }
+
+  handleDeleteCourse = async() => {
+    this.setState({
+      dialogVisibility: false
+    })
+    try{
+      const response = await fetch(
+        `${url}/admins/courses/delete`,{
+          method: 'DELETE',
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + this.props.userToken,        
+          },
+          body: JSON.stringify({
+            code: this.state.codeToBeDeleted
+          })
+        }
+      )
+
+      if(response.status === 200){
+        this.props.deleteUser(this.state.codeToBeDeleted)
+      }
+      else if(response.status === 404){
+        Toast.show('User Not Found')
+      }
+      else{
+        Toast.show('Server Error')
+      }
+
+      this.setState({
+        codeToBeDeleted: -1, 
+      })
+      
+    } catch(e){
+      console.log(e.message)
+    }
+  }
 
   render(){
     return(

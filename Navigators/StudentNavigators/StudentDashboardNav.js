@@ -24,7 +24,9 @@ export default class StudentDashboardNav extends React.Component{
         <StudentDashboardNavigator.Screen 
           name='studentCoursesScreen' 
           children={() => <StudentCoursesScreen 
-            navigation={this.props.navigation} userToken={this.props.userToken}
+            navigation={this.props.navigation} 
+            userToken={this.props.userToken}
+            user={this.props.user}
           />}
           options={{
             headerShown: true,
@@ -59,7 +61,7 @@ export default class StudentDashboardNav extends React.Component{
           }}
         />
 
-        <StudentDashboardNavigator.Screen 
+        {/* <StudentDashboardNavigator.Screen 
           name='studentGradesScreen' 
           component={StudentGradesScreen} 
           options={{
@@ -91,9 +93,9 @@ export default class StudentDashboardNav extends React.Component{
             ),
             title: 'Quizzes',
           }}
-        />
+        /> */}
 
-        <StudentDashboardNavigator.Screen 
+        {/* <StudentDashboardNavigator.Screen 
           name='studentProfileScreen' 
           children={() => <studentProfileScreen 
             navigation={this.props.navigation} userToken={this.props.userToken}
@@ -110,7 +112,7 @@ export default class StudentDashboardNav extends React.Component{
             ),
             title: 'Profile',
           }}
-        />
+        /> */}
 
         
       </StudentDashboardNavigator.Navigator>

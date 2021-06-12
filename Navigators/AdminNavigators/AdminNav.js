@@ -41,7 +41,10 @@ export default class AdminNav extends React.Component{
         
         <AdminNavigator.Screen 
           name={'adminDashboardNav'}
-          children={() => <AdminDashboardNav navigation={this.props.navigation} userToken={this.props.route.params.userToken}/>}
+          children={() => <AdminDashboardNav 
+            navigation={this.props.navigation} 
+            userToken={this.props.route.params.userToken}
+          />}
           options={({route}) => ({
             headerShown: this.getHeaderVisibility(route),
             title: this.getHeaderTitle(route)
@@ -51,11 +54,15 @@ export default class AdminNav extends React.Component{
 
         <AdminNavigator.Screen 
           name={'adminProfileScreen'}
-          component={AdminProfileScreen}
+          children={() => <AdminProfileScreen 
+            navigation={this.props.navigation} 
+            user={this.props.route.params.user}
+            userToken={this.props.route.params.userToken}
+          />}
           options={{
             title: 'Profile',
             headerTintColor: Colors.primary_color,
-            headerLeft: () => {null}            
+            // headerLeft: () => {null}            
           }}
           
         />

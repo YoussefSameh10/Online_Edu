@@ -36,6 +36,7 @@ export default class AdminDashboardNav extends React.Component{
         initialRouteName={'adminViewAdminsAccountsNav'}
         drawerType={'slide'}
         drawerContent={props => <CustomDrawer {...props} />}
+        backBehavior='initialRoute'
       >
 
         <AdminDashboardNavigator.Screen 
@@ -128,7 +129,7 @@ export default class AdminDashboardNav extends React.Component{
           
         />
 
-        <AdminDashboardNavigator.Screen 
+        {/* <AdminDashboardNavigator.Screen 
           name={'adminProfileScreen'}
           component={AdminProfileScreen}
           options={{
@@ -143,7 +144,7 @@ export default class AdminDashboardNav extends React.Component{
             ),
             title: 'Profile',
           }}
-        />
+        /> */}
 
       </AdminDashboardNavigator.Navigator>
     );

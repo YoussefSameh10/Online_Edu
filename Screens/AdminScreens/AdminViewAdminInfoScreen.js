@@ -109,7 +109,7 @@ export default class AdminViewAdminInfoScreen extends React.Component{
           {/* <View style={styles.picture}>
             <ProfileAvatar size={'large'}/>
           </View> */}
-          <View>
+          {/* <View>
             <TouchableOpacity
               onPress={() => {this.makeEditable()}}
               style={[styles.editIcon, {backgroundColor: this.state.editable ? '#aaa' : Colors.primary_color}]}
@@ -120,7 +120,7 @@ export default class AdminViewAdminInfoScreen extends React.Component{
                 color={'#fff'}  
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
           <View style={styles.row}>
             <Text style={styles.title}>Full Name</Text>
             <TextInput 
@@ -149,13 +149,13 @@ export default class AdminViewAdminInfoScreen extends React.Component{
               style={styles.text}
             />
           </View>
-          <View style={styles.saveButton}>
+          {/* <View style={styles.saveButton}>
             <Button 
               title='Save'
               onPress={this.handleSave}
               disabled={!this.state.editable || !this.state.isFormValid}
             />
-          </View>
+          </View> */}
           </ScrollView>
       </KeyboardAvoidingView>
     );
