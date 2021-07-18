@@ -54,7 +54,7 @@ export default class AdminDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Admins Accounts',
@@ -76,7 +76,7 @@ export default class AdminDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Instructors Accounts',
@@ -98,7 +98,7 @@ export default class AdminDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Students Accounts',
@@ -121,7 +121,7 @@ export default class AdminDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('adminProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Courses',

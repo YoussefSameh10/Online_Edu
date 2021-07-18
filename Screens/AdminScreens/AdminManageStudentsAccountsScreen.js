@@ -54,18 +54,13 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
       if(response.status === 200){
         this.setState({students: results}, this.init)
       }
-      else if(response.status === 404){
-        this.setState({students: []}, this.init)
-        Toast.show(results)
-      }
-      else if(response.status === 403){
-        this.setState({students: []}, this.init)
-        Toast.show('Unauthorithed')
-      }
       else if(response.status === 500){
         Toast.show('Server Error')
       }
-      
+      else{
+        this.setState({students: []}, this.init)
+        Toast.show(results)
+      }
     } catch (err){
       console.log(err.message)
     }

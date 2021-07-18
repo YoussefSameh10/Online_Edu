@@ -15,12 +15,17 @@ export default class StudentProfileScreen extends React.Component{
     studentCode: this.props.user.code,
     studentEmail: this.props.user.email,
     studentYear: this.props.user.year,
-    studentPassword: '',
+    studentOldPassword: '',
+    studentNewPassword: '',
     studentConfirmPassword: '',
   }
 
-  handleStudentPasswordUpdate = studentPassword => {
-    this.setState({studentPassword}, this.validateForm)
+  handleStudentOldPasswordUpdate = studentOldPassword => {
+    this.setState({studentOldPassword}, this.validateForm)
+  }
+
+  handleStudentNewPasswordUpdate = studentNewPassword => {
+    this.setState({studentNewPassword}, this.validateForm)
   }
 
   handleStudentConfirmPasswordUpdate = studentConfirmPassword => {
@@ -28,7 +33,8 @@ export default class StudentProfileScreen extends React.Component{
   }
 
   validateForm = () => {
-    if(this.state.studentPassword.length > 0 && 
+    if(this.state.studentOldPassword.length > 0 &&
+      this.state.studentNewPassword.length > 0 && 
       this.state.studentConfirmPassword.length > 0
     ){
       this.setState({enableConfirm: true})
@@ -42,8 +48,6 @@ export default class StudentProfileScreen extends React.Component{
     this.setState({
       dialogVisibility: false,
       enableConfirm: false,
-      studentPassword: '',
-      studentConfirmPassword: '',
     })
 
     try{
@@ -54,17 +58,22 @@ export default class StudentProfileScreen extends React.Component{
           "Authorization": "Bearer " + this.props.userToken,        
         },
         body: JSON.stringify({
-          password: this.state.studentPassword,
+          oldPassword: this.state.studentOldPassword,
+          password: this.state.studentNewPassword,
           confirmPassword: this.state.studentConfirmPassword,
         })
       })
-
-      console.log(response)
+      const result = await response.json()
+      this.setState({
+        studentOldPassword: '',
+        studentNewPassword: '',
+        studentConfirmPassword: '',
+      })
       if(response.status === 400){
-        Toast.show(`Passwords Don't Match`)
+        Toast.show(result)
       }
       else if(response.status === 500){
-        Toast.show('This Is Invalid Password')
+        Toast.show(result)
       }
       else{
         Toast.show(`Your Password Has Been Changed`)
@@ -117,13 +126,24 @@ export default class StudentProfileScreen extends React.Component{
           <Text style={styles.title}>Email</Text>
           <Text style={styles.text}>{this.state.studentEmail}</Text>
         </View>
-        <Dialog.Container visible={this.state.dialogVisibility}>
+        <Dialog.Container 
+          visible={this.state.dialogVisibility}
+          onBackdropPress={() => {this.setState({dialogVisibility: false})}}
+        >
           <Dialog.Title>Change Password</Dialog.Title>
           
           <Dialog.Input 
             style={{borderBottomWidth: 1}}
-            value={this.state.studentPassword}
-            onChangeText={this.handleStudentPasswordUpdate}
+            value={this.state.studentOldPassword}
+            onChangeText={this.handleStudentOldPasswordUpdate}
+            secureTextEntry={true}
+            placeholder='Enter your old password'  
+          />
+
+          <Dialog.Input 
+            style={{borderBottomWidth: 1}}
+            value={this.state.studentNewPassword}
+            onChangeText={this.handleStudentNewPasswordUpdate}
             secureTextEntry={true}
             placeholder='Enter your new password'  
           />
@@ -136,6 +156,10 @@ export default class StudentProfileScreen extends React.Component{
             placeholder='Enter the new password again'
           />
 
+          <Dialog.Button 
+            label="Cancel" 
+            onPress={() => {this.setState({dialogVisibility: false})}}
+          />    
           <Dialog.Button 
             label="Confirm" 
             onPress={this.handleChangePasswordConfirm}

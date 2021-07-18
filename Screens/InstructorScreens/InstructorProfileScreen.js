@@ -14,13 +14,17 @@ export default class InstructorProfileScreen extends React.Component{
     instructorName: this.props.user.name,
     instructorCode: this.props.user.code,
     instructorEmail: this.props.user.email,
-    instructorPassword: '',
+    instructorOldPassword: '',
+    instructorNewPassword: '',
     instructorConfirmPassword: '',
   }
 
+  handleInstructorOldPasswordUpdate = instructorOldPassword => {
+    this.setState({instructorOldPassword}, this.validateForm)
+  }
 
-  handleInstructorPasswordUpdate = instructorPassword => {
-    this.setState({instructorPassword}, this.validateForm)
+  handleInstructorNewPasswordUpdate = instructorNewPassword => {
+    this.setState({instructorNewPassword}, this.validateForm)
   }
 
   handleInstructorConfirmPasswordUpdate = instructorConfirmPassword => {
@@ -28,7 +32,8 @@ export default class InstructorProfileScreen extends React.Component{
   }
 
   validateForm = () => {
-    if(this.state.instructorPassword.length > 0 && 
+    if(this.state.instructorOldPassword.length > 0 &&
+      this.state.instructorNewPassword.length > 0 && 
       this.state.instructorConfirmPassword.length > 0
     ){
       this.setState({enableConfirm: true})
@@ -42,8 +47,6 @@ export default class InstructorProfileScreen extends React.Component{
     this.setState({
       dialogVisibility: false,
       enableConfirm: false,
-      instructorPassword: '',
-      instructorConfirmPassword: '',
     })
 
     try{
@@ -54,17 +57,22 @@ export default class InstructorProfileScreen extends React.Component{
           "Authorization": "Bearer " + this.props.userToken,        
         },
         body: JSON.stringify({
-          password: this.state.instructorPassword,
+          oldPassword: this.state.instructorOldPassword,
+          password: this.state.instructorNewPassword,
           confirmPassword: this.state.instructorConfirmPassword,
         })
       })
-
-      console.log(response)
+      const result = await response.json()
+      this.setState({
+        instructorOldPassword: '',
+        instructorNewPassword: '',
+        instructorConfirmPassword: '',
+      })
       if(response.status === 400){
-        Toast.show(`Passwords Don't Match`)
+        Toast.show(result)
       }
       else if(response.status === 500){
-        Toast.show('This Is Invalid Password')
+        Toast.show(result)
       }
       else{
         Toast.show(`Your Password Has Been Changed`)
@@ -110,13 +118,23 @@ export default class InstructorProfileScreen extends React.Component{
           <Text style={styles.title}>Email</Text>
           <Text style={styles.text}>{this.state.instructorEmail}</Text>
         </View>
-        <Dialog.Container visible={this.state.dialogVisibility}>
+        <Dialog.Container 
+          visible={this.state.dialogVisibility}
+          onBackdropPress={() => {this.setState({dialogVisibility: false})}}
+
+        >
           <Dialog.Title>Change Password</Dialog.Title>
-          
           <Dialog.Input 
             style={{borderBottomWidth: 1}}
-            value={this.state.instructorPassword}
-            onChangeText={this.handleInstructorPasswordUpdate}
+            value={this.state.instructorOldPassword}
+            onChangeText={this.handleInstructorOldPasswordUpdate}
+            secureTextEntry={true}
+            placeholder='Enter your old password'  
+          />
+          <Dialog.Input 
+            style={{borderBottomWidth: 1}}
+            value={this.state.instructorNewPassword}
+            onChangeText={this.handleInstructorNewPasswordUpdate}
             secureTextEntry={true}
             placeholder='Enter your new password'  
           />
@@ -127,6 +145,10 @@ export default class InstructorProfileScreen extends React.Component{
             onChangeText={this.handleInstructorConfirmPasswordUpdate}
             secureTextEntry={true}
             placeholder='Enter the new password again'
+          />
+          <Dialog.Button 
+            label="Cancel" 
+            onPress={() => {this.setState({dialogVisibility: false})}}
           />
           <Dialog.Button 
             label="Confirm" 

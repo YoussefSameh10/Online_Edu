@@ -44,7 +44,12 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
 
         <AdminManageInstructorsAccountsNavigator.Screen 
           name='adminCreateInstructorsAccountsScreen'
-          component={AdminCreateInstructorsAccountsScreen}
+          children={() => 
+            <AdminCreateInstructorsAccountsScreen 
+              navigation={this.props.navigation} 
+              userToken={this.props.userToken}
+            />
+          }
           options={{
             title: 'Create New Accounts',
             tabBarIcon: ({color, size}) =>(

@@ -20,9 +20,12 @@ export default class StudentNav extends React.Component{
 
   getHeaderTitle(route) {
     const routeName = getFocusedRouteNameFromRoute(route) ?? 'studentViewStudentsAccountsScreen';
-    switch (routeName) {
-      case 'studentProfileScreen':
-        return 'Profile'
+    console.log(route)
+    if(routeName==='studentProfileScreen'){
+      return 'Profile'
+    }
+    else if(route.name==='studentCourseNav'){
+      return `${route.params.course.name}/${route.params.course.code}`
     }
     return ''
   }
@@ -55,14 +58,14 @@ export default class StudentNav extends React.Component{
           //   user={this.props.route.params.user}
           //   userToken={this.props.route.params.userToken}
           // />}
-          options={{
-            title: 'Image Processing CSE444'
-          }}
+          options={({route}) => ({
+            title: this.getHeaderTitle(route)
+          })}
         />
 
         <StudentNavigator.Screen 
           name='studentProfileScreen' 
-          children={() => <StudentProfileScreen 
+          children={() => <StudentProfileScreen
             navigation={this.props.navigation} 
             user={this.props.route.params.user}
             userToken={this.props.route.params.userToken}

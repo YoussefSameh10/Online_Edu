@@ -43,6 +43,7 @@ export default class AdminNav extends React.Component{
           name={'adminDashboardNav'}
           children={() => <AdminDashboardNav 
             navigation={this.props.navigation} 
+            user={this.props.route.params.user}
             userToken={this.props.route.params.userToken}
           />}
           options={({route}) => ({

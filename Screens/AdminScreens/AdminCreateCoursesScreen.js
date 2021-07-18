@@ -75,22 +75,29 @@ export default class AdminCreateCoursesScreen extends React.Component{
           instructor_code: this.state.instructorCode,
         })
       })
+      const result = await response.json()
       if(response.status === 201){
-        Toast.show('Course Created Successfully')
+        Toast.show('Course created successfully')
         this.enrollCourseToYear()
       }
-      if(response.status === 404){
-        Toast.show('Instructor Not Found')
-      }
-      else if(response.status === 403){
-        Toast.show('Unauthorized action')
-      }
       else if(response.status === 500){
-        Toast.show('Server Error')
+        if(result.search('code')!==-1){
+          Toast.show('This code is taken  by another course')
+        }
+        else if(result.search('score')!==-1){
+          Toast.show('Course score must be less than or equal to 100')
+        }
+        else{
+          Toast.show('Server Error')
+        }
+      }
+      else{//403 and 404
+        Toast.show(result)
       }
     } catch(e){
       console.log(e.message)
-    }  }
+    }  
+  }
 
   enrollCourseToYear = async() => {
     try{
@@ -105,17 +112,15 @@ export default class AdminCreateCoursesScreen extends React.Component{
           year: this.state.courseYear,
         })
       })
+      const result = await response.json()
       if(response.status === 201){
-        Toast.show('Course Added Successfully')
-      }
-      if(response.status === 404){
-        Toast.show('There are no students in this year')
-      }
-      else if(response.status === 403){
-        Toast.show('Unauthorized action')
+        Toast.show(`Course added to year ${this.state.courseYear}`)
       }
       else if(response.status === 500){
         Toast.show('Server Error')
+      }
+      else{
+        Toast.show(result)
       }
     } catch(e){
       console.log(e.message)
@@ -169,7 +174,7 @@ export default class AdminCreateCoursesScreen extends React.Component{
             onChangeItem={item => this.handleCourseYearUpdate(item.value)}
             containerStyle={styles.dropdownBox}
             placeholderStyle={styles.dropdownBoxPlaceholder}
-            dropDownStyle={styles.dropdownMenu}
+            
             
           />
 
@@ -179,19 +184,21 @@ export default class AdminCreateCoursesScreen extends React.Component{
               onPress={this.handleCreate}
               disabled={!this.state.isFormValid}
             />
-          </View>           
+          </View>   
+          <View style={styles.empty}></View>
         </ScrollView>
       </KeyboardAvoidingView>
     );
   }
 }
 
+
 const styles = StyleSheet.create({
-  container: {flex: 1, margin: 16},
+  container: {flex: 1, padding: 16, backgroundColor: '#fff'},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
-  textInput: {width: '100%', marginBottom: 16, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff',},
-  dropdownBox: {width: '100%', height: 30, marginBottom: 16,},
-  dropdownMenu: {height: 100,},
+  textInput: {width: '100%', marginBottom: 16, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  dropdownBox: {width: '100%', height: 40, marginBottom: 16,},
   dropdownBoxPlaceholder: {color: '#777'},
-  createButton: {marginTop: 20, marginBottom: 40, width: '30%', alignSelf: 'center', backgroundColor: '#0f0'},
+  createButton: {marginTop: 20, width: '25%', alignSelf: 'center', zIndex: 1},  
+  empty: {height: 100, backgroundColor: '#fff'}
 })

@@ -35,7 +35,7 @@ export default class StudentDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('studentProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Courses',
@@ -54,7 +54,7 @@ export default class StudentDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('studentProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Calendar',
@@ -71,7 +71,7 @@ export default class StudentDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('studentProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Grades',
@@ -88,7 +88,7 @@ export default class StudentDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('studentProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Quizzes',
@@ -107,7 +107,7 @@ export default class StudentDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('studentProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Profile',

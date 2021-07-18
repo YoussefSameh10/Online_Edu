@@ -36,16 +36,15 @@ export default class InstructorCoursesScreen extends React.Component{
           "Authorization": "Bearer " + this.props.userToken,        
         },
       })
-      if(response.status === 500){
-        Toast.show(`Can't View Your Courses`)
+      const result = await response.json()
+      if(response.status === 200){
+        this.setState({courses: [...result]})
       }
-
-      if(response.status === 403){
-        Toast.show(`Unauthorized Action`)
+      else if(response.status === 500){
+        Toast.show(`Server error`)
       }
       else{
-        const result = await response.json()
-        this.setState({courses: [...result]})
+        Toast.show(result)
       }
       
     } catch(e){

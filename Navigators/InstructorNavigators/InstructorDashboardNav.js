@@ -34,7 +34,7 @@ export default class InstructorDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('instructorProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Courses',
@@ -54,7 +54,7 @@ export default class InstructorDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('instructorProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Calendar',
@@ -73,7 +73,7 @@ export default class InstructorDashboardNav extends React.Component{
               <TouchableOpacity 
                 onPress={() => {this.props.navigation.navigate('instructorProfileScreen')}}
               >
-                <ProfileAvatar size={'small'}/>
+                <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
             title: 'Profile',

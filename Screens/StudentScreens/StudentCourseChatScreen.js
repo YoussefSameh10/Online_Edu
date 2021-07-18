@@ -15,46 +15,33 @@ export default class StudentCourseChatScreen extends React.Component{
     canSend: false,
     typeMessage: '',
     connect: true,
-    socket: null
   }
 
+  socket = io(`http://192.168.1.5:8000`)
 
-  
-
-
-  
   componentDidMount(){
     if(this.state.connect){
       console.log('connect')
-      this.setState({socket: io(`http://192.168.1.6:8000`), connect: false}, this.init)
+      //this.setState({socket: io(`http://192.168.1.5:8000`), connect: false}, this.init)
+      this.init()
     }
-
   }
 
   init = () => {
 
-
-    
-
     const username = this.props.user.name
+    console.log(username)
     const room = this.props.courseCode
-    console.log(this.state.socket)
-
-    this.state.socket.emit('join', {username, room}, () => {
-      console.log('Joined')
+    this.socket.emit('join', {username, room}, () => {
     })
 
-    this.state.socket.emit('chatHistory', room)
-    this.state.socket.on('returnChatHistory', (data) => {
-      console.log('data', data)
-      this.setState({messages: [...data]})
-      console.log('messages', this.state.messages)
+    this.socket.emit('chatHistory', room)
+    this.socket.on('returnChatHistory', (data) => {
+      this.setState({messages: [...data.slice().reverse()]})
+      //console.log(data)
     })
-    
-    this.state.socket.on('message', (message) => {
+    this.socket.on('message', (message) => {
       this.setState({messages: [message, ...this.state.messages]})
-      console.log('here',this.state.messages)
-      console.log('new message')
     })
   }
 
@@ -116,6 +103,7 @@ export default class StudentCourseChatScreen extends React.Component{
       >
         {this.state.messages[index].text}
       </Text>
+      
       <Text 
         style={[
           styles.sendingTime, 
@@ -153,7 +141,7 @@ export default class StudentCourseChatScreen extends React.Component{
     console.log('message delivered')
 
 
-    this.state.socket.emit('sendMessage', this.state.typeMessage, (error) => {
+    this.socket.emit('sendMessage', this.state.typeMessage, (error) => {
       // if(error){
       //   return console.log(error)
       // }
@@ -164,6 +152,7 @@ export default class StudentCourseChatScreen extends React.Component{
   render(){
     return(
       <View style={styles.container}>
+        {console.log('data', this.state.messages)}
         <FlatList
           inverted
           data={this.state.messages}
@@ -203,7 +192,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, justifyContent: 'flex-end',},
   inputBox: {flex: 1, fontSize: 18, marginRight: 8, paddingHorizontal: 8, height: 40, borderRadius: 20, backgroundColor: '#fff'},
   fixedBottom: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
-  scroller: {marginBottom: 16},
+  scroller: {marginBottom: 16,},
   message: {marginBottom: 8},
   messageText: {flexDirection: 'row', fontSize: 16, paddingVertical: 4, paddingHorizontal: 8, maxWidth: '60%', borderRadius: 20,},
   senderName: {marginLeft: 4, fontSize: 14, color: '#444'},

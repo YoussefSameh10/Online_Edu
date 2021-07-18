@@ -46,15 +46,19 @@ export default class UsersTable extends React.Component{
                   userCode: this.props.users[index].code,
                   userEmail: this.props.users[index].email,
                   userYear: this.props.users[index].year,
+                  userID: this.props.users[index]._id,
                   userToken: this.props.userToken,
                   refresh: this.props.refresh,
                 })
               }
               else{
+                console.log(this.props.users[index].score)
                 this.props.navigation.navigate(`adminView${this.props.userType}InfoScreen`, {
                   userName: this.props.users[index].name,
                   userCode: this.props.users[index].code,
                   userYear: this.props.users[index].year,
+                  userScore: this.props.users[index].score,
+                  userID: this.props.users[index]._id,
                   userToken: this.props.userToken,
                   refresh: this.props.refresh,
                 })
@@ -106,15 +110,16 @@ export default class UsersTable extends React.Component{
           })
         }
       )
-
+      const result = await response.json()
       if(response.status === 200){
         this.props.deleteUser(this.state.codeToBeDeleted)
+        Toast.show('User deleted successfully')
       }
-      else if(response.status === 404){
-        Toast.show('User Not Found')
+      else if(response.status === 500){
+        Toast.show('Server error')
       }
       else{
-        Toast.show('Server Error')
+        Toast.show(result)
       }
 
       this.setState({
@@ -144,14 +149,16 @@ export default class UsersTable extends React.Component{
         }
       )
 
+      const result = await response.json()
       if(response.status === 200){
         this.props.deleteUser(this.state.codeToBeDeleted)
+        Toast.show('Course deleted successfully')
       }
-      else if(response.status === 404){
-        Toast.show('User Not Found')
+      else if(response.status === 500){
+        Toast.show('Server error')
       }
       else{
-        Toast.show('Server Error')
+        Toast.show(result)
       }
 
       this.setState({

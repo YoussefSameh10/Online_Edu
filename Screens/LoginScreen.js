@@ -3,17 +3,20 @@ import { StyleSheet, Text, Transformation, Image, View, TextInput, Button, Keybo
 import TypeWriter from 'react-native-typewriter'
 import Toast from 'react-native-simple-toast'
 import Colors from '../Constants/colors'
+import { Icon } from 'react-native-elements'
 import LoadingScreen from './LoadingScreen'
 import { StackActions } from '@react-navigation/routers'
 import { NavigationActions } from 'react-navigation'
+import { TouchableOpacity } from 'react-native'
 
 export default class LoginScreen extends React.Component{
   state = {
-    username: '',
-    password: '',
+    username: 'instructor100@gmail.com',
+    password: 'instructor100',
     typing: 1,
-    isFormValid: false,
-    loading: false
+    isFormValid: true,
+    loading: false,
+    visible: false
   }
 
   componentDidUpdate(prevProps, prevState){
@@ -45,7 +48,18 @@ export default class LoginScreen extends React.Component{
     console.log(this.state.loading)
   }
 
-  
+  validate = (text) => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    if (reg.test(text) === false) {
+      Toast.show("Email is Not Correct")
+      this.setState({ username: text })
+      return false;
+    }
+    else {
+      this.setState({ username: text })
+      Toast.show("Email is Correct");
+    }
+  }
 
   onSubmit = () => {
     this.setState({loading: true})
@@ -83,16 +97,28 @@ export default class LoginScreen extends React.Component{
           placeholder={'Username'}
           value={this.state.username}
           onChangeText={this.handleUsernameUpdate}
-          style={styles.usernameBoxStyle}
+          autoCompleteType='email'
+          // onChangeText={this.validate}
+          style={styles.usernameInput}
         />
-
-        <TextInput 
-          placeholder={'Password'}
-          value={this.state.password}
-          onChangeText={this.handlePasswordUpdate}
-          secureTextEntry={true}
-          style={styles.passwordBoxStyle}
-        />
+        <View style={styles.passwordBox}>
+          <TextInput 
+            placeholder={'Password'}
+            value={this.state.password}
+            onChangeText={this.handlePasswordUpdate}
+            secureTextEntry={!this.state.visible}
+            style={styles.passwordInput}
+            
+          />
+          <TouchableOpacity onPress={() => {this.setState({visible: !this.state.visible})}}>
+            <Icon 
+              name={this.state.visible ? 'eye-slash' : 'eye'}
+              type='font-awesome'
+              color={Colors.primary_color}  
+              style={styles.showIcon}
+            />
+          </TouchableOpacity>
+        </View>
 
         <Button 
           title='Log In'
@@ -130,18 +156,29 @@ const styles = StyleSheet.create({
         marginBottom: 40,
     },
 
-    usernameBoxStyle: {
+    usernameInput: {
       marginBottom: 30,
       width: '80%',
       borderColor: '#000',
       borderBottomWidth:1,
+      padding: 8,
     },
-  
-    passwordBoxStyle: {
-      marginBottom: 30,
+    passwordBox: {
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      flexDirection: 'row',
       width: '80%',
+    },
+    showIcon: {
+      marginBottom: 11,
+      borderBottomWidth: 1
+    },
+    passwordInput: {
+      marginBottom: 30,
+      width: '93%',
       borderColor: '#000',
       borderBottomWidth: 1,
+      padding: 8
     },
 
   });
