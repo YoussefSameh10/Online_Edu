@@ -4,6 +4,7 @@ import { Icon } from 'react-native-elements'
 import { TextInput, } from 'react-native-gesture-handler';
 import DropdownMenus from '../../Components/DropdownMenus';
 import UsersTable from '../../Components/UsersTable';
+import Spinner from 'react-native-loading-spinner-overlay'
 import Colors from '../../Constants/colors';
 import { compareByName } from '../../Constants/Functions';
 import { url } from '../../Constants/numbers';
@@ -11,104 +12,27 @@ import { url } from '../../Constants/numbers';
 export default class AdminManageAdminsAccountsScreen extends React.Component{
   
   state={
-    searchInput: '',
     attributes: ['NAME', 'CODE', ],
-    adminsBasicData: [],
-    adminsShownData: [],
-    admins: [],
   }
 
-  componentDidMount(){
-    this.getAdmins()
-  }
-
-  init = () => {
-    const arr = []
-    let obj = {}
-    this.state.admins.map((item) => {
-      Object.keys(item).map((key) => {
-        key === 'name' || key === 'code' || key === 'createdAt' ? obj[key] = item[key]
-        : null
-      })
-      arr.push(obj)
-      obj={}
-    })
-    this.setState({
-      adminsShownData: [...arr.sort(compareByName)], 
-      adminsBasicData: [...arr.sort(compareByName)],
-      admins: [...this.state.admins.sort(compareByName)],
-    })
-  }
-
-  getAdmins = async () => {
-    try{
-      const response = await fetch(
-        `${url}/admins/getAdmins`, {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + this.props.userToken,        
-        }
-      })
-      
-      const results = await response.json()
-      if(response.status === 200){
-        this.setState({admins: results}, this.init)
-      }
-      else if(response.status === 500){
-        Toast.show('Server Error')
-      }
-      else{
-        this.setState({admins: []}, this.init)
-        Toast.show(results)
-      }
-      
-
-    } catch (err){
-      console.log(err.message)
-    }
-  }
-
-  handleSearch = input => {
-    this.setState({searchInput: input})
-    if(input === null){
-      this.setState({
-        adminsShownData: this.state.adminsBasicData
-      })
-    } else{
-      this.setState({
-        adminsShownData: this.state.adminsBasicData
-        .filter(function(item) {
-          return !(item.name.indexOf(input) && item.code.indexOf(input))
-        })
-      })
-    }
-  }
-
-  deleteAdmin = (code) => {
-    this.setState({
-        admins: [...this.state.admins.filter(admin => admin.code !== code)]
-      },
-      this.init
-    )
-  }
 
   render(){
 
     return(
       <View style={styles.container}>
+        <Spinner visible={this.props.loading}/>
         <View style={styles.fixedView}>
           <TextInput 
             placeholder={'Search'}
-            value={this.state.searchInput}
-            onChangeText={this.handleSearch}
+            value={this.props.searchInput}
+            onChangeText={this.props.handleSearch}
             style={styles.searchBox}
           />
           <View style={styles.row}>
             <Text style={styles.counter}>
-              {`Number Of Shown Admins: ${this.state.admins.length}`}
+              {`${this.props.adminsShownData.length} Admins`}
             </Text>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={this.getAdmins}
               style={styles.refreshIcon}
             >
@@ -116,19 +40,18 @@ export default class AdminManageAdminsAccountsScreen extends React.Component{
                 name='refresh'
                 color={'#fff'}  
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
         
         <UsersTable 
           userType={'Admin'}
           attributes={this.state.attributes} 
-          usersShownData={this.state.adminsShownData} 
-          users={this.state.admins}
+          usersShownData={this.props.adminsShownData} 
+          users={this.props.admins}
           userToken={this.props.userToken}
           navigation={this.props.navigation} 
-          deleteUser={this.deleteAdmin}
-          refresh={this.getAdmins}
+          refresh={this.props.getAdmins}
         />
       </View>
     );

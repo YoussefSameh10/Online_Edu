@@ -3,6 +3,7 @@ import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoiding
 import DropDownPicker from 'react-native-dropdown-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay'
 import { url } from '../../Constants/numbers';
 import Colors from '../../Constants/colors';
 import * as FileSystem from 'expo-file-system'
@@ -31,7 +32,8 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
     studentEmail: '',
     file: {},
     visibleModal: false,
-    errors: []
+    errors: [],
+    loading: false,
   }
 
   componentDidUpdate(prevProps, prevState){
@@ -74,7 +76,7 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
   }
 
   handleCreate = async() => {
-
+    this.setState({loading: true})
     if(this.state.studentCode.length < 7){
       Toast.show('Please enter code longer than 6 characters', Toast.LONG)
       return
@@ -96,10 +98,10 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
       })
       const result = await response.json()
       if(response.status === 201){
+        this.props.getStudents()
         Toast.show('Student created successfully', Toast.LONG)
       }
       else{//400
-        console.log('result', result)
         if(result.search('code') !== -1){
           Toast.show('This code is taken by another user', Toast.LONG)
         }
@@ -113,12 +115,15 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
           Toast.show('Server Error', Toast.LONG)
         }
       }
+      this.setState({loading: false})
+
     } catch(e){
       console.log(e.message)
     }
   }
 
   sendFile = async() => {
+    this.setState({loading: true})
     const { name, uri } = this.state.file
     var formData = new FormData()
     const file = {
@@ -127,7 +132,6 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
       type: 'file/txt',
     }
     formData.append('upload', file)
-    console.log(formData)
     try{
       const response = await fetch(`${url}/usersAuto/student`,{
         method: 'POST',
@@ -137,14 +141,15 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
         body: formData
       })
       const result = await response.json()
-      console.log(result)
       if(response.status === 201){
+        this.props.getStudents()
         Toast.show('Students created successfully')
       }
       else if(response.status === 403){
         Toast.show(result)
       }
       else if(response.status === 400){
+        this.props.getStudents()
         this.setState({
           visibleModal: true, 
           errors: result.map(error => {
@@ -181,13 +186,20 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
           })
         })
       }
+      else{
+        return{
+          lineNumber: error.index_of_line,
+          status: 'Error'
+        }
+      }
+      this.setState({loading: false})
+
     }catch(e) {
       console.log(e.message)
     }
   }
   handleUpload = async() => {
-    this.setState({file: await upload()}, this.sendFile)
-    
+    this.setState({file: await upload()}, this.sendFile)    
   }
 
   renderItem = ({item, index}) => (
@@ -199,6 +211,7 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
   render(){
     return(
       <KeyboardAvoidingView style={styles.container}>
+        <Spinner visible={this.state.loading} />
         <ScrollView>
           <Text style={styles.title}>
             Create Students Accounts
@@ -217,11 +230,11 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
           />
           <DropDownPicker
             items={[
-              {label: 'Year 1', value: 'first',},
-              {label: 'Year 2', value: 'second',},
-              {label: 'Year 3', value: 'third',},
-              {label: 'Year 4', value: 'fourth',},
-              {label: 'Year 5', value: 'fifth',},
+              {label: 'Year 1', value: '1',},
+              {label: 'Year 2', value: '2',},
+              {label: 'Year 3', value: '3',},
+              {label: 'Year 4', value: '4',},
+              {label: 'Year 5', value: '5',},
             ]}
             placeholder='Year'
             value={this.state.studentYear}
@@ -254,6 +267,7 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
                 type='font-awesome'
                 size={20}
               />
+              <Text style={styles.buttonLabel}>Upload File</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -263,7 +277,7 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
             onRequestClose={() => {this.setState({visibleModal: false})}}
             onMagicTap={() => {this.setState({visibleModal: false})}}            
             animationType='slide'
-            transparent={true}
+            transparent={false}
           >
             <View style={styles.modal}>
               <View style={styles.innerModal}>
@@ -271,7 +285,7 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
                 <FlatList
                   data={this.state.errors}
                   renderItem={this.renderItem}
-                  keyExtractor={item => item.id}
+                  keyExtractor={item => item.index_of_line}
                 />
                 <Button 
                   title='Ok'
@@ -290,11 +304,12 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
 const styles = StyleSheet.create({
   container: {flex: 1, padding: 16, backgroundColor: '#fff'},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
-  textInput: {width: '100%', marginBottom: 16, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
-  dropdownBox: {width: '100%', height: 30, marginBottom: 16,},
+  textInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  dropdownBox: {width: '100%', height: 30, marginBottom: 32,},
   dropdownBoxPlaceholder: {color: '#777'},
   createButton: {marginTop: 20, width: '25%', alignSelf: 'center', zIndex: 1},  
-  uploadButton: {backgroundColor: Colors.primary_color, marginTop: '67%', width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
+  uploadButton: {backgroundColor: Colors.primary_color, marginTop: 60, width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22},
-  innerModal: {height: '40%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
+  innerModal: {height: '100%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
+  buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
 })

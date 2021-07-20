@@ -3,6 +3,7 @@ import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoiding
 import DropDownPicker from 'react-native-dropdown-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay'
 import { url } from '../../Constants/numbers';
 import Colors from '../../Constants/colors';
 import { Modal } from 'react-native';
@@ -29,7 +30,8 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
     instructorEmail: '',
     file: {},
     visibleModal: false,
-    errors: []
+    errors: [],
+    loading: false,
   }
 
   componentDidUpdate(prevProps, prevState){
@@ -71,6 +73,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
   handleCreate = async() => {
 
     try{
+      this.setState({loading: true})
       const response = await fetch(`${url}/users`,{
         method: 'POST',
         headers: {
@@ -86,6 +89,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
       })
       const result = await response.json()
       if(response.status === 201){
+        this.props.getInstructors()
         Toast.show('Instructor created successfully', Toast.LONG)
       }
       else{//400
@@ -103,12 +107,14 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
           Toast.show('Server Error', Toast.LONG)
         }
       }
+      this.setState({loading: false})
     } catch(e){
       console.log(e.message)
     }
   }
 
   sendFile = async() => {
+    this.setState({loading: true})
     const { name, uri } = this.state.file
     var formData = new FormData()
     const file = {
@@ -117,7 +123,6 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
       type: 'file/txt',
     }
     formData.append('upload', file)
-    console.log(formData)
     try{
       const response = await fetch(`${url}/usersAuto/instructor`,{
         method: 'POST',
@@ -127,14 +132,15 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
         body: formData
       })
       const result = await response.json()
-      console.log(result)
       if(response.status === 201){
+        this.props.getInstructors()
         Toast.show('Instructors created successfully')
       }
       else if(response.status === 403){
         Toast.show(result)
       }
       else if(response.status === 400){
+        this.props.getInstructors()
         this.setState({
           visibleModal: true, 
           errors: result.map(error => {
@@ -171,13 +177,19 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
           })
         })
       }
+      else{
+        return{
+          lineNumber: error.index_of_line,
+          status: 'Error'
+        }
+      }
+      this.setState({loading: false})
     }catch(e) {
       console.log(e.message)
     }
   }
   handleUpload = async() => {
     this.setState({file: await upload()}, this.sendFile)
-    
   }
 
   renderItem = ({item, index}) => (
@@ -189,6 +201,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
   render(){
     return(
       <KeyboardAvoidingView style={styles.container}>
+        <Spinner visible={this.state.loading} />
         <ScrollView>
           <Text style={styles.title}>
             Create Instructors Accounts
@@ -230,6 +243,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
                   type='font-awesome'
                   size={20}
                 />
+                <Text style={styles.buttonLabel}>Upload File</Text>
               </TouchableOpacity>
             </View>
             
@@ -240,7 +254,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
             onRequestClose={() => {this.setState({visibleModal: false})}}
             onMagicTap={() => {this.setState({visibleModal: false})}}            
             animationType='slide'
-            transparent={true}
+            transparent={false}
           >
             <View style={styles.modal}>
               <View style={styles.innerModal}>
@@ -248,7 +262,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
                 <FlatList
                   data={this.state.errors}
                   renderItem={this.renderItem}
-                  keyExtractor={item => item.id}
+                  keyExtractor={item => item.index_of_line}
                 />
                 <Button 
                   title='Ok'
@@ -265,11 +279,12 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16, backgroundColor: '#fff'},
+  container: {flex: 1, padding: 16, backgroundColor: '#fff',},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
-  textInput: {width: '100%', marginBottom: 16, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1, zIndex: 2},
+  textInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1, zIndex: 2},
   createButton: {marginTop: 20, width: '25%', alignSelf: 'center',},  
-  uploadButton: {backgroundColor: Colors.primary_color, marginTop: '78%', width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
+  uploadButton: {backgroundColor: Colors.primary_color, marginTop: 120, width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22},
-  innerModal: {height: '40%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
+  innerModal: {height: '100%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
+  buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
 })

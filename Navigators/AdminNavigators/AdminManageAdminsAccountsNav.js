@@ -4,10 +4,93 @@ import AdminManageAdminsAccountsScreen from '../../Screens/AdminScreens/AdminMan
 import AdminCreateAdminsAccountsScreen from '../../Screens/AdminScreens/AdminCreateAdminsAccountsScreen';
 import Colors from '../../Constants/colors';
 import { Icon } from 'react-native-elements';
+import { url } from '../../Constants/numbers';
+import { compareByName } from '../../Constants/Functions';
 
 const AdminManageAdminsAccountsNavigator = createBottomTabNavigator()
 
 export default class AdminManageAdminsAccountsNav extends React.Component{
+
+
+  state={
+    searchInput: '',
+    adminsBasicData: [],
+    adminsShownData: [],
+    admins: [],
+    loading: true,
+  }
+
+  componentDidMount(){
+    this.getAdmins()
+  }
+
+  init = () => {
+    const arr = []
+    let obj = {}
+    this.state.admins.map((item) => {
+      Object.keys(item).map((key) => {
+        key === 'name' || key === 'code' || key === 'createdAt' ? obj[key] = item[key]
+        : null
+      })
+      arr.push(obj)
+      obj={}
+    })
+    this.setState({
+      adminsShownData: [...arr.sort(compareByName)], 
+      adminsBasicData: [...arr.sort(compareByName)],
+      admins: [...this.state.admins.sort(compareByName)],
+    })
+  }
+
+  getAdmins = async () => {
+    try{
+      this.setState({loading: true})
+      const response = await fetch(
+        `${url}/admins/getAdmins`, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + this.props.userToken,        
+        }
+      })
+      
+      const results = await response.json()
+      this.setState({loading: false})
+      if(response.status === 200){
+        this.setState({admins: results}, this.init)
+      }
+      else if(response.status === 500){
+        Toast.show('Server Error')
+      }
+      else{
+        this.setState({admins: []}, this.init)
+        Toast.show(results)
+      }
+      this.setState({loading: false})
+    
+    } catch (err){
+      console.log(err.message)
+    }
+  }
+
+  handleSearch = input => {
+    this.setState({searchInput: input})
+    if(input === null){
+      this.setState({
+        adminsShownData: this.state.adminsBasicData
+      })
+    } else{
+      this.setState({
+        adminsShownData: this.state.adminsBasicData
+        .filter(function(item) {
+          return !(item.name.indexOf(input) && item.code.indexOf(input))
+        })
+      })
+    }
+  }
+
+
+
   render(){
     return(
       <AdminManageAdminsAccountsNavigator.Navigator
@@ -18,7 +101,6 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
           labelStyle: {fontSize: 13},
           keyboardHidesTabBar: 'true'
         }}
-        
       >
         
         <AdminManageAdminsAccountsNavigator.Screen 
@@ -27,6 +109,12 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
             <AdminManageAdminsAccountsScreen 
               navigation={this.props.navigation} 
               userToken={this.props.userToken}
+              handleSearch={this.handleSearch}
+              getAdmins={this.getAdmins}
+              searchInput={this.state.searchInput}
+              adminsShownData={this.state.adminsShownData}
+              admins={this.state.admins}
+              loading={this.state.loading}
             />
           }
           options={{
@@ -48,6 +136,7 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
             <AdminCreateAdminsAccountsScreen 
               navigation={this.props.navigation} 
               userToken={this.props.userToken}
+              getAdmins={this.getAdmins}
             />
           }
           options={{

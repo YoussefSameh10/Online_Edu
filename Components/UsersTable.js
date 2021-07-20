@@ -1,10 +1,11 @@
 import React from 'react'
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, RefreshControl } from 'react-native';
 import { FlatList, } from 'react-native-gesture-handler';
 import { Table, Row, Cell, } from 'react-native-table-component';
 import { Icon } from 'react-native-elements'
 import Dialog from "react-native-dialog";
 import Colors from '../Constants/colors'
+import Spinner from 'react-native-loading-spinner-overlay'
 import { url } from '../Constants/numbers';
 import Toast from 'react-native-simple-toast';
 
@@ -14,6 +15,8 @@ export default class UsersTable extends React.Component{
   state = {
     dialogVisibility: false,
     codeToBeDeleted: -1,
+    refreshing: false,
+    loading: false,
   }
 
   deleteIcon = (index) => (
@@ -52,7 +55,6 @@ export default class UsersTable extends React.Component{
                 })
               }
               else{
-                console.log(this.props.users[index].score)
                 this.props.navigation.navigate(`adminView${this.props.userType}InfoScreen`, {
                   userName: this.props.users[index].name,
                   userCode: this.props.users[index].code,
@@ -95,7 +97,8 @@ export default class UsersTable extends React.Component{
   handleDeleteUser = async() => {
 
     this.setState({
-      dialogVisibility: false
+      dialogVisibility: false,
+      loading: true
     })
     try{
       const response = await fetch(
@@ -124,6 +127,7 @@ export default class UsersTable extends React.Component{
 
       this.setState({
         codeToBeDeleted: -1, 
+        loading: false,
       })
       
     } catch(e){
@@ -133,7 +137,8 @@ export default class UsersTable extends React.Component{
 
   handleDeleteCourse = async() => {
     this.setState({
-      dialogVisibility: false
+      dialogVisibility: false,
+      loading: true
     })
     try{
       const response = await fetch(
@@ -163,6 +168,7 @@ export default class UsersTable extends React.Component{
 
       this.setState({
         codeToBeDeleted: -1, 
+        loading: false
       })
       
     } catch(e){
@@ -170,9 +176,22 @@ export default class UsersTable extends React.Component{
     }
   }
 
+  handleRefresh= () => {
+    this.setState({refreshing: true}, () => {
+      if(this.props.userType == 'Student' || this.props.userType == 'Course'){
+        this.props.refresh(this.props.year)
+      }
+      else{
+        this.props.refresh()
+      }
+      setTimeout(() => {this.setState({refreshing: false})}, 1000)
+    })
+  }
+
   render(){
     return(
       <View style={styles.container}>
+        <Spinner visible={this.state.loading} />
         <Table borderStyle={{borderColor: 'transparent'}}>
           <Row 
             data={this.props.attributes} 
@@ -185,7 +204,7 @@ export default class UsersTable extends React.Component{
         <Dialog.Container visible={this.state.dialogVisibility}>
           <Dialog.Title>Delete</Dialog.Title>
           <Dialog.Description>
-            Are you sure you want to delete this account? You cannot undo this action.
+            Are you sure you want to delete this account? You can't undo this action.
           </Dialog.Description>
           <Dialog.Button 
             label="Cancel" 
@@ -203,7 +222,14 @@ export default class UsersTable extends React.Component{
         <FlatList 
           data={this.props.usersShownData}
           renderItem={this.renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.code}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.handleRefresh}
+              enabled={true}
+            />
+          }
         />
         
       </View>

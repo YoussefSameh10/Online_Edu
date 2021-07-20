@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker'
 import Toast from 'react-native-simple-toast'
+import Spinner from 'react-native-loading-spinner-overlay'
 import { url } from '../../Constants/numbers'
 
 
@@ -14,7 +15,8 @@ export default class AdminCreateCoursesScreen extends React.Component{
     courseCode: '',
     courseYear: '',
     courseScore: '',
-    instructorCode: ''
+    instructorCode: '',
+    loading: false,
   }
 
   componentDidUpdate(prevProps, prevState){
@@ -40,8 +42,6 @@ export default class AdminCreateCoursesScreen extends React.Component{
       this.setState({isFormValid: false})
     }
   }
-
-
   
   handleCourseNameUpdate = courseName => {
     this.setState({courseName})
@@ -61,6 +61,7 @@ export default class AdminCreateCoursesScreen extends React.Component{
 
   handleCreate = async() => {
     try{
+      this.setState({loading: true})
       const response = await fetch(`${url}/admins/addCourse`, {
         method: 'POST',
         headers: {
@@ -78,6 +79,7 @@ export default class AdminCreateCoursesScreen extends React.Component{
       const result = await response.json()
       if(response.status === 201){
         Toast.show('Course created successfully')
+        this.props.getCourses()
         this.enrollCourseToYear()
       }
       else if(response.status === 500){
@@ -86,13 +88,16 @@ export default class AdminCreateCoursesScreen extends React.Component{
         }
         else if(result.search('score')!==-1){
           Toast.show('Course score must be less than or equal to 100')
+          this.setState({loading: false})
         }
         else{
           Toast.show('Server Error')
+          this.setState({loading: false})
         }
       }
       else{//403 and 404
         Toast.show(result)
+        this.setState({loading: false})
       }
     } catch(e){
       console.log(e.message)
@@ -101,6 +106,7 @@ export default class AdminCreateCoursesScreen extends React.Component{
 
   enrollCourseToYear = async() => {
     try{
+      this.setState({loading: true})
       const response = await fetch(`${url}/admins/enrollMultiple`, {
         method: 'POST',
         headers: {
@@ -122,6 +128,7 @@ export default class AdminCreateCoursesScreen extends React.Component{
       else{
         Toast.show(result)
       }
+      this.setState({loading: false})
     } catch(e){
       console.log(e.message)
     }
@@ -130,6 +137,7 @@ export default class AdminCreateCoursesScreen extends React.Component{
   render(){
     return(
       <KeyboardAvoidingView style={styles.container}>
+        <Spinner visible={this.state.loading} />
         <ScrollView >
           <Text style={styles.title}>
             Create New Course
@@ -163,11 +171,11 @@ export default class AdminCreateCoursesScreen extends React.Component{
 
           <DropDownPicker
             items={[
-              {label: 'Year 1', value: 'first', },
-              {label: 'Year 2', value: 'second', },
-              {label: 'Year 3', value: 'third', },
-              {label: 'Year 4', value: 'fourth', },
-              {label: 'Year 5', value: 'fifth', },
+              {label: 'Year 1', value: '1', },
+              {label: 'Year 2', value: '2', },
+              {label: 'Year 3', value: '3', },
+              {label: 'Year 4', value: '4', },
+              {label: 'Year 5', value: '5', },
             ]}
             placeholder='Year'
             value={this.state.courseYear}
@@ -196,9 +204,9 @@ export default class AdminCreateCoursesScreen extends React.Component{
 const styles = StyleSheet.create({
   container: {flex: 1, padding: 16, backgroundColor: '#fff'},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
-  textInput: {width: '100%', marginBottom: 16, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
-  dropdownBox: {width: '100%', height: 40, marginBottom: 16,},
+  textInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  dropdownBox: {width: '100%', height: 40, marginBottom: 32,},
   dropdownBoxPlaceholder: {color: '#777'},
   createButton: {marginTop: 20, width: '25%', alignSelf: 'center', zIndex: 1},  
-  empty: {height: 100, backgroundColor: '#fff'}
+  empty: {height: 100, backgroundColor: '#fff'},
 })

@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { TextInput, } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements'
 import UsersTable from '../../Components/UsersTable';
+import Spinner from 'react-native-loading-spinner-overlay'
 import Colors from '../../Constants/colors';
 import { compareByName } from '../../Constants/Functions';
 import { url } from '../../Constants/numbers';
@@ -10,102 +11,27 @@ import { url } from '../../Constants/numbers';
 export default class AdminManageInstructorsAccountsScreen extends React.Component{
   
   state={
-    searchInput: '',
     attributes: ['NAME', 'CODE', ],
-    instructorsBasicData: [],
-    instructorsShownData: [],
-    instructors: [],
   }
 
-  componentDidMount(){
-    this.getInstructors()
-  }
-
-  init = () => {
-    const arr = []
-    let obj = {}
-    this.state.instructors.map((item) => {
-      Object.keys(item).map((key) => {
-        key === 'name' || key === 'code' || key === 'role' ? obj[key] = item[key]
-        : null
-      })
-      arr.push(obj)
-      obj={}
-    })
-    this.setState({
-      instructorsShownData: [...arr.sort(compareByName)], 
-      instructorsBasicData: [...arr.sort(compareByName)],
-      instructors: [...this.state.instructors.sort(compareByName)],
-    })
-  }
-
-  getInstructors = async () => {
-    try{
-      const response = await fetch(
-        `${url}/admins/getAllInstructors`, {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + this.props.userToken,        
-        }
-      })
-
-      const results = await response.json()
-      if(response.status === 200){
-        this.setState({instructors: results}, this.init)
-      }
-      else if(response.status === 500){
-        Toast.show('Server Error')
-      }
-      else{
-        this.setState({instructors: []}, this.init)
-        Toast.show(results)
-      }
-    } catch (err){
-      console.log(err.message)
-    }
-  }
-
-  handleSearch = input => {
-    this.setState({searchInput: input})
-    if(input === ''){
-      this.setState({
-        instructorsShownData: this.state.instructorsBasicData
-      })
-    } else{
-      this.setState({
-        instructorsShownData: this.state.instructorsBasicData
-          .filter(function(item) {
-            return !(item.name.indexOf(input) && item.code.indexOf(input))
-          })
-      })
-    }
-  }
-
-  deleteInstructor = (code) => {
-    this.setState({
-        instructors: [...this.state.instructors.filter(instructor => instructor.code !== code)]
-      },
-      this.init
-    )
-  }
 
   render(){
 
     return(
       <View style={styles.container}>
+        <Spinner visible={this.props.loading}/>
         <View style={styles.fixedView}>
           <TextInput 
             placeholder={'Search'}
-            value={this.state.searchInput}
-            onChangeText={this.handleSearch}
+            value={this.props.searchInput}
+            onChangeText={this.props.handleSearch}
             style={styles.searchBox}
           />
           <View style={styles.row}>
             <Text style={styles.counter}>
-              {`Number Of Shown Instructors: ${this.state.instructors.length}`}
+              {`${this.props.instructorsShownData.length} Instructors`}
             </Text>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={this.getInstructors}
               style={styles.refreshIcon}
             >
@@ -113,19 +39,19 @@ export default class AdminManageInstructorsAccountsScreen extends React.Componen
                 name='refresh'
                 color={'#fff'}  
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
         
         <UsersTable 
           userType={'Instructor'}
           attributes={this.state.attributes} 
-          usersShownData={this.state.instructorsShownData}
-          users={this.state.instructors}
+          usersShownData={this.props.instructorsShownData}
+          users={this.props.instructors}
           userToken={this.props.userToken}
           navigation={this.props.navigation} 
-          deleteUser={this.deleteInstructor}
-          refresh={this.getInstructors}
+          deleteUser={this.props.deleteInstructor}
+          refresh={this.props.getInstructors}
         />
       </View>
     );

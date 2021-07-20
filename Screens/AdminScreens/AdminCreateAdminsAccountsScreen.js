@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay'
 import { url } from '../../Constants/numbers';
 import Colors from '../../Constants/colors';
 import { Modal } from 'react-native';
@@ -27,7 +28,8 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
     adminEmail: '',
     visibleModal: false,
     file: {},
-    errors: []
+    errors: [],
+    loading: false,
   }
 
   componentDidUpdate(prevProps, prevState){
@@ -63,7 +65,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
   }
 
   handleCreate = async() => {
-
+    this.setState({loading: true})
     try{
       const response = await fetch(`${url}/users`,{
         method: 'POST',
@@ -80,6 +82,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
       })
       const result = await response.json()
       if(response.status === 201){
+        this.props.getAdmins()
         Toast.show('Admin created successfully', Toast.LONG)
       }
       else{//400
@@ -97,12 +100,15 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
           Toast.show('Server Error', Toast.LONG)
         }
       }
+      this.setState
+      ({loading: false})
     } catch(e){
       console.log(e.message)
     }
   }
 
   sendFile = async() => {
+    this.setState({loading: true})
     const { name, uri } = this.state.file
     var formData = new FormData()
     const file = {
@@ -111,7 +117,6 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
       type: 'file/txt',
     }
     formData.append('upload', file)
-    console.log(formData)
     try{
       const response = await fetch(`${url}/usersAuto/admin`,{
         method: 'POST',
@@ -121,14 +126,15 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
         body: formData
       })
       const result = await response.json()
-      console.log(result)
       if(response.status === 201){
+        this.props.getAdmins()
         Toast.show('Admins created successfully')
       }
       else if(response.status === 403){
         Toast.show(result)
       }
       else if(response.status === 400){
+        this.props.getAdmins()
         this.setState({
           visibleModal: true, 
           errors: result.map(error => {
@@ -156,18 +162,14 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
                 status: 'Not an admin'
               }
             }
-            else{
-              return{
-                lineNumber: error.index_of_line,
-                status: 'Error'
-              }
-            }
+            
           })
         })
       }
       else{
         Toast.show('Server Error')
       }
+      this.setState({loading: false})
     }catch(e) {
       console.log(e.message)
     }
@@ -175,7 +177,6 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
   
   handleUpload = async() => {
     this.setState({file: await upload()}, this.sendFile)
-    
   }
 
   renderItem = ({item, index}) => (
@@ -188,6 +189,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
   render(){
     return(
       <KeyboardAvoidingView style={styles.container}>
+        <Spinner visible={this.state.loading} />
         <ScrollView>
           <Text style={styles.title}>
             Create Admins Accounts
@@ -230,6 +232,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
                 type='font-awesome'
                 size={20}
               />
+              <Text style={styles.buttonLabel}>Upload File</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -239,7 +242,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
             onRequestClose={() => {this.setState({visibleModal: false})}}
             onMagicTap={() => {this.setState({visibleModal: false})}}            
             animationType='slide'
-            transparent={true}
+            transparent={false}
           >
             <View style={styles.modal}>
               <View style={styles.innerModal}>
@@ -247,7 +250,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
                 <FlatList 
                   data={this.state.errors}
                   renderItem={this.renderItem}
-                  keyExtractor={item => item.id}
+                  keyExtractor={item => item.code}
                 />
                 <Button 
                   title='Ok'
@@ -266,9 +269,10 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
 const styles = StyleSheet.create({
   container: {flex: 1, padding: 16, backgroundColor: '#fff'},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
-  textInput: {width: '100%', marginBottom: 16, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  textInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
   createButton: {marginTop: 20, width: '25%', alignSelf: 'center', zIndex: 1},  
-  uploadButton: {backgroundColor: Colors.primary_color, marginTop: '78%', width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
+  uploadButton: {backgroundColor: Colors.primary_color, marginTop: 120, width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22},
-  innerModal: {height: '40%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
+  innerModal: {height: '100%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
+  buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
 })

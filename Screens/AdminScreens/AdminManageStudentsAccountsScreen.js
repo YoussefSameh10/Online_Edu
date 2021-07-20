@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Button, Text, TouchableOpacity } from 'react-native';
 import { TextInput, } from 'react-native-gesture-handler';
+import Spinner from 'react-native-loading-spinner-overlay'
 import { Icon } from 'react-native-elements'
 import DropDownPicker from 'react-native-dropdown-picker';
 import UsersTable from '../../Components/UsersTable';
@@ -12,113 +13,36 @@ import Colors from '../../Constants/colors';
 export default class AdminManageStudentsAccountsScreen extends React.Component{
   
   state={
-    searchInput: '',
-    year: '0',
     attributes: ['NAME', 'CODE', ],
-    studentsBasicData: [],
-    studentsShownData: [],
-    students: [],
-  }
-
-
-  init = () => {
-    const arr = []
-    let obj = {}
-    this.state.students.map((item) => {
-      Object.keys(item).map((key) => {
-        key === 'name' || key === 'code' || key === 'createdAt' ? obj[key] = item[key]
-        : null
-      })
-      arr.push(obj)
-      obj={}
-    })
-    this.setState({
-      studentsShownData: [...arr.sort(compareByName)], 
-      studentsBasicData: [...arr.sort(compareByName)],
-      students: [...this.state.students.sort(compareByName)],
-    })
-  }
-
-  getStudents = async (year) => {
-    try{
-      const response = await fetch(
-        `${url}/admins/getStudentsOfCertainYear/${year}`, {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + this.props.userToken,
-        }
-      })
-      
-      const results = await response.json()
-      if(response.status === 200){
-        this.setState({students: results}, this.init)
-      }
-      else if(response.status === 500){
-        Toast.show('Server Error')
-      }
-      else{
-        this.setState({students: []}, this.init)
-        Toast.show(results)
-      }
-    } catch (err){
-      console.log(err.message)
-    }
-  }
-
-  handleSearch = input => {
-    this.setState({searchInput: input})
-    if(input === null){
-      this.setState({
-        studentsShownData: this.state.studentsBasicData
-      })
-    } else{
-      this.setState({
-        studentsShownData: this.state.studentsBasicData
-          .filter(function(item) {
-            return !(item.name.indexOf(input) && item.code.indexOf(input))
-          })
-      })
-    }
-  }
-
-  handleYearChange = (year) => {
-    this.setState({year: year, searchInput: ''}, () => this.getStudents(year))
-  }
-
-  deleteStudent = (code) => {
-    this.setState({
-        students: [...this.state.students.filter(student => student.code !== code)]
-      },
-      this.init
-    )
   }
 
   render(){
 
     return(
       <View style={styles.container}>
+        <Spinner visible={this.props.loading}/>
         <View style={styles.fixedView}>
           <TextInput 
             placeholder={'Search'}
-            value={this.state.searchInput}
-            onChangeText={this.handleSearch}
+            value={this.props.searchInput}
+            onChangeText={this.props.handleSearch}
             style={styles.searchBox}
           />
           <View flexDirection='row' style = {styles.dropDownContainer}>
             <DropDownPicker
               items={[
-                {label: 'Year 1', value: 'first',},
-                {label: 'Year 2', value: 'second', },
-                {label: 'Year 3', value: 'third', },
-                {label: 'Year 4', value: 'fourth', },
-                {label: 'Year 5', value: 'fifth', },
+                {label: 'All Students', value: '0',},
+                {label: 'Year 1', value: '1',},
+                {label: 'Year 2', value: '2', },
+                {label: 'Year 3', value: '3', },
+                {label: 'Year 4', value: '4', },
+                {label: 'Year 5', value: '5', },
               ]}
               onChangeItem={item => {
-                console.log(item.value)
-                this.handleYearChange(item.value)
+                this.props.handleYearChange(item.value)
               }}
               placeholder={'Year'}
+              defaultValue={'0'}
               style={styles.menu}
               itemStyle={styles.item}
               dropDownStyle={styles.dropdown}
@@ -128,9 +52,9 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
           
           <View style={styles.row}>
             <Text style={styles.counter}>
-              {`Number Of Shown Students: ${this.state.students.length}`}
+              {`${this.props.studentsShownData.length} Students`}
             </Text>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => this.getStudents(this.state.year)}
               style={styles.refreshIcon}
             >
@@ -138,19 +62,20 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
                 name='refresh'
                 color={'#fff'}  
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
         
         <UsersTable 
           userType={'Student'}
           attributes={this.state.attributes} 
-          usersShownData={this.state.studentsShownData} 
-          users={this.state.students}
+          usersShownData={this.props.studentsShownData} 
+          users={this.props.studentsByYear}
           userToken={this.props.userToken}
           navigation={this.props.navigation} 
-          deleteUser={this.deleteStudent}
-          refresh={this.handleYearChange}
+          deleteUser={this.props.deleteStudent}
+          refresh={this.props.getStudents}
+          year={this.props.year}
         />
       </View>
     );

@@ -4,6 +4,8 @@ import ProfileAvatar from '../../Components/ProfileAvatar'
 import { Icon } from 'react-native-elements'
 import DropDownPicker from 'react-native-dropdown-picker';
 import Dialog from "react-native-dialog";
+import { Modal } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay'
 import { url } from '../../Constants/numbers';
 import Toast from 'react-native-simple-toast';
 import Colors from '../../Constants/colors';
@@ -30,7 +32,9 @@ export default class AdminViewStudentInfoScreen extends React.Component{
     passwordDialogVisibility: false,
     studentPassword: '',
     studentConfirmPassword: '',
-    enableConfirm: false
+    enableConfirm: false,
+    visibleModal: false,
+    loading: false,
   }
 
 
@@ -91,6 +95,7 @@ export default class AdminViewStudentInfoScreen extends React.Component{
 
   handleSave = async() => {
     try{
+      this.setState({loading: true})
       const response = await fetch(`${url}/admins/users/update`, {
         method: 'PATCH',
         headers: {
@@ -110,7 +115,7 @@ export default class AdminViewStudentInfoScreen extends React.Component{
       if(response.status === 200){
         Toast.show('Student updated successfully')
         this.makeIneditable()
-        this.props.route.params.refresh(this.state.studentYear)
+        this.props.route.params.refresh()
         this.props.navigation.goBack()
       }
       else if(response.status === 400){
@@ -130,6 +135,7 @@ export default class AdminViewStudentInfoScreen extends React.Component{
       else{
         Toast.show(result)
       }
+      this.setState({loading: false})
 
     } catch(e){
       console.log(e.message)
@@ -140,6 +146,7 @@ export default class AdminViewStudentInfoScreen extends React.Component{
 
   getCourses = async() => {
     try{
+      this.setState({loading: true})
       const response = await fetch(`${url}/users/getEnrolledCourses/${this.state.studentCode}`, {
         method: 'GET',
         headers: {
@@ -157,6 +164,8 @@ export default class AdminViewStudentInfoScreen extends React.Component{
       else{
         Toast.show(result)
       }
+      this.setState({loading: false})
+
     } catch(e){
       console.log(e.message)
     }
@@ -167,7 +176,10 @@ export default class AdminViewStudentInfoScreen extends React.Component{
   }
 
   handleDelete = async() => {
-    this.setState({deleteDialogVisibility: false})
+    this.setState({
+      deleteDialogVisibility: false,
+      loading: true,
+    })
     try{
       const response = await fetch(`${url}/admins/students/deleteEnroll`, {
         method: 'DELETE',
@@ -190,6 +202,8 @@ export default class AdminViewStudentInfoScreen extends React.Component{
       else{
         Toast.show(result)
       }
+      this.setState({loading: false})
+      
     } catch(e){
       console.log(e.message)
     }
@@ -207,8 +221,9 @@ export default class AdminViewStudentInfoScreen extends React.Component{
     this.setState({
       passwordDialogVisibility: false,
       enableConfirm: false,
+      loading: true,
     })
-
+    console.log('Change')
     try{
       const response = await fetch(`${url}/admins/users/update`, {
         method: 'PATCH',
@@ -238,6 +253,8 @@ export default class AdminViewStudentInfoScreen extends React.Component{
       else{
         Toast.show(result)
       }
+      this.setState({loading: false})
+
     } catch(e){
       console.log(e.message)
     }
@@ -268,39 +285,52 @@ export default class AdminViewStudentInfoScreen extends React.Component{
 
   render(){
 
+
+
+    
     return(
       <KeyboardAvoidingView 
         style={styles.container} 
-        behavior='height' 
-        keyboardVerticalOffset={-100}
+        behavior='height'
+        keyboardVerticalOffset={-100} 
       >
-        <View style={styles.info}>
+        <Spinner visible={this.state.loading} />
+        <ScrollView>
+        {/* <View style={styles.info}> */}
           <View style={styles.upperSection}>
-            <Button
-              title='Change Password'
+            <TouchableOpacity
               onPress={() => {this.setState({passwordDialogVisibility: true})}}
-            />
+              style={styles.changePasswordButton}
+            >
+              <Icon 
+                name='key'
+                type='font-awesome'
+                color={'#fff'}  
+              />
+              <Text style={styles.buttonLabel}>Change Password</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {this.makeEditable()}}
-              style={[styles.editIcon, {backgroundColor: this.state.editable ? '#aaa' : Colors.primary_color}]}
+              style={[styles.editButton, {backgroundColor: this.state.editable ? '#aaa' : Colors.primary_color}]}
               disabled={this.state.editable}
             >
               <Icon 
                 name='edit'
+                type='font-awesome'
                 color={'#fff'}  
               />
+              <Text style={styles.buttonLabel}>Edit</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.row}>
+          
             <Text style={styles.title}>Full Name</Text>
             <TextInput 
               value={this.state.studentName}
               onChangeText={this.handleStudentNameUpdate}
               editable={this.state.editable}
               style={styles.text}
-            />
-          </View>
-          <View style={styles.row}>
+            /> 
+          
             <Text style={styles.title}>Code</Text>
             <TextInput 
               value={this.state.studentCode}
@@ -308,16 +338,15 @@ export default class AdminViewStudentInfoScreen extends React.Component{
               editable={this.state.editable}
               style={styles.text}
             />
-          </View>
-          <View style={styles.row}>
+          
             <Text style={styles.title}>Year</Text>
             <DropDownPicker
             items={[
-              {label: 'Year 1', value: 'first',},
-              {label: 'Year 2', value: 'second', },
-              {label: 'Year 3', value: 'third', },
-              {label: 'Year 4', value: 'fourth', },
-              {label: 'Year 5', value: 'fifth', },
+              {label: 'Year 1', value: '1',},
+              {label: 'Year 2', value: '2', },
+              {label: 'Year 3', value: '3', },
+              {label: 'Year 4', value: '4', },
+              {label: 'Year 5', value: '5', },
             ]}
             defaultValue={this.state.studentYear}
             value={this.state.studentYear}
@@ -326,16 +355,13 @@ export default class AdminViewStudentInfoScreen extends React.Component{
             containerStyle={styles.dropdownBox}
           />
 
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.title}>Email</Text>
-            <TextInput 
-              value={this.state.studentEmail}
-              editable={this.state.editable}
-              onChangeText={this.handleStudentEmailUpdate}
-              style={styles.text}
-            />
-          </View>
+          <Text style={styles.title}>Email</Text>
+          <TextInput 
+            value={this.state.studentEmail}
+            editable={this.state.editable}
+            onChangeText={this.handleStudentEmailUpdate}
+            style={styles.text}
+          />
           <View style={styles.saveButton}>
             <Button 
               title='Save'
@@ -343,7 +369,18 @@ export default class AdminViewStudentInfoScreen extends React.Component{
               disabled={!this.state.editable || !this.state.isFormValid}
             />
           </View>
-        </View>
+          <TouchableOpacity 
+            style={styles.coursesButton}
+            onPress={() => {this.setState({visibleModal: true})}}  
+          >
+            <Icon 
+              name='list'
+              type='font-awesome'
+              color='#fff'
+            />
+            <Text style={styles.buttonLabel}>View Courses</Text>
+          </TouchableOpacity>
+        {/* </View> */}
         <Dialog.Container 
           visible={this.state.passwordDialogVisibility}
           onBackdropPress={() => {this.setState({passwordDialogVisibility: false})}}
@@ -397,17 +434,36 @@ export default class AdminViewStudentInfoScreen extends React.Component{
           />
         </Dialog.Container>
 
-        <View style={styles.course}>
-          <Text style={styles.title}>Courses</Text>
-        </View>
-
-        <FlatList 
-          data={this.state.studentCourses}
-          renderItem={this.renderItem}
-          keyExtractor={item => item.id}
-          style={styles.coursesList}
-        />
         
+        <View style={styles.modal}>
+          <Modal
+            visible={this.state.visibleModal}
+            onRequestClose={() => {this.setState({visibleModal: false})}}
+            onMagicTap={() => {this.setState({visibleModal: false})}}            
+            animationType='slide'
+            transparent={false}
+          >
+            <View style={styles.modal}>
+              <View style={styles.innerModal}>
+                <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 8}}>Courses</Text>
+                <FlatList 
+                  data={this.state.studentCourses}
+                  renderItem={this.renderItem}
+                  keyExtractor={item => item.id}
+                  style={styles.coursesList}
+                />
+                <Button 
+                  title='Ok'
+                  onPress={() => {this.setState({visibleModal: false})}}
+                  color={Colors.primary_color}
+                />
+              </View>
+            </View>
+          </Modal>
+        </View>
+        
+                </ScrollView>
+
       </KeyboardAvoidingView>
     );
   }
@@ -415,17 +471,18 @@ export default class AdminViewStudentInfoScreen extends React.Component{
 
 const styles = StyleSheet.create({
   container: {flex: 1, padding: 16,},
-  info: {height: '65%', marginBottom: 16},
+  info: {height: '85%', marginBottom: 16},
   picture: {marginBottom: 32},
-  row: {flex: 1, flexDirection: 'column', maxHeight: 74, marginBottom: 16, alignItems: 'flex-start',},
+  row: {flex: 1, maxHeight: 74, minHeight: 74, marginBottom: 16, alignItems: 'flex-start',},
   course: {height: 30, alignItems: 'flex-start'},
   title: {flex: 1, fontSize: 18, color: '#666', paddingLeft: 8, maxHeight: 35, marginBottom: 4,},
-  text: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',height: 35, borderRadius: 20, paddingLeft: 8},
-  dropdownBox: {flex: 1, height: 30, width: '90%',},
-  saveButton: {marginTop: 30, width: '30%', alignSelf: 'center', backgroundColor: '#0f0'},
-  upperSection: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8},
-  editIcon: {alignSelf: 'flex-end', marginTop: 8, backgroundColor: Colors.primary_color, borderRadius: 40, width: 30, height: 30, justifyContent: 'center'},
-  coursesList: {paddingLeft: 8},
+  text: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',height: 35, borderRadius: 20, paddingLeft: 8, marginBottom: 16},
+  dropdownBox: {flex: 1, height: 30, width: '90%', marginBottom: 16},
+  saveButton: {marginTop: 30, width: '30%', alignSelf: 'center', marginBottom: 8},
+  upperSection: { flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 8},
+  changePasswordButton: {marginTop: 8, backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center', marginRight: 8},
+  editButton: {marginTop: 8, backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center'},
+  coursesList: {paddingLeft: 8, width: 300, marginBottom: 16},
   evenCourseRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 40, backgroundColor: '#eef'},
   oddCourseRow: {flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', minHeight: 40, backgroundColor: '#fff'},
   courseName: {fontSize: 18, flex: 1, padding: 4, minWidth: '25%',},
@@ -433,4 +490,8 @@ const styles = StyleSheet.create({
   instructorName: {fontSize: 18, flex: 1, padding: 4, minWidth: '25%',},
   dialogDeleteButton: {color: 'red'},
   dialogCancelButton: {color: Colors.primary_color},
+  coursesButton: {width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', backgroundColor: Colors.primary_color, justifyContent: 'center'},
+  modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22,},
+  innerModal: {height: '100%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
+  buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
 })

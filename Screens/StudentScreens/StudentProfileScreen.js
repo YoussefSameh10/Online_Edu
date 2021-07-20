@@ -1,10 +1,13 @@
 import React from 'react'
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import ProfileAvatar from '../../Components/ProfileAvatar'
 import Dialog from "react-native-dialog";
+import { Icon } from 'react-native-elements'
 import { StackActions } from '@react-navigation/routers'
 import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay'
 import { url } from '../../Constants/numbers';
+import Colors from '../../Constants/colors';
 
 
 export default class StudentProfileScreen extends React.Component{
@@ -18,6 +21,7 @@ export default class StudentProfileScreen extends React.Component{
     studentOldPassword: '',
     studentNewPassword: '',
     studentConfirmPassword: '',
+    loading: false,
   }
 
   handleStudentOldPasswordUpdate = studentOldPassword => {
@@ -48,6 +52,7 @@ export default class StudentProfileScreen extends React.Component{
     this.setState({
       dialogVisibility: false,
       enableConfirm: false,
+      loading: true,
     })
 
     try{
@@ -78,54 +83,48 @@ export default class StudentProfileScreen extends React.Component{
       else{
         Toast.show(`Your Password Has Been Changed`)
       }
+      this.setState({loading: false})
     } catch(e){
       console.log(e.message)
     }
   }
 
   handleLogout = async() => {
-    const response = await fetch(`${url}/users/logout`, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + this.props.userToken,        
-      },
-    })
+    try{
+      this.setState({loading: true})
+      const response = await fetch(`${url}/users/logout`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + this.props.userToken,        
+        },
+      })
 
-    if(response.status === 500){
-      Toast.show(`Can't Logout`)
-    }
-    else{
-      this.props.navigation.dispatch(StackActions.replace('loginNav'))
+      if(response.status === 500){
+        Toast.show(`Can't Logout`)
+      }
+      else{
+        this.props.navigation.dispatch(StackActions.replace('loginScreen'))
+      }
+      this.setState({loading: false})
+
+    } catch(e){
+      console.log(e.message)
     }
   }
 
   render(){
     return(
       <View style={styles.container}>
-        {/* <View style={styles.picture}>
-          <ProfileAvatar size={'large'}/>
-        </View> */}
-        <View style={styles.row}>
-          <Text style={styles.title}>Full Name</Text>
-          <Text style={styles.text}>{this.state.studentName}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>Code</Text>
-          <Text style={styles.text}>{this.state.studentCode}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.title}>Year</Text>
-          <Text style={styles.text}>{this.state.studentYear}</Text>
-        </View>
-        {/* <View style={styles.row}>
-          <Text style={styles.title}>Grade:</Text>
-          <Text style={styles.text}>Good</Text>
-        </View> */}
-        <View style={styles.row}>
-          <Text style={styles.title}>Email</Text>
-          <Text style={styles.text}>{this.state.studentEmail}</Text>
-        </View>
+        <Spinner visible={this.state.loading} />
+        <Text style={styles.title}>Full Name</Text>
+        <Text style={styles.text}>{this.state.studentName}</Text>
+        <Text style={styles.title}>Code</Text>
+        <Text style={styles.text}>{this.state.studentCode}</Text>
+        <Text style={styles.title}>Year</Text>
+        <Text style={styles.text}>{this.state.studentYear}</Text>
+        <Text style={styles.title}>Email</Text>
+        <Text style={styles.text}>{this.state.studentEmail}</Text>
         <Dialog.Container 
           visible={this.state.dialogVisibility}
           onBackdropPress={() => {this.setState({dialogVisibility: false})}}
@@ -167,21 +166,30 @@ export default class StudentProfileScreen extends React.Component{
           />
 
         </Dialog.Container>
+        
         <View style={styles.buttonsGroup}>
-          <View style={styles.button}>
-            <Button 
-              onPress={() => {this.setState({dialogVisibility: true})}}
-              title='Change Password'
+          <TouchableOpacity
+            onPress={() => {this.setState({dialogVisibility: true})}}
+            style={styles.button}
+          >
+            <Icon 
+              name='key'
+              type='font-awesome'
+              color={'#fff'}  
             />
-          </View>
-          <View style={styles.button}>
-            <Button 
-              onPress={this.handleLogout}
-              title='Logout'
-              //color={Colors.primary_color}  
+            <Text style={styles.buttonLabel}>Change Password</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={this.handleLogout}
+            style={styles.button}
+          >
+            <Icon 
+              name='sign-out'
+              type='font-awesome'
+              color={'#fff'}  
             />
-          </View>
-          
+            <Text style={styles.buttonLabel}>Logout</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -192,8 +200,9 @@ const styles = StyleSheet.create({
   container: {flex: 1, padding: 16,},
   picture: {marginBottom: 32},
   row: {flex: 1, flexDirection: 'column', marginBottom: 24, alignItems: 'flex-start', maxHeight: 50},
-  title: {flex: 1, fontSize: 18, color: '#666', paddingLeft: 8,},
-  text: {flex: 1,width: '100%', fontSize: 16, paddingLeft: 8},
-  buttonsGroup: {alignItems: 'center', flex: 1, },
-  button: {marginBottom: 16}
+  title: {fontSize: 18, color: '#666', paddingLeft: 8, marginBottom: 8},
+  text: {width: '100%', fontSize: 16, paddingLeft: 8, marginBottom: 32},
+  buttonsGroup: {flex: 1, alignItems: 'flex-end', marginTop: 50},
+  button: {width: 50, height: 50, borderRadius: 30, backgroundColor: Colors.primary_color, marginBottom: 16, justifyContent: 'center'},
+  buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
 })

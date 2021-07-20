@@ -4,10 +4,145 @@ import AdminManageStudentsAccountsScreen from '../../Screens/AdminScreens/AdminM
 import AdminCreateStudentsAccountsScreen from '../../Screens/AdminScreens/AdminCreateStudentsAccountsScreen';
 import Colors from '../../Constants/colors';
 import { Icon } from 'react-native-elements';
+import { url } from '../../Constants/numbers';
+import { compareByName } from '../../Constants/Functions';
 
 const AdminManageStudentsAccountsNavigator = createBottomTabNavigator()
 
 export default class AdminManageStudentsAccountsNav extends React.Component{
+
+
+  state={
+    searchInput: '',
+    year: '0',
+    studentsBasicData: [],
+    studentsShownData: [],
+    students: [],
+    studentsByYear: [],
+    loading: true,
+  }
+
+  componentDidMount(){
+    this.getStudents()
+  }
+
+  init = () => {
+    this.setState({
+      studentsByYear: [...this.state.students.filter((student) => {
+        if(this.state.year==='0'){
+          return true
+        }
+        else{
+          return this.state.year===student.year
+        }
+      })]
+    }, () => {
+      const arr = []
+      let obj = {}
+      this.state.studentsByYear.map((item) => {
+        Object.keys(item).map((key) => {
+          key === 'name' || key === 'code' || key === 'year' ? obj[key] = item[key]
+          : null
+        })
+        arr.push(obj)
+        obj={}
+      })
+      this.setState({
+        studentsShownData: [...arr.sort(compareByName)], 
+        studentsBasicData: [...arr.sort(compareByName)],
+        students: [...this.state.students.sort(compareByName)],
+        studentsByYear: [...this.state.studentsByYear.sort(compareByName)]
+      })
+    })
+    
+  }
+
+  getStudents = async () => {
+    try{
+      this.setState({loading: true})
+      const response = await fetch(
+        `${url}/admins/getAllStudents`, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + this.props.userToken,
+        }
+      })
+      
+      const results = await response.json()
+      if(response.status === 200){
+        this.setState({students: [...results]}, this.init)
+      }
+      else if(response.status === 500){
+        Toast.show('Server Error')
+      }
+      else{
+        this.setState({students: []}, this.init)
+        Toast.show(results)
+      }
+      this.setState({loading: false})
+    } catch (err){
+      console.log(err.message)
+    }
+  }
+
+  handleSearch = input => {
+    this.setState({searchInput: input})
+    if(input === null){
+      this.setState({
+        studentsShownData: this.state.studentsBasicData
+      })
+    } else{
+      this.setState({
+        studentsShownData: [...this.state.studentsBasicData
+          .filter(function(item) {
+            return !(item.name.indexOf(input) && item.code.indexOf(input))
+          })]
+      })
+    }
+  }
+
+  filterByYear = (year) => {
+    this.setState({loading:true})
+    this.init()
+    this.setState({
+      studentsShownData: [...this.state.studentsBasicData.filter(function(student){
+        return student.year===year
+      })],
+      studentsByYear: [...this.state.students.filter(function(student){
+        if(year === '0'){
+          return true
+        }
+        else{
+          return student.year===year
+        }
+      })]
+    }, () => {
+      this.setState({loading: false})
+    })
+  }
+
+  handleYearChange = (year) => {
+    this.setState({loading: true})
+    if(year!=='0'){
+      this.setState({year: year, searchInput: ''}, () => this.filterByYear(year))
+    }
+    else{
+      this.setState({year: year, searchInput: ''},this.getStudents)
+    }
+    this.setState({loading: false})
+  }
+  
+
+  deleteStudent = (code) => {
+    this.setState({
+        students: [...this.state.students.filter(function(student){return student.code !== code})],
+      },
+      this.getStudents
+    )
+
+  }
+
   render(){
     return(
       <AdminManageStudentsAccountsNavigator.Navigator
@@ -18,16 +153,22 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
           labelStyle: {fontSize: 13},
           keyboardHidesTabBar: 'true',
         }}
-        
-        
       >
-        
         <AdminManageStudentsAccountsNavigator.Screen 
           name='adminManageStudentsAccountsScreen'
           children={() => 
             <AdminManageStudentsAccountsScreen 
               navigation={this.props.navigation} 
               userToken={this.props.userToken}
+              handleSearch={this.handleSearch}
+              handleYearChange={this.handleYearChange}
+              deleteStudent={this.deleteStudent}
+              getStudents={this.getStudents}
+              searchInput={this.state.searchInput}
+              year={this.state.year}
+              studentsShownData={this.state.studentsShownData}
+              studentsByYear={this.state.studentsByYear}
+              loading={this.state.loading}
             />
           }
           options={{
@@ -49,6 +190,7 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
             <AdminCreateStudentsAccountsScreen 
               navigation={this.props.navigation} 
               userToken={this.props.userToken}
+              getStudents={this.getStudents}
             />
           }
           options={{
