@@ -9,16 +9,18 @@ import { StackActions } from '@react-navigation/routers'
 import { NavigationActions } from 'react-navigation'
 import { TouchableOpacity } from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay';
-import { url } from '../Constants/numbers'
+import { emailReg, url } from '../Constants/numbers'
 
 export default class LoginScreen extends React.Component{
   state = {
-    username: 'admin1@gmail.com',
-    password: 'adminadmin1',
+    username: '',
+    password: '',
     userToken: null,
     user: {},
     typing: 1,
-    isFormValid: true,
+    isFormValid: false,
+    validUsername: false,
+    validPassword: false,
     loading: false,
     visible: false,
   }
@@ -29,39 +31,34 @@ export default class LoginScreen extends React.Component{
     }
   }
 
-  toggleTyping = () => {this.setState({typing: this.state.typing*-1})}
-
-  handleUsernameUpdate = username => {
-    this.setState({username})
-  }
-  handlePasswordUpdate = password => {
-    this.setState({password})
-  }
-
   validateForm = () => {
-    if(this.state.username.length > 0 && this.state.password.length > 0){
+    if(this.state.validUsername && this.state.validPassword){
       this.setState({isFormValid: true})
     } else{
       this.setState({isFormValid: false})
     }
   }
 
-  toggleLoading = () => {
-    this.setState({loading: !this.state.loading})
+  toggleTyping = () => {this.setState({typing: this.state.typing*-1})}
+
+  handleUsernameUpdate = username => {
+    if (emailReg.test(username) === false) {
+      this.setState({ username: username, validUsername: false })
+      return false;
+    }
+    else {
+      this.setState({ username: username, validUsername: true })
+    }
+  }
+  handlePasswordUpdate = password => {
+    if(password.length<7){
+      this.setState({password: password, validPassword: false})
+    }
+    else{
+      this.setState({password: password, validPassword: true})
+    }
   }
 
-  // validate = (text) => {
-  //   let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-  //   if (reg.test(text) === false) {
-  //     Toast.show("Email is Not Correct")
-  //     this.setState({ username: text })
-  //     return false;
-  //   }
-  //   else {
-  //     this.setState({ username: text })
-  //     Toast.show("Email is Correct");
-  //   }
-  // }
 
   login = async () => {
       
@@ -124,9 +121,17 @@ export default class LoginScreen extends React.Component{
             value={this.state.username}
             onChangeText={this.handleUsernameUpdate}
             autoCompleteType='email'
-            // onChangeText={this.validate}
             style={styles.usernameInput}
           />
+
+          <Text style={[
+            styles.alert,
+            (this.state.validUsername || this.state.username.length===0) ? 
+            {color: '#fff'} : 
+            {color: 'red'}
+          ]}>
+            Email not in the correct format
+          </Text>
           
           <View style={styles.passwordBox}>
             <TextInput 
@@ -145,6 +150,15 @@ export default class LoginScreen extends React.Component{
               />
             </TouchableOpacity>
           </View>
+
+          <Text style={[
+            styles.alert,
+            (this.state.validPassword || this.state.password.length===0) ? 
+            {color: '#fff'} : 
+            {color: 'red'}
+          ]}>
+            Password must be at least 7 characters
+          </Text>
           
           <View style={styles.loginButton}>
             <Button 
@@ -170,7 +184,7 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-start',
       backgroundColor: '#fff',
     },
-    scroller: {alignSelf: 'center', width: '100%'},
+    scroller: {alignSelf: 'center', width: '100%',},
     scrollerContent: {alignItems: 'center'}, 
     loginButton: {width: '30%', alignSelf: 'center'},
     img: {
@@ -187,29 +201,30 @@ const styles = StyleSheet.create({
     },
 
     usernameInput: {
-      marginBottom: 30,
       width: '80%',
       borderColor: '#000',
       borderBottomWidth:1,
       padding: 8,
     },
+
+    alert: {width: '80%', marginBottom: 30,},
+
     passwordBox: {
       justifyContent: 'flex-start',
       alignItems: 'center',
       flexDirection: 'row',
       width: '80%',
-      marginBottom: 50
     },
     showIcon: {
-      marginBottom: 11,
+      marginTop: 20,
       borderBottomWidth: 1
     },
     passwordInput: {
-      marginBottom: 30,
       width: '93%',
       borderColor: '#000',
       borderBottomWidth: 1,
       padding: 8
     },
+
 
   });

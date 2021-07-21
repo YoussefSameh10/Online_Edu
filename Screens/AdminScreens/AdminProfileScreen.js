@@ -22,25 +22,43 @@ export default class AdminProfileScreen extends React.Component{
     adminOldPassword: '',
     adminNewPassword: '',
     adminConfirmPassword: '',
+    validAdminConfirmPassword: false,
+    validAdminOldPassword: false,
+    validAdminNewPassword: false,
     loading: false,
   }
 
   handleAdminOldPasswordUpdate = adminOldPassword => {
-    this.setState({adminOldPassword}, this.validateForm)
+    if(adminOldPassword.length<7){
+      this.setState({adminOldPassword: adminOldPassword, validAdminOldPassword: false}, this.validateForm)
+    }
+    else{
+      this.setState({adminOldPassword: adminOldPassword, validAdminOldPassword: true}, this.validateForm)
+    }
   }
 
   handleAdminNewPasswordUpdate = adminNewPassword => {
-    this.setState({adminNewPassword}, this.validateForm)
+    if(adminNewPassword.length<7){
+      this.setState({adminNewPassword: adminNewPassword, validAdminNewPassword: false}, this.validateForm)
+    }
+    else{
+      this.setState({adminNewPassword: adminNewPassword, validAdminNewPassword: true}, this.validateForm)
+    }
   }
 
   handleAdminConfirmPasswordUpdate = adminConfirmPassword => {
-    this.setState({adminConfirmPassword}, this.validateForm)
+    if(adminConfirmPassword !== this.state.adminNewPassword){
+      this.setState({adminConfirmPassword: adminConfirmPassword, validAdminConfirmPassword: false}, this.validateForm)
+    }
+    else{
+      this.setState({adminConfirmPassword: adminConfirmPassword, validAdminConfirmPassword: true}, this.validateForm)
+    } 
   }
 
   validateForm = () => {
-    if(this.state.adminOldPassword.length > 6 &&
-      this.state.adminNewPassword.length > 6 && 
-      this.state.adminConfirmPassword.length > 6
+    if(this.state.validAdminOldPassword &&
+      this.state.validAdminNewPassword && 
+      this.state.validAdminConfirmPassword
     ){
       this.setState({enableConfirm: true})
     } else{
@@ -90,7 +108,6 @@ export default class AdminProfileScreen extends React.Component{
     }
   }
 
-  
   handleLogout = async() => {
     try{
       this.setState({loading: true})
@@ -132,9 +149,20 @@ export default class AdminProfileScreen extends React.Component{
         <Dialog.Container 
           visible={this.state.dialogVisibility}
           onBackdropPress={() => {this.setState({dialogVisibility: false})}}
+          headerStyle={{alignItems: 'center', color: '#f00'}}
+          contentStyle={{minWidth: '100%'}}
+          children={<Text>aaaaaa</Text>}
         >
           <Dialog.Title>Change Password</Dialog.Title>
-          
+          <Dialog.Description>
+            {(!this.state.validAdminOldPassword && this.state.adminOldPassword.length!==0) ||
+            (!this.state.validAdminNewPassword && this.state.adminNewPassword.length!==0)
+              ? 'Password must be at least 7 characters' 
+              : !this.state.validAdminConfirmPassword && this.state.adminNewPassword.length!==0 
+              ? `Passwords don't match`
+              : ''
+            }
+          </Dialog.Description>
           <Dialog.Input 
             style={{borderBottomWidth: 1}}
             value={this.state.adminOldPassword}
@@ -161,7 +189,11 @@ export default class AdminProfileScreen extends React.Component{
           
           <Dialog.Button 
             label="Cancel" 
-            onPress={() => {this.setState({dialogVisibility: false})}}
+            onPress={() => {
+              this.setState({dialogVisibility: false, adminOldPassword: '', adminNewPassword: '', adminConfirmPassword: '', 
+                validAdminConfirmPassword: false, validAdminOldPassword: false, validAdminNewPassword: false, enableConfirm: false
+              })
+            }}
             
           />
 
@@ -204,7 +236,7 @@ export default class AdminProfileScreen extends React.Component{
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16, justifyContent: 'space-between',},
+  container: {flex: 1, padding: 16, backgroundColor: '#fff'},
   picture: {marginBottom: 32},
   row: {flex: 1, flexDirection: 'column', marginBottom: 24, alignItems: 'flex-start', maxHeight: 50},
   title: {fontSize: 18, color: '#666', paddingLeft: 8, marginBottom: 8},

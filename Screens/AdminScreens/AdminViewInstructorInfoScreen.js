@@ -6,7 +6,7 @@ import Dialog from "react-native-dialog";
 import { Modal } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Spinner from 'react-native-loading-spinner-overlay'
-import { url } from '../../Constants/numbers';
+import { emailReg, url } from '../../Constants/numbers';
 import Toast from 'react-native-simple-toast';
 import Colors from '../../Constants/colors';
 
@@ -19,6 +19,8 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
     instructorName: this.props.route.params.userName,
     instructorCode: this.props.route.params.userCode,
     instructorEmail: this.props.route.params.userEmail,
+    validInstructorCode: true,
+    validInstructorEmail: true,
     instructorCourses: [],
     deleteDialogVisibility: false,
     codeToBeDeleted: -1,
@@ -26,6 +28,8 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
     passwordDialogVisibility: false,
     instructorPassword: '',
     instructorConfirmPassword: '',
+    validInstructorPassword: false,
+    validInstructorConfirmPassword: false,
     enableConfirm: false,
     visibleModal: false,
     loading: false,
@@ -46,8 +50,8 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
 
   validateUpdateForm = () => {
     if(this.state.instructorName.length > 0 && 
-      this.state.instructorCode.length > 6 && 
-      this.state.instructorEmail.length > 0
+      this.state.validInstructorCode && 
+      this.state.validInstructorEmail
     ){
       this.setState({isFormValid: true})
     } else{
@@ -56,8 +60,8 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
   }
 
   validateChangePasswordForm = () => {
-    if(this.state.instructorPassword.length > 6 && 
-      this.state.instructorConfirmPassword.length > 6
+    if(this.state.validInstructorPassword && 
+      this.state.validInstructorConfirmPassword
     ){
       this.setState({enableConfirm: true})
     } else{
@@ -76,10 +80,22 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
     this.setState({instructorName})
   }
   handleInstructorCodeUpdate = instructorCode => {
-    this.setState({instructorCode})
+    if(instructorCode.length<7){
+      this.setState({instructorCode: instructorCode, validInstructorCode: false})
+    }
+    else{
+      this.setState({instructorCode: instructorCode, validInstructorCode: true})
+    }
   }
+  
   handleInstructorEmailUpdate = instructorEmail => {
-    this.setState({instructorEmail})
+    if (emailReg.test(instructorEmail) === false) {
+      this.setState({ instructorEmail: instructorEmail, validInstructorEmail: false })
+      return false;
+    }
+    else {
+      this.setState({ instructorEmail: instructorEmail, validInstructorEmail: true })
+    }
   }
 
   handleSave = async() => {
@@ -169,11 +185,22 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
   // }
 
   handleInstructorPasswordUpdate = instructorPassword => {
-    this.setState({instructorPassword}, this.validateChangePasswordForm)
+    if(instructorPassword.length<7){
+      this.setState({instructorPassword: instructorPassword, validInstructorPassword: false}, this.validateChangePasswordForm)
+    }
+    else{
+      this.setState({instructorPassword: instructorPassword, validInstructorPassword: true}, this.validateChangePasswordForm)
+    }
   }
 
   handleInstructorConfirmPasswordUpdate = instructorConfirmPassword => {
-    this.setState({instructorConfirmPassword}, this.validateChangePasswordForm)
+    
+    if(instructorConfirmPassword !== this.state.instructorPassword){
+      this.setState({instructorConfirmPassword: instructorConfirmPassword, validInstructorConfirmPassword: false}, this.validateChangePasswordForm)
+    }
+    else{
+      this.setState({instructorConfirmPassword: instructorConfirmPassword, validInstructorConfirmPassword: true}, this.validateChangePasswordForm)
+    } 
   }
 
   handleChangePasswordConfirm = async() => {
@@ -279,23 +306,40 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
               value={this.state.instructorName}
               onChangeText={this.handleInstructorNameUpdate}
               editable={this.state.editable}
-              style={styles.text}
+              style={this.state.editable ? styles.textWithSpaceEditable : styles.textWithSpace}
             />
             <Text style={styles.title}>Code</Text>
             <TextInput 
               value={this.state.instructorCode}
               onChangeText={this.handleInstructorCodeUpdate}
               editable={this.state.editable}
-              style={styles.text}
+              style={this.state.editable ? styles.textEditable : styles.text}
             />
-                    
+
+            <Text style={[
+              styles.alert,
+              (this.state.validInstructorCode || this.state.instructorCode.length===0) ? 
+              {color: '#fff'} : 
+              {color: 'red'}
+            ]}>
+              Code must be at least 7 characters
+            </Text>        
+
             <Text style={styles.title}>Email</Text>
             <TextInput 
               value={this.state.instructorEmail}
               editable={this.state.editable}
               onChangeText={this.handleInstructorEmailUpdate}
-              style={styles.text}
+              style={this.state.editable ? styles.textEditable : styles.text}
             />
+            <Text style={[
+              styles.alert,
+              (this.state.validInstructorEmail || this.state.instructorEmail.length===0) ? 
+              {color: '#fff'} : 
+              {color: 'red'}
+            ]}>
+              Email not in the correct format
+            </Text>
           <View style={styles.saveButton}>
             <Button 
               title='Save'
@@ -317,9 +361,18 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
         <Dialog.Container 
           visible={this.state.passwordDialogVisibility}
           onBackdropPress={() => {this.setState({passwordDialogVisibility: false})}}
+          headerStyle={{alignItems: 'center', color: '#f00'}}
+          contentStyle={{minWidth: '100%'}}
         >
           <Dialog.Title>Change Password</Dialog.Title>
-          
+          <Dialog.Description>
+            {!this.state.validInstructorPassword && this.state.instructorPassword.length!==0 
+              ? 'Password must be at least 7 characters' 
+              : !this.state.validInstructorConfirmPassword && this.state.instructorPassword.length!==0
+              ? `Passwords don't match`
+              : ''
+            }
+          </Dialog.Description>
           <Dialog.Input 
             style={{borderBottomWidth: 1}}
             value={this.state.instructorPassword}
@@ -337,7 +390,11 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
           />
           <Dialog.Button 
             label="Cancel" 
-            onPress={() => {this.setState({passwordDialogVisibility: false})}}
+            onPress={() => {
+              this.setState({passwordDialogVisibility: false, instructorPassword: '', instructorConfirmPassword: '',
+              validInstructorPassword: false, validInstructorConfirmPassword: false, enableConfirm: false
+              })
+            }}
           />
 
           <Dialog.Button 
@@ -401,17 +458,27 @@ export default class AdminViewInstructorInfoScreen extends React.Component{
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16,},
+  container: {flex: 1, padding: 16, backgroundColor: '#fff'},
   info: {height: '65%', marginBottom: 16, justifyContent: 'flex-start'},
   picture: {marginBottom: 32},
   row: {flex: 1, flexDirection: 'column', maxHeight: 74, marginBottom: 16, alignItems: 'flex-start',},
   course: {height: 30, alignItems: 'flex-start'},
   title: {flex: 1, fontSize: 18, color: '#666', paddingLeft: 8, maxHeight: 35, marginBottom: 4,},
-  text: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',height: 35, borderRadius: 20, paddingLeft: 8, marginBottom: 16},
-  saveButton: {marginTop: 30, width: '30%', alignSelf: 'center', marginBottom: 80},
-  upperSection: { flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 8},
-  changePasswordButton: {marginTop: 8, backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center', marginRight: 8},
-  editButton: {marginTop: 8, backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center'},
+  textWithSpace: {flex: 1, width: '90%', fontSize: 16, backgroundColor: '#fff',
+                  height: 35, paddingLeft: 8, marginBottom: 16},
+  text: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',
+                  height: 35, paddingLeft: 8, },
+  
+  textWithSpaceEditable: {flex: 1, width: '90%', fontSize: 16, backgroundColor: '#fff',
+                  height: 35, paddingLeft: 8, borderBottomWidth: 1, marginBottom: 16},
+  textEditable: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',
+                  height: 35, paddingLeft: 8, borderBottomWidth: 1,},
+  
+  alert: {width: '100%', marginBottom: 4,},
+  saveButton: {width: '30%', alignSelf: 'center', marginBottom: 90},
+  upperSection: { flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'},
+  changePasswordButton: {backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center', marginRight: 8},
+  editButton: {backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center'},
   coursesList: {paddingLeft: 8, width: 300, marginBottom: 16},
   evenCourseRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 40, backgroundColor: '#eef'},
   oddCourseRow: {flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', minHeight: 40, backgroundColor: '#fff'},

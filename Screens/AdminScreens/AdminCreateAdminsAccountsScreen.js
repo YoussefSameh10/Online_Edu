@@ -3,21 +3,24 @@ import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoiding
 import * as DocumentPicker from 'expo-document-picker'
 import Toast from 'react-native-simple-toast';
 import Spinner from 'react-native-loading-spinner-overlay'
-import { url } from '../../Constants/numbers';
+import { emailReg, url } from '../../Constants/numbers';
 import Colors from '../../Constants/colors';
 import { Modal } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements'
 
 async function upload() {
-  const file = await DocumentPicker.getDocumentAsync({type: 'text/*'})
-  if(file.type === 'success'){
-    return file
-  }
-  else{
+  try{
+    const file = await DocumentPicker.getDocumentAsync({type: 'text/*'})
+    if(file.type === 'success'){
+      return file
+    }
+    else{
+      return {}
+    }
+  } catch(e){
     return {}
   }
-  
 }
 
 export default class AdminCreateAdminsAccountsScreen extends React.Component{
@@ -26,6 +29,8 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
     adminName: '',
     adminCode: '',
     adminEmail: '',
+    validAdminCode: false,
+    validAdminEmail: false,
     visibleModal: false,
     file: {},
     errors: [],
@@ -43,8 +48,8 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
 
   validateForm = () => {
     if(this.state.adminName.length > 0 && 
-      this.state.adminCode.length > 6 && 
-      this.state.adminEmail.length > 0
+      this.state.validAdminCode && 
+      this.state.validAdminEmail
     ){
       this.setState({isFormValid: true})
     } else{
@@ -57,11 +62,22 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
   }
 
   handleAdminCodeUpdate = adminCode => {
-    this.setState({adminCode})
+    if(adminCode.length<7){
+      this.setState({adminCode: adminCode, validAdminCode: false})
+    }
+    else{
+      this.setState({adminCode: adminCode, validAdminCode: true})
+    }
   }
 
   handleAdminEmailUpdate = adminEmail => {
-    this.setState({adminEmail})
+    if (emailReg.test(adminEmail) === false) {
+      this.setState({ adminEmail: adminEmail, validAdminEmail: false })
+      return false;
+    }
+    else {
+      this.setState({ adminEmail: adminEmail, validAdminEmail: true })
+    }
   }
 
   handleCreate = async() => {
@@ -108,7 +124,12 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
   }
 
   sendFile = async() => {
-    this.setState({loading: true})
+    if(file){
+      this.setState({loading: true})
+    }
+    else{
+      this.setState({loading: false})
+    }
     const { name, uri } = this.state.file
     var formData = new FormData()
     const file = {
@@ -198,7 +219,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
               value={this.state.adminName}
               placeholder='Full Name'
               onChangeText={this.handleAdminNameUpdate}
-              style={styles.textInput}
+              style={styles.nameTextInput}
           />
           <TextInput 
             value={this.state.adminCode}
@@ -206,6 +227,14 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
             onChangeText={this.handleAdminCodeUpdate}
             style={styles.textInput}
           />
+          <Text style={[
+            styles.alert,
+            (this.state.validAdminCode || this.state.adminCode.length===0) ? 
+            {color: '#fff'} : 
+            {color: 'red'}
+          ]}>
+            Code must be at least 7 characters
+          </Text>
           
           <TextInput 
             value={this.state.adminEmail}
@@ -213,6 +242,15 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
             onChangeText={this.handleAdminEmailUpdate}
             style={styles.textInput}
           />
+          <Text style={[
+            styles.alert,
+            (this.state.validAdminEmail || this.state.adminEmail.length===0) ? 
+            {color: '#fff'} : 
+            {color: 'red'}
+          ]}>
+            Email not in the correct format
+          </Text>
+
           <View style={styles.createButton}>
             <Button 
               title='Create'
@@ -222,19 +260,18 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
             />
           </View>
 
-          <View style={styles.uploadButton}>
-            <TouchableOpacity
-              onPress={this.handleUpload}
-            >
-              <Icon 
-                name='file'
-                color='#fff'
-                type='font-awesome'
-                size={20}
-              />
-              <Text style={styles.buttonLabel}>Upload File</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            onPress={this.handleUpload}
+            style={styles.uploadButton}
+          >
+            <Icon 
+              name='file'
+              color='#fff'
+              type='font-awesome'
+              size={20}
+            />
+            <Text style={styles.buttonLabel}>Upload File</Text>
+          </TouchableOpacity>
         </ScrollView>
         <View style={styles.modal}>
           <Modal 
@@ -267,9 +304,11 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16, backgroundColor: '#fff'},
+  container: {padding: 16,backgroundColor: '#fff'},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
-  textInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  nameTextInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  textInput: {width: '100%', paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  alert: {width: '100%', marginBottom: 20,},
   createButton: {marginTop: 20, width: '25%', alignSelf: 'center', zIndex: 1},  
   uploadButton: {backgroundColor: Colors.primary_color, marginTop: 120, width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22},

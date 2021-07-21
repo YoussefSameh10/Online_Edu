@@ -4,19 +4,23 @@ import DropDownPicker from 'react-native-dropdown-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import Toast from 'react-native-simple-toast';
 import Spinner from 'react-native-loading-spinner-overlay'
-import { url } from '../../Constants/numbers';
+import { emailReg, url } from '../../Constants/numbers';
 import Colors from '../../Constants/colors';
 import { Modal } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements'
 
 async function upload() {
-  const file = await DocumentPicker.getDocumentAsync({type: 'text/*'})
-  if(file.type === 'success'){
-    return file
-  }
-  else{
-    return {}
+  try{
+    const file = await DocumentPicker.getDocumentAsync({type: 'text/*'})
+    if(file.type === 'success'){
+      return file
+    }
+    else{
+      return {}
+    }
+  } catch(e){
+    return
   }
   
 }
@@ -28,6 +32,8 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
     instructorName: '',
     instructorCode: '',
     instructorEmail: '',
+    validInstructorCode: false,
+    validInstructorEmail: false,
     file: {},
     visibleModal: false,
     errors: [],
@@ -46,9 +52,8 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
 
   validateForm = () => {
     if(this.state.instructorName.length > 0 && 
-      this.state.instructorCode.length > 6 && 
-      this.state.instructorEmail.length > 0 &&
-      this.state.department !== ''
+      this.state.validInstructorCode && 
+      this.state.validInstructorEmail
     ){
       this.setState({isFormValid: true})
     } else{
@@ -60,14 +65,22 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
     this.setState({instructorName})
   }
   handleInstructorCodeUpdate = instructorCode => {
-    this.setState({instructorCode})
+    if(instructorCode.length<7){
+      this.setState({instructorCode: instructorCode, validInstructorCode: false})
+    }
+    else{
+      this.setState({instructorCode: instructorCode, validInstructorCode: true})
+    }
   }
   
-  handleDepartmentUpdate =item => {
-   this.setState({department: item.value})
-  }
   handleInstructorEmailUpdate = instructorEmail => {
-    this.setState({instructorEmail})
+    if (emailReg.test(instructorEmail) === false) {
+      this.setState({ instructorEmail: instructorEmail, validInstructorEmail: false })
+      return false;
+    }
+    else {
+      this.setState({ instructorEmail: instructorEmail, validInstructorEmail: true })
+    }
   }
 
   handleCreate = async() => {
@@ -114,7 +127,12 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
   }
 
   sendFile = async() => {
-    this.setState({loading: true})
+    if(file){
+      this.setState({loading: true})
+    }
+    else{
+      this.setState({loading: false})
+    }
     const { name, uri } = this.state.file
     var formData = new FormData()
     const file = {
@@ -210,7 +228,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
               value={this.state.instructorName}
               placeholder='Full Name'
               onChangeText={this.handleInstructorNameUpdate}
-              style={styles.textInput}
+              style={styles.nameTextInput}
             />
             <TextInput 
               value={this.state.instructorCode}
@@ -218,6 +236,15 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
               onChangeText={this.handleInstructorCodeUpdate}
               style={styles.textInput}
             />   
+
+            <Text style={[
+              styles.alert,
+              (this.state.validInstructorCode || this.state.instructorCode.length===0) ? 
+              {color: '#fff'} : 
+              {color: 'red'}
+            ]}>
+              Code must be at least 7 characters
+            </Text>
             
             <TextInput 
               value={this.state.instructorEmail}
@@ -225,6 +252,14 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
               onChangeText={this.handleInstructorEmailUpdate}
               style={styles.textInput}
             />
+            <Text style={[
+              styles.alert,
+              (this.state.validInstructorEmail || this.state.instructorEmail.length===0) ? 
+              {color: '#fff'} : 
+              {color: 'red'}
+            ]}>
+              Email not in the correct format
+            </Text>
             <View style={styles.createButton}>
               <Button 
                 title='Create'
@@ -279,9 +314,11 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16, backgroundColor: '#fff',},
+  container: {padding: 16, backgroundColor: '#fff',},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
-  textInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1, zIndex: 2},
+  nameTextInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  textInput: {width: '100%', paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  alert: {width: '100%', marginBottom: 20,},
   createButton: {marginTop: 20, width: '25%', alignSelf: 'center',},  
   uploadButton: {backgroundColor: Colors.primary_color, marginTop: 120, width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22},

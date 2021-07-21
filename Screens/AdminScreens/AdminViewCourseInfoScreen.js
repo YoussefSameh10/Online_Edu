@@ -24,6 +24,7 @@ export default class AdminViewCourseInfoScreen extends React.Component{
     courseID: this.props.route.params.userID,
     instructorCode: '',
     courseScore: this.props.route.params.userScore,
+    validCourseScore: true,
     courseStudents: [],
     deleteDialogVisibility: false,
     codeToBeDeleted: -1,
@@ -50,7 +51,7 @@ export default class AdminViewCourseInfoScreen extends React.Component{
   validateForm = () => {
     if(this.state.courseName.length > 0 && 
       this.state.courseCode.length > 0 &&
-      +this.state.courseScore
+      this.state.validCourseScore
     ){
       this.setState({isFormValid: true})
     } else{
@@ -76,7 +77,12 @@ export default class AdminViewCourseInfoScreen extends React.Component{
     this.setState({instructorCode})
   }
   handleCourseScoreUpdate = courseScore => {
-    this.setState({courseScore})
+    if(+courseScore>100 || Number.isNaN(+courseScore)){
+      this.setState({courseScore: courseScore, validCourseScore: false})
+    }
+    else{
+      this.setState({courseScore: courseScore, validCourseScore: true})
+    }
   }
 
   handleSave = async() => {
@@ -216,7 +222,7 @@ export default class AdminViewCourseInfoScreen extends React.Component{
     return(
       <KeyboardAvoidingView 
         style={styles.container} 
-        behavior='height' 
+        behavior='padding' 
         keyboardVerticalOffset={-100}
       >
         <Spinner visible={this.state.loading} />
@@ -240,14 +246,14 @@ export default class AdminViewCourseInfoScreen extends React.Component{
               value={this.state.courseName}
               onChangeText={this.handleCourseNameUpdate}
               editable={this.state.editable}
-              style={styles.text}
+              style={this.state.editable ? styles.textWithSpaceEditable : styles.textWithSpace}
             />
             <Text style={styles.title}>Course Code</Text>
             <TextInput 
               value={this.state.courseCode}
               onChangeText={this.handleCourseCodeUpdate}
               editable={this.state.editable}
-              style={styles.text}
+              style={this.state.editable ? styles.textWithSpaceEditable : styles.textWithSpace}
             />
             <Text style={styles.title}>Year</Text>
             <DropDownPicker
@@ -271,8 +277,16 @@ export default class AdminViewCourseInfoScreen extends React.Component{
               value={String(this.state.courseScore)}
               editable={this.state.editable}
               onChangeText={this.handleCourseScoreUpdate}
-              style={styles.text}
+              style={this.state.editable ? styles.textEditable : styles.text}
             />
+            <Text style={[
+              styles.alert,
+              (this.state.validCourseScore || !this.state.editable) ? 
+              {color: '#fff'} : 
+              {color: 'red'}
+            ]}>
+              Score must be number with maximum value 100
+            </Text>
           
           <View style={styles.saveButton}>
             <Button 
@@ -282,7 +296,7 @@ export default class AdminViewCourseInfoScreen extends React.Component{
             />
           </View>
           <TouchableOpacity 
-            style={styles.coursesButton}
+            style={styles.studentsButton}
             onPress={() => {this.setState({visibleModal: true})}}  
           >
             <Icon 
@@ -343,16 +357,22 @@ export default class AdminViewCourseInfoScreen extends React.Component{
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16,},
+  container: {flex: 1, padding: 16, backgroundColor: '#fff'},
   info: {height: '65%', marginBottom: 16, justifyContent: 'flex-start'},
   picture: {marginBottom: 32},
   row: {flex: 1, flexDirection: 'column', maxHeight: 74, marginBottom: 16, alignItems: 'flex-start',},
   course: {height: 30, alignItems: 'flex-start'},
   title: {flex: 1, fontSize: 18, color: '#666', paddingLeft: 8, maxHeight: 35, marginBottom: 4,},
-  text: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',height: 35, borderRadius: 20, paddingLeft: 8, marginBottom: 16},
+  text: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',height: 35, paddingLeft: 8,},
+  textWithSpace: {flex: 1,width: '90%', marginBottom: 16, fontSize: 16, backgroundColor: '#fff',height: 35, paddingLeft: 8,},
+  textWithSpaceEditable: {flex: 1, width: '90%', fontSize: 16, backgroundColor: '#fff',
+                          height: 35, paddingLeft: 8, borderBottomWidth: 1, marginBottom: 16},
+  textEditable: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',
+                  height: 35, paddingLeft: 8, borderBottomWidth: 1,},
+  alert: {width: '90%',  marginBottom: 4,},
   dropdownBox: {flex: 1, height: 30, width: '90%', marginBottom: 16},
-  saveButton: {marginTop: 30, width: '30%', alignSelf: 'center', marginBottom: 8},
-  editButton: {alignSelf: 'flex-end', marginTop: 8, backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center'},
+  saveButton: {width: '30%', alignSelf: 'center', marginBottom: 16},
+  editButton: {alignSelf: 'flex-end', backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center'},
   studentsList: {paddingLeft: 8, width: 300, marginBottom: 16},
   evenStudentRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 40, backgroundColor: '#eef'},
   oddStudentRow: {flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', minHeight: 40, backgroundColor: '#fff'},
@@ -360,7 +380,7 @@ const styles = StyleSheet.create({
   studentCode: {fontSize: 18, flex: 0.5, padding: 4, minWidth: '33%',},
   dialogDeleteButton: {color: 'red'},
   dialogCancelButton: {color: Colors.primary_color},
-  coursesButton: {width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', backgroundColor: Colors.primary_color, justifyContent: 'center'},
+  studentsButton: {width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', backgroundColor: Colors.primary_color, justifyContent: 'center'},
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22,},
   innerModal: {height: '100%', margin: 20, backgroundColor: "#fff", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
   buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},

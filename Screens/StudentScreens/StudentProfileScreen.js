@@ -21,25 +21,43 @@ export default class StudentProfileScreen extends React.Component{
     studentOldPassword: '',
     studentNewPassword: '',
     studentConfirmPassword: '',
+    validStudentConfirmPassword: false,
+    validStudentOldPassword: false,
+    validStudentNewPassword: false,
     loading: false,
   }
 
   handleStudentOldPasswordUpdate = studentOldPassword => {
-    this.setState({studentOldPassword}, this.validateForm)
+    if(studentOldPassword.length<7){
+      this.setState({studentOldPassword: studentOldPassword, validStudentOldPassword: false}, this.validateForm)
+    }
+    else{
+      this.setState({studentOldPassword: studentOldPassword, validStudentOldPassword: true}, this.validateForm)
+    }
   }
 
   handleStudentNewPasswordUpdate = studentNewPassword => {
-    this.setState({studentNewPassword}, this.validateForm)
+    if(studentNewPassword.length<7){
+      this.setState({studentNewPassword: studentNewPassword, validStudentNewPassword: false}, this.validateForm)
+    }
+    else{
+      this.setState({studentNewPassword: studentNewPassword, validStudentNewPassword: true}, this.validateForm)
+    }
   }
 
   handleStudentConfirmPasswordUpdate = studentConfirmPassword => {
-    this.setState({studentConfirmPassword}, this.validateForm)
+    if(studentConfirmPassword !== this.state.studentNewPassword){
+      this.setState({studentConfirmPassword: studentConfirmPassword, validStudentConfirmPassword: false}, this.validateForm)
+    }
+    else{
+      this.setState({studentConfirmPassword: studentConfirmPassword, validStudentConfirmPassword: true}, this.validateForm)
+    } 
   }
 
   validateForm = () => {
-    if(this.state.studentOldPassword.length > 0 &&
-      this.state.studentNewPassword.length > 0 && 
-      this.state.studentConfirmPassword.length > 0
+    if(this.state.validStudentOldPassword &&
+      this.state.validStudentNewPassword && 
+      this.state.validStudentConfirmPassword
     ){
       this.setState({enableConfirm: true})
     } else{
@@ -125,12 +143,22 @@ export default class StudentProfileScreen extends React.Component{
         <Text style={styles.text}>{this.state.studentYear}</Text>
         <Text style={styles.title}>Email</Text>
         <Text style={styles.text}>{this.state.studentEmail}</Text>
-        <Dialog.Container 
+        <Dialog.Container
           visible={this.state.dialogVisibility}
           onBackdropPress={() => {this.setState({dialogVisibility: false})}}
+          headerStyle={{alignItems: 'center', color: '#f00'}}
+          contentStyle={{minWidth: '100%'}}
         >
           <Dialog.Title>Change Password</Dialog.Title>
-          
+          <Dialog.Description>
+            {(!this.state.validStudentOldPassword && this.state.studentOldPassword.length!==0) ||
+            (!this.state.validStudentNewPassword && this.state.studentNewPassword.length!==0)
+              ? 'Password must be at least 7 characters' 
+              : !this.state.validStudentConfirmPassword && this.state.studentNewPassword.length!==0 
+              ? `Passwords don't match`
+              : ''
+            }
+          </Dialog.Description>
           <Dialog.Input 
             style={{borderBottomWidth: 1}}
             value={this.state.studentOldPassword}
@@ -157,7 +185,11 @@ export default class StudentProfileScreen extends React.Component{
 
           <Dialog.Button 
             label="Cancel" 
-            onPress={() => {this.setState({dialogVisibility: false})}}
+            onPress={() => {
+              this.setState({dialogVisibility: false, studentOldPassword: '', studentNewPassword: '', studentConfirmPassword: '', 
+                validStudentConfirmPassword: false, validStudentOldPassword: false, validStudentNewPassword: false, enableConfirm: false
+              })
+            }}
           />    
           <Dialog.Button 
             label="Confirm" 
@@ -197,7 +229,7 @@ export default class StudentProfileScreen extends React.Component{
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16,},
+  container: {flex: 1, padding: 16, backgroundColor: '#fff'},
   picture: {marginBottom: 32},
   row: {flex: 1, flexDirection: 'column', marginBottom: 24, alignItems: 'flex-start', maxHeight: 50},
   title: {fontSize: 18, color: '#666', paddingLeft: 8, marginBottom: 8},

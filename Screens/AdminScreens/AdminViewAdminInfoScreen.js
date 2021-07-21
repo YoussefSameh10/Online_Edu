@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   picture: {marginBottom: 32},
   row: {flex: 1, flexDirection: 'column', marginBottom: 16, alignItems: 'flex-start',},
   title: {flex: 1, fontSize: 18, color: '#666', paddingLeft: 8, marginBottom: 4},
-  text: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',height: 35, borderRadius: 20, paddingLeft: 8},
+  text: {flex: 1,width: '90%', marginBottom: 16,  fontSize: 16, backgroundColor: '#fff',height: 35, borderRadius: 20, paddingLeft: 8},
   dropdownBox: {flex: 0.65, height: 30,},
   saveButton: {marginTop: 30, width: '30%', alignSelf: 'center', backgroundColor: '#0f0'},
   editIcon: {alignSelf: 'flex-end', marginTop: 8, borderRadius: 40, width: 30, height: 30, justifyContent: 'center'}

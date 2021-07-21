@@ -4,7 +4,7 @@ import DropDownPicker from 'react-native-dropdown-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import Toast from 'react-native-simple-toast';
 import Spinner from 'react-native-loading-spinner-overlay'
-import { url } from '../../Constants/numbers';
+import { emailReg, url } from '../../Constants/numbers';
 import Colors from '../../Constants/colors';
 import * as FileSystem from 'expo-file-system'
 import { Modal } from 'react-native';
@@ -12,13 +12,17 @@ import { FlatList } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements'
 
 async function upload() {
-  const file = await DocumentPicker.getDocumentAsync({type: 'text/*'})
-  if(file.type === 'success'){
-    return file
-  }
-  else{
-    return {}
-  }
+  try{
+    const file = await DocumentPicker.getDocumentAsync({type: 'text/*'})
+    if(file.type === 'success'){
+      return file
+    }
+    else{
+      return {}
+    }
+} catch(e){
+  return {}
+}
   
 }
 
@@ -30,6 +34,8 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
     studentCode: '',
     studentYear: '',
     studentEmail: '',
+    validStudentCode: false,
+    validStudentEmail: false,
     file: {},
     visibleModal: false,
     errors: [],
@@ -48,8 +54,8 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
 
   validateForm = () => {
     if(this.state.studentName.length > 0 && 
-      this.state.studentCode.length > 6 && 
-      this.state.studentEmail.length > 0 &&
+      this.state.validStudentEmail &&
+      this.state.validStudentCode &&
       this.state.studentYear !== ''
     ){
       this.setState({isFormValid: true})
@@ -62,17 +68,25 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
     this.setState({studentName})
   }
   handleStudentCodeUpdate = studentCode => {
-    this.setState({studentCode})
+    if(studentCode.length<7){
+      this.setState({studentCode: studentCode, validStudentCode: false})
+    }
+    else{
+      this.setState({studentCode: studentCode, validStudentCode: true})
+    }
   }
   
   handleStudentYearUpdate =item => {
    this.setState({studentYear: item.value})
   }
-  handleGradeUpdate = grade => {
-    this.setState({grade})
-  }
   handleStudentEmailUpdate = studentEmail => {
-    this.setState({studentEmail})
+    if (emailReg.test(studentEmail) === false) {
+      this.setState({ studentEmail: studentEmail, validStudentEmail: false })
+      return false;
+    }
+    else {
+      this.setState({ studentEmail: studentEmail, validStudentEmail: true })
+    }
   }
 
   handleCreate = async() => {
@@ -123,7 +137,12 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
   }
 
   sendFile = async() => {
-    this.setState({loading: true})
+    if(file){
+      this.setState({loading: true})
+    }
+    else{
+      this.setState({loading: false})
+    }
     const { name, uri } = this.state.file
     var formData = new FormData()
     const file = {
@@ -220,7 +239,7 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
               value={this.state.studentName}
               placeholder='Full Name'
               onChangeText={this.handleStudentNameUpdate}
-              style={styles.textInput}
+              style={styles.nameTextInput}
           />
           <TextInput 
             value={this.state.studentCode}
@@ -228,6 +247,16 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
             onChangeText={this.handleStudentCodeUpdate}
             style={styles.textInput}
           />
+
+          <Text style={[
+            styles.alert,
+            (this.state.validStudentCode || this.state.studentCode.length===0) ? 
+            {color: '#fff'} : 
+            {color: 'red'}
+          ]}>
+            Code must be at least 7 characters
+          </Text>
+
           <DropDownPicker
             items={[
               {label: 'Year 1', value: '1',},
@@ -249,6 +278,14 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
             onChangeText={this.handleStudentEmailUpdate}
             style={styles.textInput}
           />
+          <Text style={[
+              styles.alert,
+              (this.state.validStudentEmail || this.state.studentEmail.length===0) ? 
+              {color: '#fff'} : 
+              {color: 'red'}
+            ]}>
+              Email not in the correct format
+            </Text>
           <View style={styles.createButton}>
             <Button 
               title='Create'
@@ -302,9 +339,11 @@ export default class AdminCreateStudentsAccountsScreen extends React.Component{
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16, backgroundColor: '#fff'},
+  container: {padding: 16, backgroundColor: '#fff'},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
-  textInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  nameTextInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  textInput: {width: '100%', paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  alert: {width: '100%', marginBottom: 20,},
   dropdownBox: {width: '100%', height: 30, marginBottom: 32,},
   dropdownBoxPlaceholder: {color: '#777'},
   createButton: {marginTop: 20, width: '25%', alignSelf: 'center', zIndex: 1},  

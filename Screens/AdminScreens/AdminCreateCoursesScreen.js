@@ -16,6 +16,8 @@ export default class AdminCreateCoursesScreen extends React.Component{
     courseYear: '',
     courseScore: '',
     instructorCode: '',
+    validInstructorCode: false,
+    validCourseScore: false,
     loading: false,
   }
 
@@ -33,16 +35,16 @@ export default class AdminCreateCoursesScreen extends React.Component{
   validateForm = () => {
     if(this.state.courseName.length > 0 && 
       this.state.courseCode.length > 0 && 
-      +this.state.courseScore && 
+      this.state.validCourseScore && 
       this.state.courseYear !== '' && 
-      this.state.instructorCode.length > 0
+      this.state.validInstructorCode
     ){
       this.setState({isFormValid: true})
     } else{
       this.setState({isFormValid: false})
     }
   }
-  
+
   handleCourseNameUpdate = courseName => {
     this.setState({courseName})
   }
@@ -53,10 +55,20 @@ export default class AdminCreateCoursesScreen extends React.Component{
     this.setState({courseYear})
   }
   handleCourseScoreUpdate = courseScore => {
-    this.setState({courseScore})
+    if(+courseScore>100 || Number.isNaN(+courseScore)){
+      this.setState({courseScore: courseScore, validCourseScore: false})
+    }
+    else{
+      this.setState({courseScore: courseScore, validCourseScore: true})
+    }
   }
   handleInstructorCodeUpdate = instructorCode => {
-    this.setState({instructorCode})
+    if(instructorCode.length<7){
+      this.setState({instructorCode: instructorCode, validInstructorCode: false})
+    }
+    else{
+      this.setState({instructorCode: instructorCode, validInstructorCode: true})
+    }
   }
 
   handleCreate = async() => {
@@ -72,13 +84,12 @@ export default class AdminCreateCoursesScreen extends React.Component{
           code: this.state.courseCode,
           name: this.state.courseName,
           year: this.state.courseYear,
-          score: this.state.courseScore,
+          score: +this.state.courseScore,
           instructor_code: this.state.instructorCode,
         })
       })
       const result = await response.json()
       if(response.status === 201){
-        Toast.show('Course created successfully')
         this.props.getCourses()
         this.enrollCourseToYear()
       }
@@ -146,21 +157,31 @@ export default class AdminCreateCoursesScreen extends React.Component{
               value={this.state.courseName}
               placeholder='Course Name'
               onChangeText={this.handleCourseNameUpdate}
-              style={styles.textInput}
+              style={styles.nameTextInput}
           />
           <TextInput 
             value={this.state.courseCode}
             placeholder='Course Code'
             onChangeText={this.handleCourseCodeUpdate}
-            style={styles.textInput}
+            style={styles.nameTextInput}
           />
-
+          
           <TextInput 
             value={this.state.courseScore}
             placeholder='Course Score'
+            keyboardType='numeric'
             onChangeText={this.handleCourseScoreUpdate}
             style={styles.textInput}
           />
+
+          <Text style={[
+            styles.alert,
+            (this.state.validCourseScore || this.state.courseScore.length===0) ? 
+            {color: '#fff'} : 
+            {color: 'red'}
+          ]}>
+            Score must be number with maximum value 100
+          </Text>
           
           <TextInput 
             value={this.state.instructorCode}
@@ -168,6 +189,15 @@ export default class AdminCreateCoursesScreen extends React.Component{
             onChangeText={this.handleInstructorCodeUpdate}
             style={styles.textInput}
           />
+
+          <Text style={[
+            styles.alert,
+            (this.state.validInstructorCode || this.state.instructorCode.length===0) ? 
+            {color: '#fff'} : 
+            {color: 'red'}
+          ]}>
+            Code must be at least 7 characters
+          </Text>
 
           <DropDownPicker
             items={[
@@ -204,9 +234,11 @@ export default class AdminCreateCoursesScreen extends React.Component{
 const styles = StyleSheet.create({
   container: {flex: 1, padding: 16, backgroundColor: '#fff'},
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
-  textInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  nameTextInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  textInput: {width: '100%', paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  alert: {width: '100%', marginBottom: 20,},
   dropdownBox: {width: '100%', height: 40, marginBottom: 32,},
   dropdownBoxPlaceholder: {color: '#777'},
   createButton: {marginTop: 20, width: '25%', alignSelf: 'center', zIndex: 1},  
-  empty: {height: 100, backgroundColor: '#fff'},
+  empty: {height: 45, backgroundColor: '#fff'},
 })
