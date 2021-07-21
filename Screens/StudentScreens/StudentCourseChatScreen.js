@@ -17,7 +17,7 @@ export default class StudentCourseChatScreen extends React.Component{
     connect: true,
   }
 
-  socket = io(`http://192.168.1.5:8000`)
+  socket = io(`http://${localhost}:8000`)
 
   componentDidMount(){
     if(this.state.connect){

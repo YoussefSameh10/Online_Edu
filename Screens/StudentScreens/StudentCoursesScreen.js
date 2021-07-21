@@ -58,7 +58,7 @@ export default class StudentCoursesScreen extends React.Component{
       <FlatList 
           data={this.state.courses}
           renderItem={this.renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.code}
           style={{flex: 1, backgroundColor: Colors.primary_color}}
       />
 
