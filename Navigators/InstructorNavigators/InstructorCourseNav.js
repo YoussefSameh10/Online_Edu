@@ -1,7 +1,6 @@
 import React from 'react'
 import { Icon } from 'react-native-elements'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import InstructorCourseOverviewScreen from '../../Screens/InstructorScreens/InstructorCourseOverviewScreen'
 import InstructorCourseContentScreen from '../../Screens/InstructorScreens/InstructorCourseContentScreen'
 import InstructorCourseQuizzesScreen from '../../Screens/InstructorScreens/InstructorCourseQuizzesScreen'
 import InstructorCourseGradesScreen from '../../Screens/InstructorScreens/InstructorCourseGradesScreen'
@@ -27,30 +26,14 @@ export default class InstructorCourseNav extends React.Component{
           labelStyle: {fontSize: 13}
         }}  
       >
+        
         <InstructorCourseNavigator.Screen
-          name='overview'
-          children={() => <InstructorCourseOverviewScreen 
+          name='content'
+          children={() => <InstructorCourseContentScreen 
             navigation={this.props.navigation} 
             userToken={this.props.userToken}
             course={this.props.route.params.course}
             instructorName={this.props.route.params.instructorName}
-          />}
-          options={{
-            tabBarIcon: ({color, size}) =>(
-              <Icon 
-                name='columns'
-                type='font-awesome-5' 
-                color={color} 
-                size={size} 
-              />
-            ),
-            title: 'Overview'
-          }}
-        />
-        <InstructorCourseNavigator.Screen
-          name='content'
-          children={() => <InstructorCourseContentScreen 
-            navigation={this.props.navigation} userToken={this.props.userToken}
           />}
           options={{
             tabBarIcon: ({color, size}) =>(
