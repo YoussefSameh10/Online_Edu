@@ -18,6 +18,7 @@ export default class AdminManageCoursesNav extends React.Component{
     coursesShownData: [],
     courses: [],
     coursesByYear: [],
+    shownCourses: [],
     loading: true,
   }
 
@@ -52,6 +53,7 @@ export default class AdminManageCoursesNav extends React.Component{
         coursesBasicData: [...arr.sort(compareByName)],
         courses: [...this.state.courses.sort(compareByName)],
         coursesByYear: [...this.state.coursesByYear.sort(compareByName)],
+        shownCourses: [...this.state.coursesByYear.sort(compareByName)],
       })
     })  
   }
@@ -86,7 +88,8 @@ export default class AdminManageCoursesNav extends React.Component{
       this.setState({loading: false})
 
     } catch (err){
-      console.log(err.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -94,20 +97,24 @@ export default class AdminManageCoursesNav extends React.Component{
     this.setState({searchInput: input})
     if(input === null){
       this.setState({
-        coursesShownData: this.state.coursesBasicData
+        coursesShownData: this.state.coursesBasicData,
+        shownCourses: this.state.courses
       })
     } else{
       this.setState({
         coursesShownData: [...this.state.coursesBasicData
           .filter(function(item) {
             return !(item.name.indexOf(input) && item.code.indexOf(input))
-          })]
+          })],
+        shownCourses: [...this.state.coursesByYear
+          .filter(function(item) {
+            return !(item.name.indexOf(input) && item.code.indexOf(input))
+          })],
       })
     }
   }
 
   filterByYear = (year) => {
-    this.setState({loading: true})
     this.init()
     this.setState({
       coursesShownData: [...this.state.coursesBasicData.filter(function(course){
@@ -127,17 +134,24 @@ export default class AdminManageCoursesNav extends React.Component{
         }
       })]
     }, () => {
-      this.setState({loading: false})
+      this.setState({
+        shownCourses: [...this.state.coursesByYear
+          .filter(function(course) {
+            return course.year === year
+        })],
+      })
     })
   }
 
   handleYearChange = (year) => {
+    this.setState({loading: true})
     if(year!=='0'){
       this.setState({year: year, searchInput: ''}, () => this.filterByYear(year))
     }
     else{
       this.setState({year: year, searchInput: ''},this.getCourses)
     }
+    this.setState({loading: false})
   }
 
   deleteCourse = (code) => {
@@ -147,8 +161,6 @@ export default class AdminManageCoursesNav extends React.Component{
       this.init
     )
   }
-
-
 
   render(){
     return(
@@ -178,6 +190,7 @@ export default class AdminManageCoursesNav extends React.Component{
               year={this.state.year}
               coursesShownData={this.state.coursesShownData}
               coursesByYear={this.state.coursesByYear}
+              shownCourses={this.state.shownCourses}
               loading={this.state.loading}
             />
           }

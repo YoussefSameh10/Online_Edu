@@ -4,6 +4,7 @@ import ProfileAvatar from '../../Components/ProfileAvatar'
 import { Icon } from 'react-native-elements'
 import DropDownPicker from 'react-native-dropdown-picker';
 import { url } from '../../Constants/numbers';
+import Spinner from 'react-native-loading-spinner-overlay'
 import Colors from '../../Constants/colors';
 
 export default class AdminViewAdminInfoScreen extends React.Component{
@@ -14,7 +15,8 @@ export default class AdminViewAdminInfoScreen extends React.Component{
     adminOldCode: this.props.route.params.userCode,
     adminName: this.props.route.params.userName,
     adminCode: this.props.route.params.userCode,
-    adminEmail: this.props.route.params.userEmail
+    adminEmail: this.props.route.params.userEmail,
+    loading: false,
   }
 
   componentDidUpdate(prevProps, prevState){
@@ -57,6 +59,7 @@ export default class AdminViewAdminInfoScreen extends React.Component{
 
   handleSave = async() => {
     try{
+      this.setState({loading: true})
       const response = await fetch(`${url}/admins/users/update`, {
         method: 'PATCH',
         headers: {
@@ -90,9 +93,11 @@ export default class AdminViewAdminInfoScreen extends React.Component{
       else if(response.status === 500){
         Toast.show('Server Error')
       }
+      this.setState({loading: false})
 
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
 
     
@@ -106,6 +111,7 @@ export default class AdminViewAdminInfoScreen extends React.Component{
         keyboardVerticalOffset={-100}
       >
         <ScrollView>
+          <Spinner visible={this.state.loading} />
           {/* <View style={styles.picture}>
             <ProfileAvatar size={'large'}/>
           </View> */}

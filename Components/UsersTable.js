@@ -131,7 +131,9 @@ export default class UsersTable extends React.Component{
       })
       
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false, codeToBeDeleted: -1})
+      Toast.show('An error occured. Please try again later')
+
     }
   }
 
@@ -172,7 +174,9 @@ export default class UsersTable extends React.Component{
       })
       
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false, codeToBeDeleted: -1})
+      Toast.show('An error occured. Please try again later')
+
     }
   }
 
@@ -223,6 +227,7 @@ export default class UsersTable extends React.Component{
           data={this.props.usersShownData}
           renderItem={this.renderItem}
           keyExtractor={item => item.code}
+          keyboardShouldPersistTaps='handled'
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -231,7 +236,6 @@ export default class UsersTable extends React.Component{
             />
           }
         />
-        
       </View>
     );
   }
@@ -242,7 +246,7 @@ const styles = StyleSheet.create({
   header: { height: 40, },
   headerText: { margin: 6, fontSize: 20, fontWeight: 'bold' },
   text: { margin: 6, },
-  evenRow: { flexDirection: 'row', backgroundColor: '#eef', height: 60, },
+  evenRow: { flexDirection: 'row', backgroundColor: Colors.grey, height: 60, },
   oddRow: {flexDirection: 'row', backgroundColor: '#fff', height: 60, },
   dialogDeleteButton: {color: 'red'},
   dialogCancelButton: {color: Colors.primary_color}

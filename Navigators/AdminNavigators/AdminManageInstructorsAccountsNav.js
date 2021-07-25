@@ -16,6 +16,7 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
     instructorsBasicData: [],
     instructorsShownData: [],
     instructors: [],
+    shownInstructors: [],
     loading: true,
   }
 
@@ -38,6 +39,7 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
       instructorsShownData: [...arr.sort(compareByName)], 
       instructorsBasicData: [...arr.sort(compareByName)],
       instructors: [...this.state.instructors.sort(compareByName)],
+      shownInstructors: [...this.state.instructors.sort(compareByName)],
     })
   }
 
@@ -67,7 +69,8 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
       this.setState({loading: false})
 
     } catch (err){
-      console.log(err.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -75,14 +78,19 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
     this.setState({searchInput: input})
     if(input === ''){
       this.setState({
-        instructorsShownData: this.state.instructorsBasicData
+        instructorsShownData: this.state.instructorsBasicData,
+        shownInstructors: this.state.instructors
       })
     } else{
       this.setState({
-        instructorsShownData: this.state.instructorsBasicData
+        instructorsShownData: [...this.state.instructorsBasicData
           .filter(function(item) {
             return !(item.name.indexOf(input) && item.code.indexOf(input))
-          })
+        })],
+        shownInstructors: [...this.state.instructors
+          .filter(function(item) {
+            return !(item.name.indexOf(input) && item.code.indexOf(input))
+      })]
       })
     }
   }
@@ -121,6 +129,7 @@ export default class AdminManageInstructorsAccountsNav extends React.Component{
               searchInput={this.state.searchInput}
               instructorsShownData={this.state.instructorsShownData}
               instructors={this.state.instructors}
+              shownInstructors={this.state.shownInstructors}
               loading={this.state.loading}
             />
           }

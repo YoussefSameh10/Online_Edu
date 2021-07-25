@@ -57,7 +57,7 @@ export default class AdminDashboardNav extends React.Component{
                 <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
-            title: 'Admins Accounts',
+            title: 'Admins',
           })}
         />
         
@@ -79,7 +79,7 @@ export default class AdminDashboardNav extends React.Component{
                 <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
-            title: 'Instructors Accounts',
+            title: 'Instructors',
           })}
         />
 
@@ -101,7 +101,7 @@ export default class AdminDashboardNav extends React.Component{
                 <ProfileAvatar size={'small'} name={this.props.user.name}/>
               </TouchableOpacity>
             ),
-            title: 'Students Accounts',
+            title: 'Students',
           })}
           
         />

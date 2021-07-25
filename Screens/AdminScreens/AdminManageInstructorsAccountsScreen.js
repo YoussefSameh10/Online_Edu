@@ -47,7 +47,7 @@ export default class AdminManageInstructorsAccountsScreen extends React.Componen
           userType={'Instructor'}
           attributes={this.state.attributes} 
           usersShownData={this.props.instructorsShownData}
-          users={this.props.instructors}
+          users={this.props.shownInstructors}
           userToken={this.props.userToken}
           navigation={this.props.navigation} 
           deleteUser={this.props.deleteInstructor}

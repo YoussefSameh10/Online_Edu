@@ -13,12 +13,14 @@ import { emailReg, url } from '../Constants/numbers'
 
 export default class LoginScreen extends React.Component{
   state = {
+    //username: 'instructor@example.com',
+    //password: 'instructor',
     username: '',
     password: '',
     userToken: null,
     user: {},
     typing: 1,
-    isFormValid: false,
+    isFormValid: true,
     validUsername: false,
     validPassword: false,
     loading: false,
@@ -58,7 +60,6 @@ export default class LoginScreen extends React.Component{
       this.setState({password: password, validPassword: true})
     }
   }
-
 
   login = async () => {
       
@@ -103,11 +104,15 @@ export default class LoginScreen extends React.Component{
       >
         <Spinner visible={this.state.loading}/>
         <Image
-          source={require('../assets/login_img1.png')}
+          source={require('../assets/login.jpeg')}
           style={styles.img}
           resizeMode= 'cover'
         />
-        <ScrollView style={styles.scroller} contentContainerStyle={styles.scrollerContent}>
+        <ScrollView 
+          style={styles.scroller} 
+          contentContainerStyle={styles.scrollerContent}
+          keyboardShouldPersistTaps='handled'  
+        >
           <TypeWriter 
             typing={this.state.typing}
             //onTypingEnd={this.toggleTyping}
@@ -120,6 +125,7 @@ export default class LoginScreen extends React.Component{
             placeholder={'Username'}
             value={this.state.username}
             onChangeText={this.handleUsernameUpdate}
+            keyboardType='email-address'
             autoCompleteType='email'
             style={styles.usernameInput}
           />
@@ -143,7 +149,7 @@ export default class LoginScreen extends React.Component{
             />
             <TouchableOpacity onPress={() => {this.setState({visible: !this.state.visible})}}>
               <Icon 
-                name={this.state.visible ? 'eye-slash' : 'eye'}
+                name={!this.state.visible ? 'eye-slash' : 'eye'}
                 type='font-awesome'
                 color={Colors.primary_color}  
                 style={styles.showIcon}
@@ -183,13 +189,14 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'flex-start',
       backgroundColor: '#fff',
+      paddingBottom: 40
     },
     scroller: {alignSelf: 'center', width: '100%',},
     scrollerContent: {alignItems: 'center'}, 
     loginButton: {width: '30%', alignSelf: 'center'},
     img: {
       width: '100%',
-      height: 120,
+      height: '40%',
       marginBottom: 30,
     },
   
@@ -197,7 +204,7 @@ const styles = StyleSheet.create({
         fontSize: 32,
         color: Colors.secondary_color,
         fontWeight: 'bold',
-        marginBottom: 40,
+        marginBottom: 20,
     },
 
     usernameInput: {
@@ -207,7 +214,7 @@ const styles = StyleSheet.create({
       padding: 8,
     },
 
-    alert: {width: '80%', marginBottom: 30,},
+    alert: {width: '80%', marginBottom: 16,},
 
     passwordBox: {
       justifyContent: 'flex-start',

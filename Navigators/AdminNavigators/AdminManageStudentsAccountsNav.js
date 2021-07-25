@@ -19,6 +19,7 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
     studentsShownData: [],
     students: [],
     studentsByYear: [],
+    shownStudents: [],
     loading: true,
   }
 
@@ -51,7 +52,8 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
         studentsShownData: [...arr.sort(compareByName)], 
         studentsBasicData: [...arr.sort(compareByName)],
         students: [...this.state.students.sort(compareByName)],
-        studentsByYear: [...this.state.studentsByYear.sort(compareByName)]
+        studentsByYear: [...this.state.studentsByYear.sort(compareByName)],
+        shownStudents: [...this.state.studentsByYear.sort(compareByName)]
       })
     })
     
@@ -82,7 +84,8 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
       }
       this.setState({loading: false})
     } catch (err){
-      console.log(err.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -90,20 +93,24 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
     this.setState({searchInput: input})
     if(input === null){
       this.setState({
-        studentsShownData: this.state.studentsBasicData
+        studentsShownData: this.state.studentsBasicData,
+        shownStudents: this.state.students
       })
     } else{
       this.setState({
         studentsShownData: [...this.state.studentsBasicData
           .filter(function(item) {
             return !(item.name.indexOf(input) && item.code.indexOf(input))
-          })]
+          })],
+        shownStudents: [...this.state.studentsByYear
+          .filter(function(item) {
+            return !(item.name.indexOf(input) && item.code.indexOf(input))
+        })],
       })
     }
   }
 
   filterByYear = (year) => {
-    this.setState({loading:true})
     this.init()
     this.setState({
       studentsShownData: [...this.state.studentsBasicData.filter(function(student){
@@ -118,7 +125,12 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
         }
       })]
     }, () => {
-      this.setState({loading: false})
+      this.setState({
+        shownStudents: [...this.state.studentsByYear
+          .filter(function(student) {
+            return student.year === year
+        })],
+      })
     })
   }
 
@@ -133,7 +145,6 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
     this.setState({loading: false})
   }
   
-
   deleteStudent = (code) => {
     this.setState({
         students: [...this.state.students.filter(function(student){return student.code !== code})],
@@ -168,6 +179,7 @@ export default class AdminManageStudentsAccountsNav extends React.Component{
               year={this.state.year}
               studentsShownData={this.state.studentsShownData}
               studentsByYear={this.state.studentsByYear}
+              shownStudents={this.state.shownStudents}
               loading={this.state.loading}
             />
           }

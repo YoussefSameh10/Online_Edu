@@ -70,7 +70,7 @@ export default class AdminManageCoursesScreen extends React.Component{
           userType={'Course'}
           attributes={this.state.attributes} 
           usersShownData={this.props.coursesShownData} 
-          users={this.props.coursesByYear}
+          users={this.props.shownCourses}
           userToken={this.props.userToken}
           navigation={this.props.navigation} 
           deleteUser={this.props.deleteCourse}

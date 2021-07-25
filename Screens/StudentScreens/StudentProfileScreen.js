@@ -103,7 +103,8 @@ export default class StudentProfileScreen extends React.Component{
       }
       this.setState({loading: false})
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -127,7 +128,9 @@ export default class StudentProfileScreen extends React.Component{
       this.setState({loading: false})
 
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
+
     }
   }
 
@@ -220,7 +223,7 @@ export default class StudentProfileScreen extends React.Component{
               type='font-awesome'
               color={'#fff'}  
             />
-            <Text style={styles.buttonLabel}>Logout</Text>
+            <Text style={styles.logoutButtonLabel}>Logout</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -237,4 +240,5 @@ const styles = StyleSheet.create({
   buttonsGroup: {flex: 1, alignItems: 'flex-end', marginTop: 50},
   button: {width: 50, height: 50, borderRadius: 30, backgroundColor: Colors.primary_color, marginBottom: 16, justifyContent: 'center'},
   buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
+  logoutButtonLabel: {color: '#fff', fontSize: 9, textAlign: 'center'},
 })

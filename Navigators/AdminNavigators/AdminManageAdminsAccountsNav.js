@@ -17,6 +17,7 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
     adminsBasicData: [],
     adminsShownData: [],
     admins: [],
+    shownAdmins: [],
     loading: true,
   }
 
@@ -39,6 +40,7 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
       adminsShownData: [...arr.sort(compareByName)], 
       adminsBasicData: [...arr.sort(compareByName)],
       admins: [...this.state.admins.sort(compareByName)],
+      shownAdmins: [...this.state.admins.sort(compareByName)],
     })
   }
 
@@ -53,9 +55,7 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
           "Authorization": "Bearer " + this.props.userToken,        
         }
       })
-      
       const results = await response.json()
-      this.setState({loading: false})
       if(response.status === 200){
         this.setState({admins: results}, this.init)
       }
@@ -69,7 +69,8 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
       this.setState({loading: false})
     
     } catch (err){
-      console.log(err.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -77,14 +78,19 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
     this.setState({searchInput: input})
     if(input === null){
       this.setState({
-        adminsShownData: this.state.adminsBasicData
+        adminsShownData: this.state.adminsBasicData,
+        shownAdmins: this.state.admins
       })
     } else{
       this.setState({
-        adminsShownData: this.state.adminsBasicData
+        adminsShownData: [...this.state.adminsBasicData
         .filter(function(item) {
           return !(item.name.indexOf(input) && item.code.indexOf(input))
-        })
+        })],
+        shownAdmins: [...this.state.admins
+          .filter(function(item) {
+            return !(item.name.indexOf(input) && item.code.indexOf(input))
+        })]
       })
     }
   }
@@ -114,6 +120,7 @@ export default class AdminManageAdminsAccountsNav extends React.Component{
               searchInput={this.state.searchInput}
               adminsShownData={this.state.adminsShownData}
               admins={this.state.admins}
+              shownAdmins={this.state.shownAdmins}
               loading={this.state.loading}
             />
           }

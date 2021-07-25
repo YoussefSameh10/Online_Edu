@@ -23,7 +23,8 @@ export default class InstructorCourseNav extends React.Component{
         backBehavior='none'
         tabBarOptions={{
           activeTintColor: Colors.primary_color,
-          labelStyle: {fontSize: 13}
+          labelStyle: {fontSize: 13},
+          keyboardHidesTabBar: true
         }}  
       >
         
@@ -31,7 +32,7 @@ export default class InstructorCourseNav extends React.Component{
           name='content'
           children={() => <InstructorCourseContentScreen 
             navigation={this.props.navigation} 
-            userToken={this.props.userToken}
+            userToken={this.props.route.params.userToken}
             course={this.props.route.params.course}
             instructorName={this.props.route.params.instructorName}
           />}
@@ -44,14 +45,14 @@ export default class InstructorCourseNav extends React.Component{
                 size={size} 
               />
             ),
-            title: 'Content'
+            title: 'Lessons'
           }}
         />
         <InstructorCourseNavigator.Screen
           name='quizzes'
           children={() => <InstructorCourseQuizzesScreen 
             navigation={this.props.navigation} 
-            userToken={this.props.userToken}
+            userToken={this.props.route.params.userToken}
             course={this.props.route.params.course}
             instructorName={this.props.route.params.instructorName}
           />}
@@ -71,7 +72,7 @@ export default class InstructorCourseNav extends React.Component{
           name='assignments'
           children={() => <InstructorCourseAssignmentsScreen 
             navigation={this.props.navigation} 
-            userToken={this.props.userToken}
+            userToken={this.props.route.params.userToken}
             course={this.props.route.params.course}
             instructorName={this.props.route.params.instructorName}
           />}
@@ -91,7 +92,7 @@ export default class InstructorCourseNav extends React.Component{
           name='grades'
           children={() => <InstructorCourseGradesScreen 
             navigation={this.props.navigation} 
-            userToken={this.props.userToken}
+            userToken={this.props.route.params.userToken}
             course={this.props.route.params.course}
             instructorName={this.props.route.params.instructorName}
           />}

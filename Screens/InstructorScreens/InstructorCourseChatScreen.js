@@ -4,9 +4,10 @@ import { Button, TouchableOpacity, FlatList, StyleSheet, Text, TextInput, View }
 import { Icon } from 'react-native-elements'
 import {io} from 'socket.io-client'
 import Moment from 'moment'
-import localhost from '../../Constants/numbers'
+import {localhost} from '../../Constants/numbers'
 import { clockRunning } from 'react-native-reanimated'
 
+const socket = io(`http://${localhost}:8000`)
 
 export default class InstructorCourseChatScreen extends React.Component{
   
@@ -16,7 +17,7 @@ export default class InstructorCourseChatScreen extends React.Component{
     typeMessage: '',
     connect: true,
   }
-  socket = io(`http://${localhost}:8000`)
+  
 
   componentDidMount(){
     if(this.state.connect){
@@ -31,15 +32,15 @@ export default class InstructorCourseChatScreen extends React.Component{
     const username = this.props.user.name
     console.log(username)
     const room = this.props.courseCode
-    this.socket.emit('join', {username, room}, () => {
+    socket.emit('join', {username, room}, () => {
     })
 
-    this.socket.emit('chatHistory', room)
-    this.socket.on('returnChatHistory', (data) => {
+    socket.emit('chatHistory', room)
+    socket.on('returnChatHistory', (data) => {
       this.setState({messages: [...data.slice().reverse()]})
       //console.log(data)
     })
-    this.socket.on('message', (message) => {
+    socket.on('message', (message) => {
       this.setState({messages: [message, ...this.state.messages]})
     })
   }
@@ -140,7 +141,7 @@ export default class InstructorCourseChatScreen extends React.Component{
     console.log('message delivered')
 
 
-    this.socket.emit('sendMessage', this.state.typeMessage, (error) => {
+    socket.emit('sendMessage', this.state.typeMessage, (error) => {
       // if(error){
       //   return console.log(error)
       // }
@@ -156,7 +157,7 @@ export default class InstructorCourseChatScreen extends React.Component{
           inverted
           data={this.state.messages}
           renderItem={this.renderItem}
-          //keyExtractor={item => item.id} 
+          keyExtractor={item => item._id} 
           style={styles.scroller} 
         />
         <View style={styles.fixedBottom}>

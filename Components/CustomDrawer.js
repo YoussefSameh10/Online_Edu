@@ -9,8 +9,8 @@ export default class CustomDrawer extends React.Component{
         <DrawerContentScrollView {...this.props}>
           <View style={styles.container}>
             <Image 
-              source={require('../assets/login_img1.png')} 
-              resizeMode='center' 
+              source={require('../assets/login.jpeg')} 
+              resizeMode='contain' 
               style={styles.headerImage} 
             />
           </View>
@@ -23,7 +23,7 @@ export default class CustomDrawer extends React.Component{
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      height: 200,
+      height: 250,
       alignItems: 'center',
       justifyContent: 'flex-start',
       marginBottom: 10

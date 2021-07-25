@@ -48,7 +48,7 @@ export default class AdminManageAdminsAccountsScreen extends React.Component{
           userType={'Admin'}
           attributes={this.state.attributes} 
           usersShownData={this.props.adminsShownData} 
-          users={this.props.admins}
+          users={this.props.shownAdmins}
           userToken={this.props.userToken}
           navigation={this.props.navigation} 
           refresh={this.props.getAdmins}

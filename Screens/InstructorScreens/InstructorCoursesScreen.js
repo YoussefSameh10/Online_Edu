@@ -4,11 +4,14 @@ import Toast from 'react-native-simple-toast';
 import CourseCard from '../../Components/CourseCard';
 import Colors from '../../Constants/colors';
 import { url } from '../../Constants/numbers';
+import { compareByCourseYearAndName } from '../../Constants/Functions';
+
 
 export default class InstructorCoursesScreen extends React.Component{
 
   state = {
-    courses: []
+    courses: [],
+    loading: true,
   }
 
   componentDidMount(){
@@ -23,6 +26,7 @@ export default class InstructorCoursesScreen extends React.Component{
       user={this.props.user}
       userToken={this.props.userToken}
       userType={'instructor'} 
+      index={index}
     />
   )
 
@@ -37,8 +41,9 @@ export default class InstructorCoursesScreen extends React.Component{
         },
       })
       const result = await response.json()
+      console.log(result)
       if(response.status === 200){
-        this.setState({courses: [...result]})
+        this.setState({courses: [...result.sort(compareByCourseYearAndName)]})
       }
       else if(response.status === 500){
         Toast.show(`Server error`)
@@ -46,9 +51,11 @@ export default class InstructorCoursesScreen extends React.Component{
       else{
         Toast.show(result)
       }
+      this.setState({loading: false})
       
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -58,7 +65,7 @@ export default class InstructorCoursesScreen extends React.Component{
           data={this.state.courses}
           renderItem={this.renderItem}
           keyExtractor={item => item.code}
-          style={{flex: 1, backgroundColor: Colors.primary_color}}
+          style={{flex: 1, backgroundColor: '#eee'}}
       />
       
     );

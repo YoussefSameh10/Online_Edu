@@ -1,15 +1,23 @@
 import React from 'react'
-import { StyleSheet, View, Button, Text, ScrollView, Modal, FlatList } from 'react-native';
+import { StyleSheet, View, Button, Text, ScrollView, addLessonModal, FlatList } from 'react-native';
 import TreeView from 'react-native-final-tree-view';
 import * as DocumentPicker from 'expo-document-picker';
 import { Icon } from 'react-native-elements'
 import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay'
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import Colors from '../../Constants/colors';
+import {url} from '../../Constants/numbers'
+import { lessonsToTree } from '../../Constants/Functions';
+import * as Linking from 'expo-linking';
+import { Modal } from 'react-native';
+import YoutubePlayer from 'react-native-youtube-iframe';
+import PDFReader from 'rn-pdf-reader-js'
+
 
 async function upload() {
   try{
-    const file = await DocumentPicker.getDocumentAsync({type: 'text/*'})
+    const file = await DocumentPicker.getDocumentAsync({type: 'application/pdf'})
     if(file.type === 'success'){
       return file
     }
@@ -21,250 +29,324 @@ async function upload() {
   }
 }
 
-export default class AdminManageStudentsAccountsScreen extends React.Component{
+export default class InstructorCourseContentScreen extends React.Component{
   
   state={
-    lessons: [
-      {
-        id: 'Grandparent',
-        name: 'Grandpa',
-        age: 78,
-        children: [
-          {
-            id: 'Me',
-            name: 'Me',
-            age: 30,
-            children: [
-              {
-                id: 'Erick',
-                name: 'Erick',
-                age: 10,
-              },
-              {
-                id: 'Rose',
-                name: 'Rose',
-                age: 12,
-              },
-            ],
-          },
-          {
-            id: 'You',
-            name: 'You',
-            age: 30,
-            children: [
-              {
-                id: 'Cantona',
-                name: 'Cantona',
-                age: 10,
-              },
-              {
-                id: 'Pink',
-                name: 'Pink',
-                age: 12,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 'GrandMa',
-        name: 'Grandma',
-        age: 78,
-        children: [
-          {
-            id: 'We',
-            name: 'We',
-            age: 30,
-            children: [
-              {
-                id: 'Toby',
-                name: 'Toby',
-                age: 10,
-              },
-              {
-                id: 'Yellow',
-                name: 'Yellow',
-                age: 12,
-              },
-            ],
-          },
-          {
-            id: 'They',
-            name: 'They',
-            age: 30,
-            children: [
-              {
-                id: 'Dier',
-                name: 'Dier',
-                age: 10,
-              },
-              {
-                id: 'Red',
-                name: 'Red',
-                age: 12,
-              },
-            ],
-          },
-        ],
-      },
-      
-    ],
-    visibleModal: false,
+    lessons: this.props.course.lessons,
+    visibleAddLessonModal: false,
+    visibleYoutubeModal: false,
+    visiblePdf: false,
     lessonTitle: '',
     youtubeLink: '',
     enableAdd: false,
+    validFile: false,
+    loading: false,
+    loadingPdf: true,
+    file: {},
+    fileToSend: {},
+    videoID: ''
+  }
+  componentDidMount(){
+    this.formatLessons()
+  }
+
+  formatLessons = () => {
+    this.setState({lessons: [...this.state.lessons.map(lessonsToTree)]})
   }
 
   handleLessonTitleUpdate = lessonTitle => {
     this.setState({lessonTitle}, this.validateForm)
   }
+
   handleYoutubeLinkUpdate = youtubeLink => {
     this.setState({youtubeLink}, this.validateForm)
   }
 
   validateForm = () => {
-    if(this.state.lessonTitle.length > 0 && this.state.youtubeLink.length > 0){
+    if(this.state.lessonTitle.length > 0 && Object.keys(this.state.file).length !== 0){
       this.setState({enableAdd: true})
     }
+    else{
+      this.setState({enableAdd: false})
+    }
+  }
+  
+  refreshLessons = async() => {
+    try{
+			const response = await fetch(`${url}/courses/course/${this.props.course.code}`,{
+				method: 'GET',
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + this.props.userToken,        
+				},
+			})
+			const result = await response.json()
+      console.log('result', result)
+			if(response.status === 200){
+				this.setState({lessons: result.course.lessons}, this.formatLessons)
+			}
+			else if(response.status === 500){
+				Toast.show('Server error')
+			}
+			else{
+				Toast.show(result)
+			}
+			
+			
+		} catch(e){
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
+
+		}
   }
 
-  // uploadFile = () =>{
-  //   var formData = new FormData();
-  //   const token ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MGMzMjI3OTk1MmVhNTNhMGMyNzdmOTYiLCJuYW1lIjoiYWJkZWxyaG1hbiIsImVtYWlsIjoiaTZAZ21haWwuY29tIiwicm9sZSI6Imluc3RydWN0b3IiLCJpYXQiOjE2MjM0MDY3NzN9.uRxlfkIbpEkbf5IIasOD0sbJKWhO0hO48mbvR0M8tng'
-  //   //console.log(this.state.filename)  
-  //   //console.log(this.state.title)
-  //   formData.append('upload', {uri: this.state.File.uri
-  //     , name: this.state.File.name, type: 'file/pdf'});
-  //     formData.append(`lesson_title`, this.state.title);
-  //     formData.append(`course_id`, `60c337c85b92c52224b405e4`);
-  //     fetch(`http://192.168.1.4:3000/courses/course/lessonsUpload`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Authorization": `Bearer ${token}`,
-  //       },
-  //       body: formData,
-  //     })
-  //       .then((res) => {
-  //         console.log(res);
-  //         if (!res.ok) {
-  //           throw Error(res.status);
-  //         }
-  //         console.log("then data");
-  //       })
-  //       .catch((error) => console.log(error));
-  //       this.setState({i:this.state.i+1})
-  //       this.setState({ 
-  //         Lessons: this.state.Lessons.concat([`Lesson${this.state.i}: ${this.state.File.name}${'\n'}`])
-  //       })
-  //     this.setState({File:{name:'',size:0,type:'',uri:''},title:''})
-  // }
+  sendFile = async() => {
+    this.setState({loading: true})
+    var formData = new FormData()
+    const file = this.state.fileToSend
+    formData.append('upload', file)
+    formData.append('lesson_title', this.state.lessonTitle)
+    formData.append('course_id', this.props.course._id)  
+    if(this.state.youtubeLink){
+      formData.append('video_url', this.state.youtubeLink)    
+    }
+    try{
+      const response = await fetch(`${url}/courses/course/lessonsUpload`,{
+        method: 'POST',
+        headers: {
+          "Authorization": "Bearer " + this.props.userToken,
+        },
+        body: formData
+      })
+      const result = await response.json()
+      if(response.status === 200){
+        this.refreshLessons()
+      }
+      else if(response.status === 403){
+        Toast.show(result)
+      }
+      
+      else{
+        Toast.show('Server error')
+      }
+      this.setState({loading: false, visibleAddLessonModal: false, lessonTitle: '', youtubeLink: '', enableAdd: false,  file: {}})
+    }catch(e) {
+      this.setState({loading: false, visibleAddLessonModal: false, lessonTitle: '', youtubeLink: '', enableAdd: false,  file: {}})
+      Toast.show('An error occured. Please try again later')
+    }
+  }
   
-  uploadFile = async() => {
-
+  handleUpload = async() => {
+    this.setState({file: await upload()}, () => {
+      if(Object.keys(this.state.file).length !== 0){
+        this.setState({validFile: true, loading: true})
+      }
+      else{
+        this.setState({validFile: false, loading: false})
+      }
+      const { name, uri } = this.state.file
+      
+      const file = {
+        uri: uri,
+        name: name,
+        type: 'file/pdf',
+      }
+      this.setState({fileToSend: file, loading: false})
+      this.validateForm()
+    })
   }
 
   createLesson = () => {
-    this.setState({visibleModal: false})
+    this.setState({visibleAddLessonModal: false})
   }
 
-  getIndicator = (isExpanded, hasChildrenNodes) => {
-    if (!hasChildrenNodes) {
-      return '-'
-    } else if (isExpanded) {
-      return '\\/'
-    } else {
-      return '>'
+  renderNode = ({node, level, isExpanded, hasChildrenNodes}) => {
+    if(level===2 && node.name==='Preview'){
+      return(
+        <View style={{alignSelf: 'flex-start', marginLeft: 25*level, marginBottom: 16,}}>
+          <Icon 
+            name='file'
+            type='font-awesome'
+            color={Colors.primary_color}
+          />
+        </View>
+      )
     }
+    else if(level===2 && node.name==='Download'){
+      return(
+        <View style={{alignSelf: 'flex-start', marginLeft: 25*level, marginBottom: 16,}}>
+          <Icon 
+            name='download'
+            type='font-awesome'
+            color={Colors.primary_color}
+          />
+        </View>
+      )
+    }
+    else if(level===2 && node.name==='Player'){
+      return(
+        <View style={{alignSelf: 'flex-start', marginLeft: 25*level, marginBottom: 16,}}>
+          <Icon 
+            name='movie'
+            color={Colors.primary_color}
+          />
+        </View>
+      )
+    }
+    else if(level===2 && node.name==='Youtube'){
+      return(
+        <View style={{alignSelf: 'flex-start', marginLeft: 25*level, marginBottom: 16,}}>
+          <Icon 
+            name='youtube'
+            type='font-awesome'
+            color={Colors.primary_color}
+          />
+        </View>
+      )
+    }
+    else{
+      return (
+        <View style={{alignSelf: 'flex-start', marginLeft: 25*level, marginBottom: 16, flexDirection: 'row', alignItems: 'center'}}>
+          <Icon 
+            name={isExpanded ? 'chevron-down' : 'chevron-right'}
+            type='font-awesome'
+            color='#000'
+            size={16}
+          /> 
+          <Text style={{fontSize: 20, marginLeft: 8}}>
+            {node.name}
+          </Text>
+        </View>
+      )
+    }
+    
   }
 
-  renderNode = ({node, level, isExpanded, hasChildrenNodes}) => (
-    <View>
-      <Text style={{marginLeft: 25*level, fontSize: 20}}>
-        {this.getIndicator(isExpanded, hasChildrenNodes)} {node.name}
-      </Text>
-    </View>
-  )
-
-  //Open
   onNodePress = ({node, level}) => {
-    if(level === 2){
-      Toast.show(`PRESSED node ${node.name} in level ${level}`)
+    if(level===2 && node.name==='Preview'){
+      this.setState({pdfSrc: node.fileName}, () => {
+        this.setState({visiblePdf: true, loadingPdf: true})
+      })
+    }
+    else if(level===2 && node.name==='Download'){
+      this.setState({pdfSrc: node.fileName}, () => {
+        this.setState({visiblePdf: true, loadingPdf: true})
+      })
+    }
+    else if(level===2 && node.name==='Player'){
+      this.setState({videoID: node.videoID}, () => {
+        this.setState({visibleYoutubeModal: true})
+      })
+    }
+    else if(level===2 && node.name==='Youtube'){
+      console.log(node.videoID)
+      Linking.openURL(`https://www.youtube.com/watch?v=${node.videoID}`)
     }
   }
 
-  //Download
-  onNodeLongPress = ({node, level}) => {
-    if(level === 2){
-      Toast.show(`LONG PRESSED node ${node.name} in level ${level}`)
-    }
-  }
 
   render(){
-    return(
+    return(this.state.visibleYoutubeModal ? 
+      (<View style={styles.videoView}>
+        
+        <YoutubePlayer
+          height={300}
+          play={true}
+          videoId={this.state.videoID}
+          onChangeState={() => {}}
+          webViewStyle={{marginTop: 80}}
+        />
+        <View style={styles.closeVideoButton}>
+          <TouchableOpacity
+            onPress={() => {this.setState({visibleYoutubeModal: false})}}
+          >
+            <Icon 
+              name='close'
+              color='#fff'
+            />
+          </TouchableOpacity>
+        </View>
+      </View>)
+      : this.state.visiblePdf ?(
+        <View style={{flex: 1, justifyContent: 'flex-end'}}>
+          <Spinner visible={this.state.loadingPdf} />
+          <PDFReader
+            source={{
+              uri: 'https://arxiv.org/pdf/quant-ph/0410100',
+            }}
+            onLoad={() => {this.setState({loadingPdf: false})}}
+          />
+        <TouchableOpacity 
+          style={{height: 50, justifyContent: 'center', backgroundColor: '#555',}}
+          onPress={() => {this.setState({visiblePdf: false})}}
+        >
+          <Icon name='close' color='#fff' size={24}/>
+        </TouchableOpacity>
+      </View>
+      ) :
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scroller}>
+        <Spinner visible={this.state.loading} />
+        <ScrollView keyboardShouldPersistTaps='handled'>
           <TreeView 
             data={this.state.lessons}
             renderNode={this.renderNode}
             onNodePress={this.onNodePress}
-            onNodeLongPress={this.onNodeLongPress}
             getCollapsedNodeHeight={({level}) => {}}
           />
-          <View style={styles.modal}>
-          <Modal
-            visible={this.state.visibleModal}
-            onRequestClose={() => {this.setState({visibleModal: false})}}
-            onMagicTap={() => {this.setState({visibleModal: false})}}            
-            animationType='slide'
-            transparent={false}
-          >
-            <View style={styles.modal}>
-              <View style={styles.innerModal}>
-                <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 24}}>Add Lesson</Text>
-                <TextInput 
-                  value={this.state.lessonTitle}
-                  placeholder='Enter lesson title'
-                  onChangeText={this.handleLessonTitleUpdate}
-                  style={styles.input}
-                />
-                <TextInput 
-                  value={this.state.youtubeLink}
-                  placeholder='Enter youtube link'
-                  onChangeText={this.handleYoutubeLinkUpdate}
-                  style={styles.input}
-                />
-                
-                <View style={styles.formButton}>
-                  <Button 
-                    title='Upload File'
-                    onPress={this.uploadFile}
-                    color={Colors.primary_color}
+          <View style={styles.addLessonModal}>
+            <Modal
+              visible={this.state.visibleAddLessonModal}
+              onRequestClose={() => {this.setState({visibleAddLessonModal: false})}}
+              onMagicTap={() => {this.setState({visibleAddLessonModal: false})}}            
+              animationType='slide'
+              transparent={false}
+            >
+              <View style={styles.addLessonModal}>
+                <View style={styles.innerAddLessonModal}>
+                  <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 24}}>Add Lesson</Text>
+                  <TextInput 
+                    value={this.state.lessonTitle}
+                    placeholder='Enter lesson title'
+                    onChangeText={this.handleLessonTitleUpdate}
+                    style={styles.input}
                   />
-                </View>
-
-                <View style={styles.formButton}>
-                  <Button 
-                    title='Create'
-                    onPress={this.createLesson}
-                    color={Colors.primary_color}
+                  <TextInput 
+                    value={this.state.youtubeLink}
+                    placeholder='Enter youtube link'
+                    onChangeText={this.handleYoutubeLinkUpdate}
+                    style={styles.input}
                   />
-                </View>
+                  
+                  <View style={styles.formButton}>
+                    <Button 
+                      title='Choose File'
+                      onPress={this.handleUpload}
+                      color={Colors.primary_color}
+                    />
+                  </View>
 
+                  <View style={styles.formButton}>
+                    <Button 
+                      title='Create'
+                      disabled={!this.state.enableAdd}
+                      onPress={this.sendFile}
+                      color={Colors.primary_color}
+                    />
+                  </View>
+                </View>
               </View>
-            </View>
-          </Modal>
-        </View>
+            </Modal>
+          </View>
         </ScrollView>
         <View style={styles.addButton}>
           <TouchableOpacity 
-            onPress={() => {this.setState({visibleModal: true})}}  
+            onPress={() => {this.setState({visibleAddLessonModal: true})}}  
             >
             <Icon 
-              name='list'
-              type='font-awesome'
+              name='add'
+              size={36}
               color='#fff'
             />
-            <Text style={styles.buttonLabel}>Add lesson</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -276,13 +358,12 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
 
 const styles = StyleSheet.create({
   container: {height: '100%', padding: 16, backgroundColor: '#fff'},
-  scroller: {},
-  buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
   addButton: {width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', 
                   backgroundColor: Colors.primary_color, justifyContent: 'center',marginBottom: 8},
-  modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22,},
-  innerModal: {height: '100%', width: '80%', margin: 20, paddingBottom: 80, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center", justifyContent: 'center'},
+  addLessonModal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22,},
+  innerAddLessonModal: {height: '100%', width: '80%', margin: 20, paddingBottom: 80, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center", justifyContent: 'center'},
   input: {borderBottomWidth: 1, marginBottom: 16, width: '80%', position: 'relative'},
-  formButton: {marginVertical: 8}
-
+  formButton: {marginVertical: 8},
+  videoView: {height: '100%', padding: 8, backgroundColor: '#fff'},
+  closeVideoButton: {backgroundColor: Colors.primary_color, width: 50, height: 50, borderRadius: 30, alignSelf: 'center', justifyContent: 'center', marginVertical: 4},
 });

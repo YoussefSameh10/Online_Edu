@@ -25,7 +25,7 @@ export default class StudentNav extends React.Component{
       return 'Profile'
     }
     else if(route.name==='studentCourseNav'){
-      return `${route.params.course.name}/${route.params.course.code}`
+      return `${route.params.course.name}`
     }
     return ''
   }

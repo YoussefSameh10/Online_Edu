@@ -42,9 +42,6 @@ export default class AdminViewStudentInfoScreen extends React.Component{
   }
 
 
-  componentDidMount(){
-    this.getCourses()
-  }
 
   componentDidUpdate(prevProps, prevState){
     if(prevState.studentName !== this.state.studentName || 
@@ -150,7 +147,8 @@ export default class AdminViewStudentInfoScreen extends React.Component{
       this.setState({loading: false})
 
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
 
     
@@ -159,7 +157,7 @@ export default class AdminViewStudentInfoScreen extends React.Component{
   getCourses = async() => {
     try{
       this.setState({loading: true})
-      const response = await fetch(`${url}/users/getEnrolledCourses/${this.state.studentCode}`, {
+      const response = await fetch(`${url}/users/getEnrolledCourses/${this.state.studentOldCode}`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",
@@ -171,7 +169,7 @@ export default class AdminViewStudentInfoScreen extends React.Component{
         this.setState({studentCourses: [...result.sort(compareByCourseName)]})
       }
       else if(response.status === 500){
-        Toast.show(result)
+        Toast.show('Server error')
       }
       else{
         Toast.show(result)
@@ -179,7 +177,8 @@ export default class AdminViewStudentInfoScreen extends React.Component{
       this.setState({loading: false})
 
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -217,7 +216,8 @@ export default class AdminViewStudentInfoScreen extends React.Component{
       this.setState({loading: false})
       
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -277,7 +277,8 @@ export default class AdminViewStudentInfoScreen extends React.Component{
       this.setState({loading: false})
 
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -312,7 +313,7 @@ export default class AdminViewStudentInfoScreen extends React.Component{
         keyboardVerticalOffset={-100} 
       >
         <Spinner visible={this.state.loading} />
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps='handled'>
         {/* <View style={styles.info}> */}
           <View style={styles.upperSection}>
             <TouchableOpacity
@@ -333,10 +334,9 @@ export default class AdminViewStudentInfoScreen extends React.Component{
             >
               <Icon 
                 name='edit'
-                type='font-awesome'
-                color={'#fff'}  
+                color='#fff'
+                size={32} 
               />
-              <Text style={styles.buttonLabel}>Edit</Text>
             </TouchableOpacity>
           </View>
           
@@ -385,6 +385,8 @@ export default class AdminViewStudentInfoScreen extends React.Component{
             value={this.state.studentEmail}
             editable={this.state.editable}
             onChangeText={this.handleStudentEmailUpdate}
+            keyboardType='email-address'
+            autoCompleteType='email'
             style={this.state.editable ? styles.textEditable : styles.text}
           />
           <Text style={[
@@ -404,14 +406,17 @@ export default class AdminViewStudentInfoScreen extends React.Component{
           </View>
           <TouchableOpacity 
             style={styles.coursesButton}
-            onPress={() => {this.setState({visibleModal: true})}}  
+            onPress={() => {
+              this.setState({visibleModal: true})
+              this.getCourses()
+          }}  
           >
             <Icon 
               name='list'
               type='font-awesome'
               color='#fff'
             />
-            <Text style={styles.buttonLabel}>View Courses</Text>
+            <Text style={styles.coursesButtonLabel}>Courses</Text>
           </TouchableOpacity>
         {/* </View> */}
         <Dialog.Container
@@ -530,13 +535,13 @@ const styles = StyleSheet.create({
   textEditable: {flex: 1,width: '90%', fontSize: 16, backgroundColor: '#fff',
                   height: 35, paddingLeft: 8, borderBottomWidth: 1,},
   alert: {width: '100%', marginBottom: 4,},
-  dropdownBox: {flex: 1, height: 30, width: '90%', marginBottom: 16},
-  saveButton: {width: '30%', alignSelf: 'center', marginBottom: 16},
+  dropdownBox: {flex: 1, height: 30, width: '90%', marginBottom: 16,},
+  saveButton: {width: '30%', alignSelf: 'center', marginBottom: 16, zIndex: -5},
   upperSection: { flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'},
   changePasswordButton: {backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center', marginRight: 8},
   editButton: {backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center'},
   coursesList: {paddingLeft: 8, width: 300, marginBottom: 16},
-  evenCourseRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 40, backgroundColor: '#eef'},
+  evenCourseRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 40, backgroundColor: Colors.grey},
   oddCourseRow: {flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', minHeight: 40, backgroundColor: '#fff'},
   courseName: {fontSize: 18, flex: 1, padding: 4, minWidth: '25%',},
   courseCode: {fontSize: 18, flex: 0.5, padding: 4, minWidth: '25%',},
@@ -546,5 +551,7 @@ const styles = StyleSheet.create({
   coursesButton: {width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', backgroundColor: Colors.primary_color, justifyContent: 'center'},
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22,},
   innerModal: {height: '100%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
+  coursesButtonLabel: {color: '#fff', fontSize: 9, textAlign: 'center'},
   buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
+
 })

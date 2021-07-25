@@ -29,7 +29,7 @@ export default class StudentCourseNav extends React.Component{
           name='content'
           children={() => <StudentCourseContentScreen 
             navigation={this.props.navigation} 
-            userToken={this.props.userToken}
+            userToken={this.props.route.params.userToken}
             course={this.props.route.params.course}
             instructorName={this.props.route.params.instructorName}
           />}
@@ -40,14 +40,14 @@ export default class StudentCourseNav extends React.Component{
                 type='font-awesome-5' 
                 color={color} 
                 size={size} />),
-            title: 'Content'
+            title: 'Lessons'
           }}
         />
         <StudentCourseNavigator.Screen
           name='quizzes'
           children={() => <StudentCourseQuizzesScreen 
             navigation={this.props.navigation} 
-            userToken={this.props.userToken}
+            userToken={this.props.route.params.userToken}
             course={this.props.route.params.course}
             instructorName={this.props.route.params.instructorName}
           />}
@@ -66,7 +66,7 @@ export default class StudentCourseNav extends React.Component{
           name='assignments'
           children={() => <StudentCourseAssignmentsScreen 
             navigation={this.props.navigation} 
-            userToken={this.props.userToken}
+            userToken={this.props.route.params.userToken}
             course={this.props.route.params.course}
             instructorName={this.props.route.params.instructorName}
           />}
@@ -80,11 +80,11 @@ export default class StudentCourseNav extends React.Component{
             title: 'Assignments'
           }}
         />
-        <StudentCourseNavigator.Screen
+        {/* <StudentCourseNavigator.Screen
           name='grades'
           children={() => <StudentCourseGradesScreen 
             navigation={this.props.navigation} 
-            userToken={this.props.userToken}
+            userToken={this.props.route.params.userToken}
             course={this.props.route.params.course}
             instructorName={this.props.route.params.instructorName}
           />}
@@ -97,7 +97,7 @@ export default class StudentCourseNav extends React.Component{
                 size={size} />),
             title: 'Grades'
           }}
-        />
+        /> */}
         <StudentCourseNavigator.Screen
           name='studentCourseChatScreen'
           children={() => <StudentCourseChatScreen 

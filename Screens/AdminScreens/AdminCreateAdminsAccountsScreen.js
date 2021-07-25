@@ -34,6 +34,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
     visibleModal: false,
     file: {},
     errors: [],
+    numberOfErrors: [],
     loading: false,
   }
 
@@ -119,17 +120,13 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
       this.setState
       ({loading: false})
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
   sendFile = async() => {
-    if(file){
-      this.setState({loading: true})
-    }
-    else{
-      this.setState({loading: false})
-    }
+    this.setState({loading: true})
     const { name, uri } = this.state.file
     var formData = new FormData()
     const file = {
@@ -158,7 +155,8 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
         this.props.getAdmins()
         this.setState({
           visibleModal: true, 
-          errors: result.map(error => {
+          numberOfErrors: result.numberOfSavedSuccessfuly[0],
+          errors: result.indicesOfFailedSaving.map(error => {
             if(error.status.search('code') !== -1){
               return{
                 lineNumber: error.index_of_line,
@@ -192,7 +190,8 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
       }
       this.setState({loading: false})
     }catch(e) {
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
   
@@ -211,7 +210,7 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
     return(
       <KeyboardAvoidingView style={styles.container}>
         <Spinner visible={this.state.loading} />
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps='handled'>
           <Text style={styles.title}>
             Create Admins Accounts
           </Text>
@@ -240,6 +239,8 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
             value={this.state.adminEmail}
             placeholder='Email'
             onChangeText={this.handleAdminEmailUpdate}
+            keyboardType='email-address'
+            autoCompleteType='email'
             style={styles.textInput}
           />
           <Text style={[
@@ -260,18 +261,19 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
             />
           </View>
 
-          <TouchableOpacity
-            onPress={this.handleUpload}
-            style={styles.uploadButton}
-          >
-            <Icon 
-              name='file'
-              color='#fff'
-              type='font-awesome'
-              size={20}
-            />
-            <Text style={styles.buttonLabel}>Upload File</Text>
-          </TouchableOpacity>
+          <View style={styles.uploadButton}>
+              <TouchableOpacity
+                onPress={this.handleUpload}
+              >
+                <Icon 
+                  name='file'
+                  color='#fff'
+                  type='font-awesome'
+                  size={20}
+                />
+                <Text style={styles.buttonLabel}>Upload</Text>
+              </TouchableOpacity>
+            </View>
         </ScrollView>
         <View style={styles.modal}>
           <Modal 
@@ -283,7 +285,12 @@ export default class AdminCreateAdminsAccountsScreen extends React.Component{
           >
             <View style={styles.modal}>
               <View style={styles.innerModal}>
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Error Report</Text>
+                <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 16}}>Error Report</Text>
+                <Text style={{fontSize: 16, marginBottom: 8}}>
+                  {
+                    `Created ${this.state.numberOfErrors.number_of_saved_lines} out of ${this.state.numberOfErrors.number_of_saved_lines + this.state.numberOfErrors.number_of_failed_lines}`
+                  }
+                </Text>
                 <FlatList 
                   data={this.state.errors}
                   renderItem={this.renderItem}
@@ -313,5 +320,5 @@ const styles = StyleSheet.create({
   uploadButton: {backgroundColor: Colors.primary_color, marginTop: 120, width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22},
   innerModal: {height: '100%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
-  buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
+  buttonLabel: {color: '#fff', fontSize: 9, textAlign: 'center'},
 })

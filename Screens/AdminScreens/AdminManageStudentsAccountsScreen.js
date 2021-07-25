@@ -70,7 +70,7 @@ export default class AdminManageStudentsAccountsScreen extends React.Component{
           userType={'Student'}
           attributes={this.state.attributes} 
           usersShownData={this.props.studentsShownData} 
-          users={this.props.studentsByYear}
+          users={this.props.shownStudents}
           userToken={this.props.userToken}
           navigation={this.props.navigation} 
           deleteUser={this.props.deleteStudent}

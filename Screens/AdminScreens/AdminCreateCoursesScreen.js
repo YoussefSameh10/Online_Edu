@@ -1,9 +1,13 @@
 import React from 'react'
-import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, View, Button, Text, TextInput, ScrollView, KeyboardAvoidingView, TouchableOpacity, FlatList } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker'
 import Toast from 'react-native-simple-toast'
+import { Icon } from 'react-native-elements'
 import Spinner from 'react-native-loading-spinner-overlay'
 import { url } from '../../Constants/numbers'
+import Colors from '../../Constants/colors'
+import { Modal } from 'react-native'
+import { compareByName } from '../../Constants/Functions'
 
 
 
@@ -16,8 +20,13 @@ export default class AdminCreateCoursesScreen extends React.Component{
     courseYear: '',
     courseScore: '',
     instructorCode: '',
+    instructors: [],
+    shownInstructors: [],
+    chosenInstructorName: '',
+    searchInput: '',
     validInstructorCode: false,
     validCourseScore: false,
+    visibleModal: false,
     loading: false,
   }
 
@@ -62,12 +71,60 @@ export default class AdminCreateCoursesScreen extends React.Component{
       this.setState({courseScore: courseScore, validCourseScore: true})
     }
   }
-  handleInstructorCodeUpdate = instructorCode => {
-    if(instructorCode.length<7){
-      this.setState({instructorCode: instructorCode, validInstructorCode: false})
+  
+  init = () => {
+    this.setState({
+      instructors: [...this.state.instructors.sort(compareByName)],
+      shownInstructors:  [...this.state.shownInstructors.sort(compareByName)]
+    })
+  }
+
+  handleSearch = input => {
+    this.setState({searchInput: input})
+    if(input === ''){
+      this.setState({
+        shownInstructors: this.state.instructors
+      })
+    } else{
+      this.setState({
+        shownInstructors: this.state.instructors
+          .filter(function(item) {
+            return !(item.name.indexOf(input) && item.code.indexOf(input))
+          })
+      })
     }
-    else{
-      this.setState({instructorCode: instructorCode, validInstructorCode: true})
+  }
+
+  getInstructors = async() => {
+    this.setState({visibleModal: true})
+    try{
+      this.setState({loading: true})
+      const response = await fetch(
+        `${url}/admins/getAllInstructors`, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + this.props.userToken,        
+        }
+      })
+
+      const results = await response.json()
+      console.log(results)
+      if(response.status === 200){
+        this.setState({instructors: results, shownInstructors: results}, this.init)
+      }
+      else if(response.status === 500){
+        Toast.show('Server Error')
+      }
+      else{
+        this.setState({instructors: [], shownInstructors: []}, this.init)
+        Toast.show(results)
+      }
+      this.setState({loading: false})
+
+    } catch (err){
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -111,7 +168,8 @@ export default class AdminCreateCoursesScreen extends React.Component{
         this.setState({loading: false})
       }
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }  
   }
 
@@ -141,15 +199,36 @@ export default class AdminCreateCoursesScreen extends React.Component{
       }
       this.setState({loading: false})
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
+
+
+  renderItem = ({item, index}) => (
+    <TouchableOpacity
+      onPress={() => {
+        this.setState({
+          instructorCode: item.code,
+          validInstructorCode: true,
+          visibleModal: false,
+          chosenInstructorName: item.name
+        })
+      }}
+    >
+      <View style={index%2 === 0 ? styles.evenRow : styles.oddRow}>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.code}>{item.code}</Text>
+      </View>
+    </TouchableOpacity>
+  )
+
 
   render(){
     return(
       <KeyboardAvoidingView style={styles.container}>
         <Spinner visible={this.state.loading} />
-        <ScrollView >
+        <ScrollView keyboardShouldPersistTaps='always'>
           <Text style={styles.title}>
             Create New Course
           </Text>
@@ -182,22 +261,25 @@ export default class AdminCreateCoursesScreen extends React.Component{
           ]}>
             Score must be number with maximum value 100
           </Text>
-          
-          <TextInput 
-            value={this.state.instructorCode}
-            placeholder='Instructor Code'
-            onChangeText={this.handleInstructorCodeUpdate}
-            style={styles.textInput}
-          />
 
-          <Text style={[
-            styles.alert,
-            (this.state.validInstructorCode || this.state.instructorCode.length===0) ? 
-            {color: '#fff'} : 
-            {color: 'red'}
-          ]}>
-            Code must be at least 7 characters
-          </Text>
+          <View style={styles.chooseInstructorButton}>
+            <TouchableOpacity
+              onPress={this.getInstructors}
+            >
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Icon 
+                  name='list'
+                />
+                <Text style={{marginLeft: 4}}>
+                  {!this.state.instructorCode ? 
+                    'Choose Instructor' : 
+                    this.state.chosenInstructorName
+                  }
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
 
           <DropDownPicker
             items={[
@@ -212,10 +294,7 @@ export default class AdminCreateCoursesScreen extends React.Component{
             onChangeItem={item => this.handleCourseYearUpdate(item.value)}
             containerStyle={styles.dropdownBox}
             placeholderStyle={styles.dropdownBoxPlaceholder}
-            
-            
           />
-
           <View style={styles.createButton}>
             <Button 
               title='Create'
@@ -224,6 +303,33 @@ export default class AdminCreateCoursesScreen extends React.Component{
             />
           </View>   
           <View style={styles.empty}></View>
+          <View style={styles.modal}>
+          <Modal
+            visible={this.state.visibleModal}
+            onRequestClose={() => {this.setState({visibleModal: false})}}
+            onMagicTap={() => {this.setState({visibleModal: false})}}            
+            animationType='slide'
+            transparent={false}
+          >
+            <View style={styles.modal}>
+              <View style={styles.innerModal}>
+              <TextInput 
+                placeholder={'Search'}
+                value={this.state.searchInput}
+                onChangeText={this.handleSearch}
+                style={styles.searchBox}
+              />
+                <FlatList
+                  data={this.state.shownInstructors}
+                  renderItem={this.renderItem}
+                  keyExtractor={item => item.id}
+                  style={styles.list}
+                  keyboardShouldPersistTaps='handled'
+                />
+              </View>
+            </View>
+          </Modal>
+        </View>
         </ScrollView>
       </KeyboardAvoidingView>
     );
@@ -236,9 +342,19 @@ const styles = StyleSheet.create({
   title: {alignSelf: 'center', marginBottom: 20, fontSize: 20, fontWeight: 'bold'},
   nameTextInput: {width: '100%', marginBottom: 32, paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
   textInput: {width: '100%', paddingLeft: 8, fontSize: 16, backgroundColor: '#fff', borderBottomWidth: 1,},
+  chooseInstructorButton: {width: '100%', height: 40, paddingLeft: 8, fontSize: 16, marginBottom: 32, backgroundColor: '#ddd', borderRadius: 30, justifyContent: 'center'},
   alert: {width: '100%', marginBottom: 20,},
   dropdownBox: {width: '100%', height: 40, marginBottom: 32,},
   dropdownBoxPlaceholder: {color: '#777'},
   createButton: {marginTop: 20, width: '25%', alignSelf: 'center', zIndex: 1},  
   empty: {height: 45, backgroundColor: '#fff'},
+  modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22,},
+  innerModal: {height: '100%', width: '100%', margin: 20, backgroundColor: "#fff", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
+  searchBox: {alignSelf: 'center', marginBottom: 16, borderBottomWidth: 1, width: '100%', paddingLeft: 8},
+  evenRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 40, backgroundColor: Colors.grey},
+  oddRow: {flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', minHeight: 40, backgroundColor: '#fff'},
+  list: {width: '100%', marginBottom: 16},
+  name: {fontSize: 18, flex: 1, padding: 4, minWidth: '33%',},
+  code: {fontSize: 18, flex: 0.5, padding: 4, minWidth: '33%',},
+
 })

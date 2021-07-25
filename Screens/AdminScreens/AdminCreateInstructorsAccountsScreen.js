@@ -37,6 +37,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
     file: {},
     visibleModal: false,
     errors: [],
+    numberOfErrors: [],
     loading: false,
   }
 
@@ -64,6 +65,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
   handleInstructorNameUpdate = instructorName => {
     this.setState({instructorName})
   }
+  
   handleInstructorCodeUpdate = instructorCode => {
     if(instructorCode.length<7){
       this.setState({instructorCode: instructorCode, validInstructorCode: false})
@@ -122,17 +124,13 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
       }
       this.setState({loading: false})
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
   sendFile = async() => {
-    if(file){
-      this.setState({loading: true})
-    }
-    else{
-      this.setState({loading: false})
-    }
+    this.setState({loading: true})
     const { name, uri } = this.state.file
     var formData = new FormData()
     const file = {
@@ -152,6 +150,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
       const result = await response.json()
       if(response.status === 201){
         this.props.getInstructors()
+        this.setState({loading: false})
         Toast.show('Instructors created successfully')
       }
       else if(response.status === 403){
@@ -161,7 +160,8 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
         this.props.getInstructors()
         this.setState({
           visibleModal: true, 
-          errors: result.map(error => {
+          numberOfErrors: result.numberOfSavedSuccessfuly[0],
+          errors: result.indicesOfFailedSaving.map(error => {
             if(error.status.search('code') !== -1){
               return{
                 lineNumber: error.index_of_line,
@@ -203,9 +203,11 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
       }
       this.setState({loading: false})
     }catch(e) {
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
+
   handleUpload = async() => {
     this.setState({file: await upload()}, this.sendFile)
   }
@@ -220,7 +222,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
     return(
       <KeyboardAvoidingView style={styles.container}>
         <Spinner visible={this.state.loading} />
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps='handled'>
           <Text style={styles.title}>
             Create Instructors Accounts
           </Text>
@@ -250,6 +252,8 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
               value={this.state.instructorEmail}
               placeholder='Email'
               onChangeText={this.handleInstructorEmailUpdate}
+              keyboardType='email-address'
+              autoCompleteType='email'
               style={styles.textInput}
             />
             <Text style={[
@@ -278,7 +282,7 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
                   type='font-awesome'
                   size={20}
                 />
-                <Text style={styles.buttonLabel}>Upload File</Text>
+                <Text style={styles.buttonLabel}>Upload</Text>
               </TouchableOpacity>
             </View>
             
@@ -293,7 +297,12 @@ export default class AdminCreateInstructorsAccountsScreen extends React.Componen
           >
             <View style={styles.modal}>
               <View style={styles.innerModal}>
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Error Report</Text>
+              <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 16}}>Error Report</Text>
+                <Text style={{fontSize: 16, marginBottom: 8}}>
+                  {
+                    `Created ${this.state.numberOfErrors.number_of_saved_lines} out of ${this.state.numberOfErrors.number_of_saved_lines + this.state.numberOfErrors.number_of_failed_lines}`
+                  }
+                </Text>
                 <FlatList
                   data={this.state.errors}
                   renderItem={this.renderItem}
@@ -323,5 +332,5 @@ const styles = StyleSheet.create({
   uploadButton: {backgroundColor: Colors.primary_color, marginTop: 120, width: 50, height: 50, borderRadius: 30, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', zIndex: 1},
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22},
   innerModal: {height: '100%', margin: 20, backgroundColor: "#eee", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
-  buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
+  buttonLabel: {color: '#fff', fontSize: 9, textAlign: 'center'},
 })

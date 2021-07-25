@@ -20,6 +20,7 @@ export default class AdminViewCourseInfoScreen extends React.Component{
     courseOldCode: this.props.route.params.userCode, 
     courseName: this.props.route.params.userName,
     courseCode: this.props.route.params.userCode,
+    courseOldCode: this.props.route.params.userCode,
     courseYear: this.props.route.params.userYear,
     courseID: this.props.route.params.userID,
     instructorCode: '',
@@ -34,9 +35,6 @@ export default class AdminViewCourseInfoScreen extends React.Component{
     loading: false,
   }
 
-  componentDidMount(){
-    this.getStudents()
-  }
 
   componentDidUpdate(prevProps, prevState){
     if(prevState.courseName !== this.state.courseName || 
@@ -58,7 +56,6 @@ export default class AdminViewCourseInfoScreen extends React.Component{
       this.setState({isFormValid: false})
     }
   }
-
 
   makeEditable = () => {
     this.setState({editable: true})
@@ -103,6 +100,7 @@ export default class AdminViewCourseInfoScreen extends React.Component{
         })
       })
       const result = await response.json()
+      console.log(response)
       if(response.status === 200){
         Toast.show('Course updated successfully')
         this.makeIneditable()
@@ -122,14 +120,15 @@ export default class AdminViewCourseInfoScreen extends React.Component{
       }
       this.setState({loading: false})
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')    
     }
   }
 
   getStudents = async() => {
     try{
       this.setState({loading: true})
-      const response = await fetch(`${url}/admins/courses/course/students/${this.state.courseCode}`, {
+      const response = await fetch(`${url}/admins/courses/course/students/${this.state.courseOldCode}`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",
@@ -150,7 +149,8 @@ export default class AdminViewCourseInfoScreen extends React.Component{
       this.setState({loading: false})
       
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -190,7 +190,8 @@ export default class AdminViewCourseInfoScreen extends React.Component{
       }
       this.setState({loading: false})
     } catch(e){
-      console.log(e.message)
+      this.setState({loading: false})
+      Toast.show('An error occured. Please try again later')
     }
   }
 
@@ -226,7 +227,7 @@ export default class AdminViewCourseInfoScreen extends React.Component{
         keyboardVerticalOffset={-100}
       >
         <Spinner visible={this.state.loading} />
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps='handled'>
           <View>
             <TouchableOpacity
               onPress={() => {this.makeEditable()}}
@@ -235,10 +236,9 @@ export default class AdminViewCourseInfoScreen extends React.Component{
             >
               <Icon 
                 name='edit'
-                type='font-awesome'
                 color={'#fff'}  
+                size={32}
               />
-              <Text style={styles.buttonLabel}>Edit</Text>
             </TouchableOpacity>
           </View>
             <Text style={styles.title}>Course Name</Text>
@@ -297,14 +297,17 @@ export default class AdminViewCourseInfoScreen extends React.Component{
           </View>
           <TouchableOpacity 
             style={styles.studentsButton}
-            onPress={() => {this.setState({visibleModal: true})}}  
+            onPress={() => {
+              this.setState({visibleModal: true})
+              this.getStudents()
+            }}  
           >
             <Icon 
               name='list'
               type='font-awesome'
               color='#fff'
             />
-            <Text style={styles.buttonLabel}>View Students</Text>
+            <Text style={styles.studentsButtonLabel}>Students</Text>
           </TouchableOpacity>
         <Dialog.Container visible={this.state.deleteDialogVisibility}>
           <Dialog.Title>Delete</Dialog.Title>
@@ -371,10 +374,10 @@ const styles = StyleSheet.create({
                   height: 35, paddingLeft: 8, borderBottomWidth: 1,},
   alert: {width: '90%',  marginBottom: 4,},
   dropdownBox: {flex: 1, height: 30, width: '90%', marginBottom: 16},
-  saveButton: {width: '30%', alignSelf: 'center', marginBottom: 16},
+  saveButton: {width: '30%', alignSelf: 'center', marginBottom: 16, zIndex: -5},
   editButton: {alignSelf: 'flex-end', backgroundColor: Colors.primary_color, borderRadius: 30, width: 50, height: 50, justifyContent: 'center'},
   studentsList: {paddingLeft: 8, width: 300, marginBottom: 16},
-  evenStudentRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 40, backgroundColor: '#eef'},
+  evenStudentRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 40, backgroundColor: Colors.grey},
   oddStudentRow: {flexDirection: 'row', justifyContent: 'space-between',  alignItems: 'center', minHeight: 40, backgroundColor: '#fff'},
   studentName: {fontSize: 18, flex: 1, padding: 4, minWidth: '33%',},
   studentCode: {fontSize: 18, flex: 0.5, padding: 4, minWidth: '33%',},
@@ -384,4 +387,5 @@ const styles = StyleSheet.create({
   modal: {flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22,},
   innerModal: {height: '100%', margin: 20, backgroundColor: "#fff", borderRadius: 20, padding: 15, alignItems: "center",shadowColor: "#000",},
   buttonLabel: {color: '#fff', fontSize: 7, textAlign: 'center'},
+  studentsButtonLabel: {color: '#fff', fontSize: 9, textAlign: 'center'},
 })

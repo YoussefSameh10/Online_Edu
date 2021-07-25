@@ -29,7 +29,7 @@ export default class App extends React.Component {
               <AppNavigator.Screen 
                 name={'loginScreen'} 
                 component={LoginScreen} 
-              />   
+              />
               <AppNavigator.Screen 
                 name={'studentNav'} 
                 component={StudentNav} 

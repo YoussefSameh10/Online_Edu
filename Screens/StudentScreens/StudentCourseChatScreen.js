@@ -4,9 +4,9 @@ import { Button, TouchableOpacity, FlatList, StyleSheet, Text, TextInput, View }
 import { Icon } from 'react-native-elements'
 import {io} from 'socket.io-client'
 import Moment from 'moment'
-import localhost from '../../Constants/numbers'
-import { clockRunning } from 'react-native-reanimated'
+import {localhost} from '../../Constants/numbers'
 
+const socket = io(`http://${localhost}:8000`)
 
 export default class StudentCourseChatScreen extends React.Component{
   
@@ -15,13 +15,13 @@ export default class StudentCourseChatScreen extends React.Component{
     canSend: false,
     typeMessage: '',
     connect: true,
+    visibleTimeNewMessage: false,
+    visibleTimeOldMessage: false,
   }
 
-  socket = io(`http://${localhost}:8000`)
 
   componentDidMount(){
     if(this.state.connect){
-      console.log('connect')
       //this.setState({socket: io(`http://192.168.1.5:8000`), connect: false}, this.init)
       this.init()
     }
@@ -30,17 +30,15 @@ export default class StudentCourseChatScreen extends React.Component{
   init = () => {
 
     const username = this.props.user.name
-    console.log(username)
     const room = this.props.courseCode
-    this.socket.emit('join', {username, room}, () => {
+    
+    socket.emit('join', {username, room}, () => {
     })
-
-    this.socket.emit('chatHistory', room)
-    this.socket.on('returnChatHistory', (data) => {
+    socket.emit('chatHistory', room)
+    socket.on('returnChatHistory', (data) => {
       this.setState({messages: [...data.slice().reverse()]})
-      //console.log(data)
     })
-    this.socket.on('message', (message) => {
+    socket.on('message', (message) => {
       this.setState({messages: [message, ...this.state.messages]})
     })
   }
@@ -57,18 +55,22 @@ export default class StudentCourseChatScreen extends React.Component{
               {alignSelf: 'flex-end'}
           ]}
         >
-          {this.state.messages[index].sendername}
+          {this.state.messages[index].sendername !== this.props.user.name ? this.state.messages[index].sendername : ``}
         </Text>
-        <Text
-          style={[
-            styles.messageText, 
-            this.state.messages[index].sendername === this.props.user.name ? 
-              {backgroundColor: '#66f', alignSelf: 'flex-start'} : 
-              {backgroundColor: '#ddd', alignSelf: 'flex-end'}
-          ]}
-        >
-          {this.state.messages[index].messagetext}
-        </Text>
+        <View>
+          <TouchableOpacity onPress={() => {this.setState({visibleTimeNewMessage: !this.state.visibleTimeNewMessage})}}>
+            <Text
+              style={[
+                styles.messageText, 
+                this.state.messages[index].sendername === this.props.user.name ? 
+                  {backgroundColor: '#66f', alignSelf: 'flex-start'} : 
+                  {backgroundColor: '#ddd', alignSelf: 'flex-end'}
+              ]}
+            >
+              {this.state.messages[index].messagetext}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <Text 
           style={[
             styles.sendingTime, 
@@ -91,18 +93,22 @@ export default class StudentCourseChatScreen extends React.Component{
             {alignSelf: 'flex-end'}
         ]}
       >
-        {this.state.messages[index].username}
+        {this.state.messages[index].username !== this.props.user.name ? this.state.messages[index].username : ''}
       </Text>
-      <Text
-        style={[
-          styles.messageText, 
-          this.state.messages[index].username === this.props.user.name ? 
-            {backgroundColor: '#66f', alignSelf: 'flex-start'} : 
-            {backgroundColor: '#ddd', alignSelf: 'flex-end'}
-        ]}
-      >
-        {this.state.messages[index].text}
-      </Text>
+      <TouchableOpacity onPress={() => {
+          console.log(this.state.visibleTimeOldMessage)
+          this.setState({visibleTimeOldMessage: !this.state.visibleTimeOldMessage})}}>
+        <Text
+          style={[
+            styles.messageText, 
+            this.state.messages[index].username === this.props.user.name ? 
+              {backgroundColor: '#66f', alignSelf: 'flex-start'} : 
+              {backgroundColor: '#ddd', alignSelf: 'flex-end'}
+          ]}
+        >
+          {this.state.messages[index].text}
+        </Text>
+      </TouchableOpacity>
       
       <Text 
         style={[
@@ -138,10 +144,9 @@ export default class StudentCourseChatScreen extends React.Component{
     }, this.checkEnableSend)
 
     Keyboard.dismiss()
-    console.log('message delivered')
 
 
-    this.socket.emit('sendMessage', this.state.typeMessage, (error) => {
+    socket.emit('sendMessage', this.state.typeMessage, (error) => {
       // if(error){
       //   return console.log(error)
       // }
@@ -157,7 +162,8 @@ export default class StudentCourseChatScreen extends React.Component{
           inverted
           data={this.state.messages}
           renderItem={this.renderItem}
-          //keyExtractor={item => item.id} 
+          keyboardShouldPersistTaps='handled'
+          keyExtractor={item => item._id} 
           style={styles.scroller} 
         />
         <View style={styles.fixedBottom}>
